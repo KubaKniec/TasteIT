@@ -1,2 +1,19 @@
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: var(--theme-color-950) }
+:root{
+  --theme-color-50: #f3f7fb;
+  --theme-color-100: #e4eaf5;
+  --theme-color-200: #d0dced;
+  --theme-color-300: #afc5e1;
+  --theme-color-400: #89a6d1;
+  --theme-color-500: #6d8bc4;
+  --theme-color-600: #5a74b6;
+  --theme-color-700: #4f63a6;
+  --theme-color-800: #455388;
+  --theme-color-900: #3b466d;
+  --theme-color-950: #24293e;
+  /*--accent-color: #8ebbff;*/
+  --accent-color: #00CED1;
+
+
+}

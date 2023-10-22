@@ -23,7 +23,7 @@
   white-space: nowrap;
   transition: 0.5s ease-in-out;
 }
-.active{
+.active > *{
   color: var(--accent-color);
 }
 mat-icon{

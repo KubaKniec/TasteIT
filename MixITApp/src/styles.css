@@ -12,8 +12,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   --theme-color-800: #455388;
   --theme-color-900: #3b466d;
   --theme-color-950: #24293e;
-  /*--accent-color: #8ebbff;*/
-  --accent-color: #00CED1;
+
+  --accent-color: #FFD2E5;
+
+  --logo-font: 'Pacifico', cursive;
 
 
 }

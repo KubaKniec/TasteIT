@@ -1,23 +1,24 @@
 <div class="nav-container">
-  <div class="nav-item">
-    <mat-icon class="active">home</mat-icon>
-    <span class="active">Home</span>
+
+  <div [classList]="activeRoute('/home')" (click)="goto('home')" >
+    <mat-icon>home</mat-icon>
+    <span>Home</span>
   </div>
 
-  <div class="nav-item">
+  <div [classList]="activeRoute('/drinkBuilder')" (click)="goto('drinkBuilder')">
       <mat-icon>local_bar</mat-icon>
       <span>Generator</span>
   </div>
 
-  <div class="nav-item">
+  <div [classList]="activeRoute('/yourBar')" (click)="goto('yourBar')">
     <mat-icon>liquor</mat-icon>
     <span>Your bar</span>
   </div>
-  <div class="nav-item">
+  <div [classList]="activeRoute('/profile')" (click)="goto('profile')">
     <mat-icon>person_outline</mat-icon>
     <span>Profile</span>
   </div>
-  <div class="nav-item">
+  <div [classList]="activeRoute('/search')" (click)="goto('search')">
     <mat-icon>search</mat-icon>
     <span>Search</span>
   </div>

@@ -1,0 +1,25 @@
+.nav-container{
+  width: 100%;
+  border: 1px solid red;
+  height: 55px;
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.nav-item{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  min-width: 50px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: 0.5s ease-in-out;
+}
+.active{
+  color: pink;
+}
+

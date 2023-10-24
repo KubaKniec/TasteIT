@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KnownIdsData {
-    public List<Integer> drinkIds = new ArrayList<>(List.of(11000,
+    public static List<Integer> KNOWN_DRIKNS_IDS = new ArrayList<>(List.of(11000,
             11001,
             11002,
             11003,

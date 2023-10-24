@@ -58,7 +58,7 @@ public class Fetcher {
         String image = drinkJsonObject.getString("strDrinkThumb");
 
         Drink drink = new Drink();
-        drink.setAlcoholic(alcoholic.equals("Alcoholic"));
+//        drink.setAlcoholic(alcoholic.equals("Alcoholic"));
     }
     void fetchAll() {
         for(int id: KNOWN_DRIKNS_IDS) {

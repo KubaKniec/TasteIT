@@ -2,13 +2,16 @@ package mixitserver.model;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Drink {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

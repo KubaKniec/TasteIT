@@ -8,7 +8,7 @@ import lombok.Data;
 public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idDrink;
+    private Integer idIngredient;
     private String name;
     private String amount;
     @ManyToOne

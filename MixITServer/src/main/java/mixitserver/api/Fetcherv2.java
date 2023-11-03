@@ -61,6 +61,7 @@ public class Fetcherv2 {
         newDrink.setApiId(Integer.parseInt(drinkObject.getString("idDrink")));
         newDrink.setName(drinkObject.getString("strDrink"));
         newDrink.setInstructions(drinkObject.getString("strInstructions"));
+//        newDrink.setInstructions("test"); //TODO change this
         newDrink.setAlcoholic("Alcoholic".equalsIgnoreCase(drinkObject.getString("strAlcoholic")));
         newDrink.setGlassType(drinkObject.getString("strGlass"));
         newDrink.setImage(drinkObject.getString("strDrinkThumb"));
@@ -87,10 +88,12 @@ public class Fetcherv2 {
     }
 
     public void fetchAll(){
+        int x = 0;
         for(Integer id : tcdbIds){
             try {
                 Drink drink = fetchDrinkById(id);
                 if(drink != null){
+                    System.out.println(x++);
                     System.out.println(drink.getName());
 
                     drinks.add(drink);

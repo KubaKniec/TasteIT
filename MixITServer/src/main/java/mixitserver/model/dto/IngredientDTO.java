@@ -18,7 +18,7 @@ public class IngredientDTO {
     private Integer idDrink;
     private String name;
     private String amount;
-    @ManyToOne
-    @JoinColumn(name = "drink_id") //TODO Do i need to add realations anntation in DTO object
-    private Drink drink;
+//    @ManyToOne
+//    @JoinColumn(name = "drink_id") //TODO Do i need to add realations anntation in DTO object
+//    private Drink drink;
 }

@@ -17,7 +17,7 @@ public class IngredientMapperImpl implements IngredientMapper{
         ingredientDTO.idDrink(ingredient.getIdIngredient());
         ingredientDTO.name(ingredient.getName());
         ingredientDTO.amount(ingredient.getAmount());
-        ingredientDTO.drink(ingredient.getDrink()); //TODO Check if its ok
+//        ingredientDTO.drink(ingredient.getDrink()); //TODO Check if its ok
 
         return ingredientDTO.build();
     }
@@ -32,7 +32,7 @@ public class IngredientMapperImpl implements IngredientMapper{
         ingredient.idIngredient(ingredientDTO.getIdDrink());
         ingredient.name(ingredientDTO.getName());
         ingredient.amount(ingredientDTO.getAmount());
-        ingredient.drink(ingredientDTO.getDrink());
+//        ingredient.drink(ingredientDTO.getDrink());
 
         return ingredient.build();
     }

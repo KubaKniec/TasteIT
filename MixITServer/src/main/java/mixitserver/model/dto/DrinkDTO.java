@@ -19,8 +19,8 @@ public class DrinkDTO {
     private Integer idDrink;
     private Integer apiId;
     private String name;
-    @OneToMany(mappedBy = "drink", cascade = CascadeType.ALL, orphanRemoval = true) //TODO Do i need to add realations anntation in DTO object
-    private List<Ingredient> ingredients = new ArrayList<>();
+//    @OneToMany(mappedBy = "drink", cascade = CascadeType.ALL, orphanRemoval = true) //TODO czy powinny byc te pola
+//    private List<Ingredient> ingredients = new ArrayList<>();
     private String instructions;
     private boolean isAlcoholic;
     private String glassType;

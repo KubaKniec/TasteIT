@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Ingredient implements Serializable {
+public class Ingredient{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idIngredient;

@@ -21,10 +21,10 @@ public class DrinkMapperImpl implements DrinkMapper{
         drinkDTO.idDrink(drink.getIdDrink());
         drinkDTO.apiId(drink.getApiId());
         drinkDTO.name(drink.getName());
-        List<Ingredient> list = drink.getIngredients();
-        if (list != null) {
-            drinkDTO.ingredients(new ArrayList<Ingredient>(list));
-        }
+//        List<Ingredient> list = drink.getIngredients();
+//        if (list != null) {
+//            drinkDTO.ingredients(new ArrayList<Ingredient>(list));
+//        }
         drinkDTO.instructions(drink.getInstructions());
         drinkDTO.isAlcoholic(drink.isAlcoholic());
         drinkDTO.glassType(drink.getGlassType());
@@ -45,10 +45,10 @@ public class DrinkMapperImpl implements DrinkMapper{
         drink.idDrink(drinkDTO.getIdDrink());
         drink.apiId(drinkDTO.getApiId());
         drink.name(drinkDTO.getName());
-        List<Ingredient> list = drinkDTO.getIngredients();
-        if (list != null) {
-            drink.ingredients(new ArrayList<Ingredient>(list));
-        }
+//        List<Ingredient> list = drinkDTO.getIngredients();
+//        if (list != null) {
+//            drink.ingredients(new ArrayList<Ingredient>(list));
+//        }
         drink.instructions(drinkDTO.getInstructions());
         drink.isAlcoholic(drinkDTO.isAlcoholic());
         drink.glassType(drinkDTO.getGlassType());

@@ -1,8 +1,9 @@
-package mixitserver.model;
+package mixitserver.model.domain;
 
 
 import jakarta.persistence.*;
 import lombok.*;
+import mixitserver.model.domain.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Drink {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

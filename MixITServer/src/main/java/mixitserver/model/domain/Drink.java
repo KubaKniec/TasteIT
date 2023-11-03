@@ -22,6 +22,8 @@ public class Drink {
     private String name;
     @OneToMany(mappedBy = "drink", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ingredient> ingredients = new ArrayList<>();
+    @Lob
+    @Column(length = 100000)
     private String instructions;
     private boolean isAlcoholic;
     private String glassType;

@@ -1,7 +1,6 @@
 package mixitserver.api;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import mixitserver.model.Drink;
+import mixitserver.model.domain.Drink;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 

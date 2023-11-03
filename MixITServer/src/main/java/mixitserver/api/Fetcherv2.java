@@ -1,7 +1,7 @@
 package mixitserver.api;
 
 import lombok.Getter;
-import mixitserver.model.Drink;
+import mixitserver.model.domain.Drink;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

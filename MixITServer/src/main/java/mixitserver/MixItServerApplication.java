@@ -8,16 +8,17 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 
 import java.io.IOException;
 //KONIECZNIE USUNCIE TO CO PO SpringBootApplication JESLI CHCECIE URUCHOMIC SERWER
-@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+//@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@SpringBootApplication
 public class MixItServerApplication {
 
     public static void main(String[] args) throws IOException {
         SpringApplication.run(MixItServerApplication.class, args);
-        Fetcherv2 f = new Fetcherv2();
-        System.out.println("Started fetching drinks.....");
-        f.fetchAll();
-        System.out.println(f.getDrinks());
-        System.out.println("Done!");
+//        Fetcherv2 f = new Fetcherv2();
+//        System.out.println("Started fetching drinks.....");
+//        f.fetchAll();
+//        System.out.println(f.getDrinks());
+//        System.out.println("Done!");
 
     }
 

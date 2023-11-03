@@ -1,11 +1,19 @@
-package mixitserver.model;
+package mixitserver.model.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Entity
 @Data
-public class Ingredient {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Ingredient implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idDrink;

@@ -1,67 +1,104 @@
 package mixitserver.api;
 
+import lombok.Getter;
+import mixitserver.exception.FetchException;
 import mixitserver.model.domain.Drink;
+import mixitserver.model.domain.Ingredient;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mixitserver.api.KnownIdsData.KNOWN_DRIKNS_IDS;
-
-@Component
 public class Fetcher {
-    private final List<Drink> drinks = new ArrayList<>();
-    public static String URL = "www.thecocktaildb.com/api/json/v1/1/lookup.php?i=";
-    private String rawData;
+    private final String URL = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=";
+    private final List<Integer> tcdbIds = KnownIdsData.KNOWN_DRIKNS_IDS;
+    @Getter
+    private final ArrayList<Drink> drinks = new ArrayList<>();
 
-    void loadDataById(int id){
-        String rawUrl = URL+id;
 
-        try {
-            URL url = new URL(rawUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            int status = connection.getResponseCode();
-            if(status == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String line;
-                StringBuilder response = new StringBuilder();
-                while((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-                this.rawData = response.toString();
-            } else {
-                System.out.println("Error, response status: " + status);
+    public Drink fetchDrinkById(int id) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request req = new Request.Builder()
+                .url(URL+id)
+                .build();
+        try{
+            Response response = client.newCall(req).execute();
+
+            if(!response.isSuccessful()) {
+                throw new IOException("Request failed with HTTP error code: " + response.code());
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Error " + e);
+
+            ResponseBody body = response.body();
+            if(body != null) {
+                String rawData = body.string();
+                return parseDrink(rawData);
+            } else {
+                throw new IOException("Response body is null");
+            }
+
+        } catch (IOException e) {
+            throw new FetchException("Failed to fetch drink data", e);
+        }
+    }
+    public Drink parseDrink(String rawData){
+        JSONObject drinkData = new JSONObject(rawData);
+
+        if (!drinkData.has("drinks") || drinkData.isNull("drinks")) {
+            return null;
+        }
+
+        JSONArray drinksArray = drinkData.getJSONArray("drinks");
+
+        JSONObject drinkObject = drinksArray.getJSONObject(0);
+        Drink newDrink = new Drink();
+        newDrink.setApiId(Integer.parseInt(drinkObject.getString("idDrink")));
+        newDrink.setName(drinkObject.getString("strDrink"));
+        newDrink.setInstructions(drinkObject.getString("strInstructions"));
+//        newDrink.setInstructions("test"); //TODO change this
+        newDrink.setAlcoholic("Alcoholic".equalsIgnoreCase(drinkObject.getString("strAlcoholic")));
+        newDrink.setGlassType(drinkObject.getString("strGlass"));
+        newDrink.setImage(drinkObject.getString("strDrinkThumb"));
+        newDrink.setCategory(drinkObject.getString("strCategory"));
+
+        List<Ingredient> ingredients = new ArrayList<>();
+        for(int i = 1; i <= 15; i++) {
+            String ingredientName = drinkObject.optString("strIngredient" + i);
+            String ingredientAmount = drinkObject.optString("strMeasure" + i);
+
+            if(ingredientName != null && !ingredientName.isEmpty()) {
+                Ingredient ingredient = new Ingredient();
+                ingredient.setName(ingredientName);
+                ingredient.setAmount(ingredientAmount);
+                ingredient.setDrink(newDrink);
+                ingredients.add(ingredient);
+            } else {
+                break;
+            }
+        }
+        newDrink.setIngredients(ingredients);
+
+        return newDrink;
+    }
+
+    public void fetchAll(){
+        int x = 0;
+        for(Integer id : tcdbIds){
+            try {
+                Drink drink = fetchDrinkById(id);
+                if(drink != null){
+                    System.out.println(x++ + " " + drink.getName());
+                    drinks.add(drink);
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
-//    public List<Drink> parseData() {
-//    }
-
-    public void parseDrink(JSONObject drinkJsonObject, List<Drink> drinks) {
-        String idDrink = drinkJsonObject.getString("idDrink");
-        String name = drinkJsonObject.getString("strDrink");
-        String category = drinkJsonObject.getString("strCategory");
-        String glassType = drinkJsonObject.getString("strGlass");
-        String alcoholic = drinkJsonObject.getString("strAlcoholic");
-        String instructions = drinkJsonObject.getString("strInstructions");
-        String image = drinkJsonObject.getString("strDrinkThumb");
-
-        Drink drink = new Drink();
-//        drink.setAlcoholic(alcoholic.equals("Alcoholic"));
-    }
-    void fetchAll() {
-        for(int id: KNOWN_DRIKNS_IDS) {
-//            drinks.add(fetchDrinkById(id));
-        }
-    }
 }

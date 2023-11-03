@@ -34,20 +34,22 @@ public class Fetcherv2 {
     }
     public Drink parseDrink(String rawData){
         JSONObject drinkData = new JSONObject(rawData);
-        JSONArray drinksArray = drinkData.getJSONArray("drinks");
-        if(!drinksArray.isEmpty()){
-            JSONObject drinkObject = drinksArray.getJSONObject(0);
-            Drink newDrink = new Drink();
-            newDrink.setApiId(Integer.parseInt(drinkObject.getString("idDrink")));
-            newDrink.setName(drinkObject.getString("strDrink"));
-            newDrink.setInstructions(drinkObject.getString("strInstructions"));
-            newDrink.setAlcoholic("Alcoholic".equalsIgnoreCase(drinkObject.getString("strAlcoholic")));
-            newDrink.setGlassType(drinkObject.getString("strGlass"));
-            newDrink.setImage(drinkObject.getString("strDrinkThumb"));
-            newDrink.setCategory(drinkObject.getString("strCategory"));
-            newDrink.setIngredients(null); //!
+        if (drinkData.has("drinks") && !drinkData.isNull("drinks")) {
+            JSONArray drinksArray = drinkData.getJSONArray("drinks");
+            if (!drinksArray.isEmpty()) {
+                JSONObject drinkObject = drinksArray.getJSONObject(0);
+                Drink newDrink = new Drink();
+                newDrink.setApiId(Integer.parseInt(drinkObject.getString("idDrink")));
+                newDrink.setName(drinkObject.getString("strDrink"));
+                newDrink.setInstructions(drinkObject.getString("strInstructions"));
+                newDrink.setAlcoholic("Alcoholic".equalsIgnoreCase(drinkObject.getString("strAlcoholic")));
+                newDrink.setGlassType(drinkObject.getString("strGlass"));
+                newDrink.setImage(drinkObject.getString("strDrinkThumb"));
+                newDrink.setCategory(drinkObject.getString("strCategory"));
+                newDrink.setIngredients(null); //!
 
-            return newDrink;
+                return newDrink;
+            }
         }
         return null;
     }

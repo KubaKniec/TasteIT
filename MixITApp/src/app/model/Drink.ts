@@ -1,13 +1,14 @@
 import {Ingredient} from "./Ingredient";
 
 export interface Drink{
-  id: number;
+  idDrink: number;
+  apiId: number;
   name: string;
-  ingredients: Ingredient[];
-  instructions: string[];
-  isAlcoholic: boolean;
+  instructions?: string[];
   glassType: string;
   image: string;
   category: string;
+  alcoholic: boolean;
+  ingredients?: Ingredient[];
 
 }

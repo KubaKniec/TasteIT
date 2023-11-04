@@ -1,1 +1,7 @@
 <h1>MixIT</h1>
+
+<div class="drinks" *ngIf="allDrinks.length > 0">
+  <div class="drink" *ngFor="let drink of allDrinks">
+    <p (click)="gotoDrink(drink.idDrink)"> {{drink.name}} </p>
+  </div>
+</div>

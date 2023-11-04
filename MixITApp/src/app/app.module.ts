@@ -15,6 +15,8 @@ import { YourBarComponent } from './components/your-bar/your-bar.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SearchComponent } from './components/search/search.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
+import {DemoService} from "./service/DemoService";
+import { DrinkViewComponent } from './components/drink-view/drink-view.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import {MatToolbarModule} from "@angular/material/toolbar";
     DrinkBuilderComponent,
     YourBarComponent,
     ProfileComponent,
-    SearchComponent
+    SearchComponent,
+    DrinkViewComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +39,9 @@ import {MatToolbarModule} from "@angular/material/toolbar";
     HotToastModule.forRoot(),
     MatToolbarModule
   ],
-  providers: [],
+  providers: [
+    DemoService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

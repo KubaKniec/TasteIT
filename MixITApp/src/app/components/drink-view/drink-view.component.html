@@ -1,6 +1,35 @@
 <div class="container" *ngIf="activeDrink">
-  <h2> {{activeDrink.name}}</h2>
-  <img src="{{activeDrink.image}}" width="200px" height="200px">
-  <h4> {{activeDrink.category}}</h4>
+  <div class="menu">
+    <a [routerLink]="['/home']"><mat-icon>arrow_back_ios</mat-icon></a>
+    <p class="details-text"> Drink Details </p>
+    <mat-icon style="color: var(--theme-color-950)">ios_share</mat-icon>
+  </div>
+  <div class="details">
+    <img class="image" src="{{activeDrink.image}}" width="250px" height="250px">
+    <div class="drink-info">
+      <p class="name-text"> {{activeDrink.name}}</p>
+      <p class="category-text"> {{activeDrink.category}}</p>
+    </div>
+    <div class="controls">
+      <p class="nomargin"> ingriedients </p>
+      <div class="beans">
+        <div class="bean">
+          <mat-icon>favorite</mat-icon>
+        </div>
+        <div class="bean">
+          <mat-icon>local_bar</mat-icon>
+        </div>
+      </div>
 
+    </div>
+    <div class="ingredients">
+      <p> sample ingriedient 1</p>
+      <p> sample ingriedient 2</p>
+      <p> sample ingriedient 3</p>
+    </div>
+    <div class="buttons">
+      <button class="btn" matRipple> <mat-icon>liquor </mat-icon>Add to bar</button>
+      <button class="btn" matRipple> <mat-icon>list_alt </mat-icon>Show instructions</button>
+    </div>
+  </div>
 </div>

@@ -17,6 +17,8 @@ import { SearchComponent } from './components/search/search.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {DemoService} from "./service/DemoService";
 import { DrinkViewComponent } from './components/drink-view/drink-view.component';
+import {MatButtonModule} from "@angular/material/button";
+import {MatRippleModule} from "@angular/material/core";
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import { DrinkViewComponent } from './components/drink-view/drink-view.component
     MatSlideToggleModule,
     MatIconModule,
     HotToastModule.forRoot(),
-    MatToolbarModule
+    MatToolbarModule,
+    MatButtonModule,
+    MatRippleModule
   ],
   providers: [
     DemoService

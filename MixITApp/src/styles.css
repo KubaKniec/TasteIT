@@ -16,6 +16,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   --accent-color: #FFD2E5;
 
   --logo-font: 'Pacifico', cursive;
-
-
 }
+.button-primary{
+  background-color: var(--theme-color-700)
+}
+

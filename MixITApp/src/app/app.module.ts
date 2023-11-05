@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatChipsModule} from "@angular/material/chips";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatIconModule} from "@angular/material/icon";
-import {HotToastModule} from "@ngneat/hot-toast";
+import {HotToastService} from "@ngneat/hot-toast";
 import { HomeComponent } from './components/home/home.component';
 import { DrinkBuilderComponent } from './components/drink-builder/drink-builder.component';
 import { YourBarComponent } from './components/your-bar/your-bar.component';
@@ -19,6 +19,7 @@ import {DemoService} from "./service/DemoService";
 import { DrinkViewComponent } from './components/drink-view/drink-view.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatRippleModule} from "@angular/material/core";
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [
@@ -38,13 +39,19 @@ import {MatRippleModule} from "@angular/material/core";
     MatChipsModule,
     MatSlideToggleModule,
     MatIconModule,
-    HotToastModule.forRoot(),
     MatToolbarModule,
     MatButtonModule,
-    MatRippleModule
+    MatRippleModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [
-    DemoService
+    DemoService,
+    HotToastService
   ],
   bootstrap: [AppComponent]
 })

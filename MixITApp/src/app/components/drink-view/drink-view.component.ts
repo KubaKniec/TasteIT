@@ -33,4 +33,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
   ngOnDestroy(): void {
     this.enableBodyScroll(document.querySelector('body')!);
   }
+  showTestToast() {
+    this.toast.success("Test toast");
+  }
 }

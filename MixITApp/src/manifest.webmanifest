@@ -1,7 +1,7 @@
 {
   "name": "MixIT",
   "short_name": "MixIT",
-  "theme_color": "#1976d2",
+  "theme_color": "#24293e",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",

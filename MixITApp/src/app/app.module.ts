@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatChipsModule} from "@angular/material/chips";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatIconModule} from "@angular/material/icon";
-import {HotToastModule} from "@ngneat/hot-toast";
+import {HotToastService} from "@ngneat/hot-toast";
 import { HomeComponent } from './components/home/home.component';
 import { DrinkBuilderComponent } from './components/drink-builder/drink-builder.component';
 import { YourBarComponent } from './components/your-bar/your-bar.component';
@@ -38,13 +38,13 @@ import {MatRippleModule} from "@angular/material/core";
     MatChipsModule,
     MatSlideToggleModule,
     MatIconModule,
-    HotToastModule.forRoot(),
     MatToolbarModule,
     MatButtonModule,
     MatRippleModule
   ],
   providers: [
-    DemoService
+    DemoService,
+    HotToastService
   ],
   bootstrap: [AppComponent]
 })

@@ -5,35 +5,27 @@ import mixitserver.model.dto.IngredientDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IngredientMapperImpl implements IngredientMapper{
+public class IngredientMapperImpl {
 
-    @Override
     public IngredientDTO mapToDto(Ingredient ingredient) {
-        if (ingredient == null){
+        if (ingredient == null) {
             return null;
         }
-        IngredientDTO.IngredientDTOBuilder ingredientDTO = IngredientDTO.builder();
-
-        ingredientDTO.idDrink(ingredient.getIdIngredient());
-        ingredientDTO.name(ingredient.getName());
-        ingredientDTO.amount(ingredient.getAmount());
-//        ingredientDTO.drink(ingredient.getDrink()); //TODO Check if its ok
-
-        return ingredientDTO.build();
+        return IngredientDTO.builder()
+                .idIngredient(ingredient.getIdIngredient())
+                .name(ingredient.getName())
+                .amount(ingredient.getAmount())
+                .build();
     }
 
-    @Override
     public Ingredient mapToDomain(IngredientDTO ingredientDTO) {
         if (ingredientDTO == null) {
             return null;
         }
-        Ingredient.IngredientBuilder ingredient = Ingredient.builder();
-
-        ingredient.idIngredient(ingredientDTO.getIdDrink());
-        ingredient.name(ingredientDTO.getName());
-        ingredient.amount(ingredientDTO.getAmount());
-//        ingredient.drink(ingredientDTO.getDrink());
-
-        return ingredient.build();
+        return Ingredient.builder()
+                .idIngredient(ingredientDTO.getIdIngredient())
+                .name(ingredientDTO.getName())
+                .amount(ingredientDTO.getAmount())
+                .build();
     }
 }

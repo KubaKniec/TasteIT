@@ -1,8 +1,11 @@
 package mixitserver.service.mapper;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import mixitserver.model.domain.Drink;
 import mixitserver.model.domain.Ingredient;
 import mixitserver.model.dto.DrinkDTO;
+import mixitserver.model.dto.IngredientDTO;
 import org.hibernate.annotations.Comment;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class DrinkMapperImpl implements DrinkMapper{
-    @Override
+@RequiredArgsConstructor
+public class DrinkMapperImpl{
+    private final IngredientMapperImpl ingredientMapper;
+
     public DrinkDTO mapToDto(Drink drink) {
         if (drink == null) {
             return null;
@@ -21,10 +26,11 @@ public class DrinkMapperImpl implements DrinkMapper{
         drinkDTO.idDrink(drink.getIdDrink());
         drinkDTO.apiId(drink.getApiId());
         drinkDTO.name(drink.getName());
-//        List<Ingredient> list = drink.getIngredients();
-//        if (list != null) {
-//            drinkDTO.ingredients(new ArrayList<Ingredient>(list));
-//        }
+        // Mapowanie składników na DTO (jeśli istnieją)
+        List<IngredientDTO> ingredientDTOs = drink.getIngredients().stream()
+                .map(ingredientMapper::mapToDto)
+                .toList();
+        drinkDTO.ingredients(ingredientDTOs);
         drinkDTO.instructions(drink.getInstructions());
         drinkDTO.isAlcoholic(drink.isAlcoholic());
         drinkDTO.glassType(drink.getGlassType());
@@ -34,21 +40,20 @@ public class DrinkMapperImpl implements DrinkMapper{
         return drinkDTO.build();
     }
 
-    @Override
     public Drink mapToDomain(DrinkDTO drinkDTO) {
-        if (drinkDTO == null){
+        if (drinkDTO == null) {
             return null;
         }
-
         Drink.DrinkBuilder drink = Drink.builder();
 
         drink.idDrink(drinkDTO.getIdDrink());
         drink.apiId(drinkDTO.getApiId());
         drink.name(drinkDTO.getName());
-//        List<Ingredient> list = drinkDTO.getIngredients();
-//        if (list != null) {
-//            drink.ingredients(new ArrayList<Ingredient>(list));
-//        }
+        // Mapowanie składników na encję (jeśli istnieją)
+        List<Ingredient> ingredients = drinkDTO.getIngredients().stream()
+                .map(ingredientMapper::mapToDomain)
+                .toList();
+        drink.ingredients(ingredients);
         drink.instructions(drinkDTO.getInstructions());
         drink.isAlcoholic(drinkDTO.isAlcoholic());
         drink.glassType(drinkDTO.getGlassType());

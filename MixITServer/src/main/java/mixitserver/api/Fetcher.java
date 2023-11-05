@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Fetcher {
@@ -59,8 +60,14 @@ public class Fetcher {
         Drink newDrink = new Drink();
         newDrink.setApiId(Integer.parseInt(drinkObject.getString("idDrink")));
         newDrink.setName(drinkObject.getString("strDrink"));
-        newDrink.setInstructions(drinkObject.getString("strInstructions"));
-//        newDrink.setInstructions("test"); //TODO change this
+
+        String strInstructions = drinkObject.getString("strInstructions");
+        String[] splittedInstructionsArray = strInstructions.split("\\.");
+        List<String> splittedInstructionsList = Arrays.stream(splittedInstructionsArray)
+                .map(String::trim)
+                .toList();
+        newDrink.setInstructions(splittedInstructionsList);
+
         newDrink.setAlcoholic("Alcoholic".equalsIgnoreCase(drinkObject.getString("strAlcoholic")));
         newDrink.setGlassType(drinkObject.getString("strGlass"));
         newDrink.setImage(drinkObject.getString("strDrinkThumb"));
@@ -69,7 +76,7 @@ public class Fetcher {
         List<Ingredient> ingredients = new ArrayList<>();
         for(int i = 1; i <= 15; i++) {
             String ingredientName = drinkObject.optString("strIngredient" + i);
-            String ingredientAmount = drinkObject.optString("strMeasure" + i);
+            String ingredientAmount = drinkObject.optString("strMeasure" + i).trim();
 
             if(ingredientName != null && !ingredientName.isEmpty()) {
                 Ingredient ingredient = new Ingredient();

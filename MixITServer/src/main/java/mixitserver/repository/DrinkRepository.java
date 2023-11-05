@@ -8,8 +8,4 @@ import java.util.List;
 
 @Repository
 public interface DrinkRepository extends JpaRepository<Drink, Integer> {
-//    Drink findDrinkByIdDrink(Integer id);
-//    Drink findDrinkByIdDrink(Integer id);
-
-    List<Drink> findAll();
 }

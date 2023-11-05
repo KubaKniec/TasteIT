@@ -23,11 +23,11 @@ public class Drink{
     private Integer apiId;
     private String name;
     @OneToMany(mappedBy = "drink", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore //TODO
     private List<Ingredient> ingredients = new ArrayList<>();
-//    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String instructions;
+    @ElementCollection
+    @CollectionTable(name = "drink_instructions", joinColumns = @JoinColumn(name = "drink_id"))
+    @Column(name = "instruction", columnDefinition = "TEXT")
+    private List<String> instructions;
     private boolean isAlcoholic;
     private String glassType;
     private String image;

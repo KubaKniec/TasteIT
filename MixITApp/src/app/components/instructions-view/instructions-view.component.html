@@ -1,0 +1,29 @@
+<div class="modal" [@dialog]="state" *ngIf="drink">
+    <!--  SETUP STEP-->
+    <div class="setup-step" *ngIf="isIngredientStep()">
+      <p class="title-text">Prerequisites</p>
+      <img src="assets/barman.png" width="250px" height="250px">
+      <p class="text">Before you can make a <b class="accent"> {{drink.name}} </b>, you need to make sure you have the following ingredients:</p>
+      <p class="ingredient-text" *ngFor="let ingredient of drink.ingredients"> <b class="am"> {{ingredient.amount}} </b> {{ingredient.name}}</p>
+    </div>
+    <!--  -->
+    <!--  STEPS -->
+  <div class="steps" *ngIf="!isIngredientStep() && !isDone">
+    <p class="title-text"> {{currentStep}}/{{getTotalSteps()}}</p>
+    <img src="assets/bartender.png" width="250px" height="250px">
+    <p class="text"> {{getCurrentInstruction()}} </p>
+  </div>
+<!--  COMPLETE SCREEN-->
+  <div class="complete-screen" *ngIf="isDone">
+    <p class="title-text"> Enjoy! </p>
+    <img src="assets/drink_ready.png" width="250px" height="250px">
+    <p class="text"> Your <b class="accent"> {{drink.name}} </b> is ready!  </p>
+  </div>
+    <!--  CONTROLS -->
+    <div class="controls">
+      <button (click)="nextStep()" *ngIf="!isDone" class="continue-btn" matRipple>Continue</button>
+      <button (click)="onClose()" *ngIf="!isDone" class="close-btn">Close</button>
+      <button (click)="onClose()" *ngIf="isDone" class="continue-btn" matRipple> Finish </button>
+    </div>
+
+</div>

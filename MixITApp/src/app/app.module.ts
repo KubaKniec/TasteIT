@@ -20,6 +20,9 @@ import { DrinkViewComponent } from './components/drink-view/drink-view.component
 import {MatButtonModule} from "@angular/material/button";
 import {MatRippleModule} from "@angular/material/core";
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { InstructionsViewComponent } from './components/instructions-view/instructions-view.component';
+import {InstructionsFactoryService} from "./service/InstructionsFactoryService";
+import {BodyScrollService} from "./service/BodyScrollService";
 
 @NgModule({
   declarations: [
@@ -30,7 +33,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     YourBarComponent,
     ProfileComponent,
     SearchComponent,
-    DrinkViewComponent
+    DrinkViewComponent,
+    InstructionsViewComponent
   ],
   imports: [
     BrowserModule,
@@ -51,7 +55,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
   ],
   providers: [
     DemoService,
-    HotToastService
+    HotToastService,
+    InstructionsFactoryService,
+    BodyScrollService
   ],
   bootstrap: [AppComponent]
 })

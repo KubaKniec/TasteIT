@@ -32,4 +32,6 @@ public class Drink{
     private String glassType;
     private String image;
     private String category;
+//    @Column(columnDefinition = "integer default 0")   // nie działczy :(
+    private Integer popularity = 0;     // get request count
 }

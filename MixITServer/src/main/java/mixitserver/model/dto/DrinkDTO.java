@@ -25,6 +25,7 @@ public class DrinkDTO {
     private String image;
     private String category;
     private List<IngredientDTO> ingredients;
+    private Integer popularity;     // get request count
 }
 
 //jak coś to usunęliśmy pola z relacjami w obiektach dto i ich powinniśmy używać w metodach z serwisów

@@ -44,4 +44,21 @@ export class PublicDrinkService {
     }
     throw new Error("Error getting popular drinks");
   }
+  async getFilteredDrinks(category: string, alcoholic: boolean, glassType: string): Promise<Drink[]>{
+    let drinks: Drink[] = [];
+    let queryParams: any = {}
+    if (category) queryParams.category = category;
+    if (alcoholic !== null) queryParams.alcoholic = alcoholic;
+    if (glassType) queryParams.glassType = glassType;
+    const response = await publicAPI.get('/drink/drink/filter',{
+      params: queryParams
+    })
+    if(response.status === 200){
+      for(let drink of response.data){
+        drinks.push(drink);
+      }
+      return drinks;
+    }
+    throw new Error("Error getting filtered drinks");
+  }
 }

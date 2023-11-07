@@ -24,6 +24,8 @@ import { InstructionsViewComponent } from './components/instructions-view/instru
 import {InstructionsFactoryService} from "./service/InstructionsFactoryService";
 import {BodyScrollService} from "./service/BodyScrollService";
 import { DailyDrinkComponent } from './components/daily-drink/daily-drink.component';
+import {FormsModule} from "@angular/forms";
+import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { DailyDrinkComponent } from './components/daily-drink/daily-drink.compon
     SearchComponent,
     DrinkViewComponent,
     InstructionsViewComponent,
-    DailyDrinkComponent
+    DailyDrinkComponent,
+    DrinksGridComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +56,8 @@ import { DailyDrinkComponent } from './components/daily-drink/daily-drink.compon
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    })
+    }),
+    FormsModule
   ],
   providers: [
     PublicDrinkService,

@@ -2,6 +2,7 @@ package mixitserver.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import mixitserver.model.additional.Filter;
 import mixitserver.model.domain.Drink;
 import mixitserver.model.dto.DrinkDTO;
 import mixitserver.repository.DrinkRepository;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,6 @@ public class DrinkService {
                 .map(drinkMapper::mapToDto)
                 .toList();
     }
-
     public List<DrinkDTO> getTop10DrinksByPopularity() {
         List<Drink> topDrinks = drinkRepository.findTop10ByOrderByPopularityDesc();
         return topDrinks.stream().map(drink -> {
@@ -103,6 +104,10 @@ public class DrinkService {
         Integer randomIndex = random.nextInt(numberOfDrinks);
 
         return getDrinkByIdDrink(randomIndex);
+    }
+
+    public List<DrinkDTO> filterDrinks(Filter filter){
+        return drinkRepository.filterDrinks(filter.getCategory(), filter.getIsAlcoholic(), filter.getGlassType()).stream().map(drinkMapper::mapToDto).toList();
     }
 
 }

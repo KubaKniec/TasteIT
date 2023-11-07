@@ -1,6 +1,7 @@
 package mixitserver.controller;
 
 import lombok.RequiredArgsConstructor;
+import mixitserver.model.additional.Filter;
 import mixitserver.model.domain.Drink;
 import mixitserver.model.dto.DrinkDTO;
 import mixitserver.service.DrinkService;
@@ -42,5 +43,15 @@ public class DrinkController {
     @GetMapping("/daily")
     public ResponseEntity<DrinkDTO> getDailyDrink() {
         return ResponseEntity.ok(drinkService.getDailyDrink());
+    }
+    @GetMapping("/drink/filter")
+    public ResponseEntity<List<DrinkDTO>> filterDrinks(
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "alcoholic", required = false) Boolean alcoholic,
+            @RequestParam(value = "glassType", required = false) String glassType) {
+
+        Filter filter = new Filter(category, alcoholic, glassType);
+
+        return ResponseEntity.ok(drinkService.filterDrinks(filter));
     }
 }

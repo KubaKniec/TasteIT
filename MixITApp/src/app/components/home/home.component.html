@@ -1,10 +1,9 @@
 <h1>MixIT</h1>
+<div class="content">
   <app-daily-drink
     *ngIf="dailyDrink"
     [dailyDrink]="dailyDrink"
   />
-<div class="drinks" *ngIf="allDrinks.length > 0">
-  <div class="drink" *ngFor="let drink of allDrinks">
-    <p (click)="gotoDrink(drink.idDrink)"> {{drink.name}} </p>
-  </div>
+
 </div>
+

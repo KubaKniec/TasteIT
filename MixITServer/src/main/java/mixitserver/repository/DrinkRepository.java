@@ -17,5 +17,7 @@ public interface DrinkRepository extends JpaRepository<Drink, Integer> {
     List<Drink> filterDrinks(@Param("category")String category, @Param("isAlcoholic") Boolean isAlcoholic, @Param("glassType") String glassType);
     List<Drink> findTop10ByOrderByPopularityDesc();
     //List<Drink> findAllByNameOrderByPopularityDesc(String drinkName);
-    List<Drink> findByNameContainingOrderByPopularityDesc(String drinkName);
+//    List<Drink> findByNameContainingOrderByPopularityDesc(String drinkName);
+    List<Drink> findByNameContainingIgnoreCaseOrderByPopularityDesc(String drinkName);
+
 }

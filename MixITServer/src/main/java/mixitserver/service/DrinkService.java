@@ -78,7 +78,7 @@ public class DrinkService {
     }
 
     public List<DrinkDTO> getDrinksByName(String drinkName) {
-        List<Drink> drinks = drinkRepository.findAllByNameOrderByPopularityDesc(drinkName);
+        List<Drink> drinks = drinkRepository.findByNameContainingOrderByPopularityDesc(drinkName);
         return drinks.stream().map(drinkMapper::mapToDto).toList();
     }
 

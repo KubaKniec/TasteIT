@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Drink} from "../../model/Drink";
-import {DemoService} from "../../service/DemoService";
+import {PublicDrinkService} from "../../service/PublicDrinkService";
 import {Router} from "@angular/router";
+import {async} from "rxjs";
 
 @Component({
   selector: 'app-home',
@@ -10,15 +11,16 @@ import {Router} from "@angular/router";
 })
 export class HomeComponent implements OnInit{
   allDrinks: Drink[] = [];
-  constructor(private demoService: DemoService, private router: Router) {
+  dailyDrink!: Drink;
+  constructor(private publicDrinkService: PublicDrinkService, private router: Router) {
   }
-  ngOnInit(): void {
-    this.demoService.getAllDrinks().then((drinks) => {
+  async ngOnInit(): Promise<void> {
+    this.publicDrinkService.getAllDrinks().then((drinks) => {
       this.allDrinks = drinks;
-      console.log(this.allDrinks);
     }).catch((error) => {
       console.log(error);
     })
+    this.dailyDrink = await this.publicDrinkService.getDailyDrink();
   }
   gotoDrink(id: number){
     this.router.navigate([`/drink/${id}`]).then();

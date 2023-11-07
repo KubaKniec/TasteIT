@@ -8,10 +8,15 @@ import mixitserver.model.dto.DrinkDTO;
 import mixitserver.repository.DrinkRepository;
 import mixitserver.service.mapper.DrinkMapper;
 import mixitserver.service.mapper.DrinkMapperImpl;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +24,7 @@ import java.util.stream.Collectors;
 public class DrinkService {
     private final DrinkRepository drinkRepository;
     private final DrinkMapperImpl drinkMapper;
+    private DrinkDTO dailyDrink;
 
     public Drink save(Drink drink) {        //Todo change to dto(?)
         if (drink == null) {
@@ -41,19 +47,63 @@ public class DrinkService {
 
     }
 
-    public DrinkDTO findDrinkByIdDrink(Integer id) {
-        var optionalDrink = drinkRepository.findById(id);
-        if (optionalDrink.isEmpty()) {
-            throw new EntityNotFoundException("Drink not found with id: " + id);
+    public DrinkDTO getDrinkByIdDrink(Integer id) {
+        Drink drink = drinkRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Drink not found with id: " + id));
+
+        if (drink.getPopularity() == null) {
+            throw new IllegalStateException("Drink Popularity is null");
         }
-        return optionalDrink.map(drinkMapper::mapToDto).get();
+
+        drink.setPopularity(drink.getPopularity() + 1);
+        drinkRepository.save(drink);
+
+        return drinkMapper.mapToDto(drink);
     }
 
-    public List<DrinkDTO> findAll() {
+    public List<DrinkDTO> getAll() {
         return drinkRepository.findAll()
                 .stream()
                 .map(drinkMapper::mapToDto)
                 .toList();
+    }
+    public List<DrinkDTO> getTop10DrinksByPopularity() {
+        List<Drink> topDrinks = drinkRepository.findTop10ByOrderByPopularityDesc();
+        return topDrinks.stream().map(drink -> {
+            if (drink.getPopularity() == null) {
+                throw new IllegalStateException("Drink Popularity is null");
+            }
+            return drinkMapper.mapToDto(drink);
+        }).toList();
+    }
+
+    public List<DrinkDTO> getDrinksByName(String drinkName) {
+        List<Drink> drinks = drinkRepository.findAllByNameOrderByPopularityDesc(drinkName);
+        return drinks.stream().map(drinkMapper::mapToDto).toList();
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?") // Uruchamia co dzień o północy
+    public void drawDailyDrink() {
+        dailyDrink = getRandomDrink();
+    }
+
+    public DrinkDTO getDailyDrink() {
+        if (dailyDrink == null) {
+            dailyDrink = getRandomDrink();            // jeśli dzienne losowanie jeszcze się nie odbyło, losuj drinka teraz
+        }
+        return dailyDrink;
+    }
+
+    public DrinkDTO getRandomDrink() {                       //TODO póki co random
+        Integer numberOfDrinks = getAll().size();
+        if (numberOfDrinks == 0) {
+            throw new EntityNotFoundException("No drinks available in the database.");
+        }
+
+        Random random = new Random();
+        Integer randomIndex = random.nextInt(numberOfDrinks);
+
+        return getDrinkByIdDrink(randomIndex);
     }
 
     public List<DrinkDTO> filterDrinks(Filter filter){

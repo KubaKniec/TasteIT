@@ -2,6 +2,7 @@ package mixitserver.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import mixitserver.model.additional.Filter;
 import mixitserver.model.domain.Drink;
 import mixitserver.model.dto.DrinkDTO;
 import mixitserver.repository.DrinkRepository;
@@ -53,6 +54,10 @@ public class DrinkService {
                 .stream()
                 .map(drinkMapper::mapToDto)
                 .toList();
+    }
+
+    public List<DrinkDTO> filterDrinks(Filter filter){
+        return drinkRepository.filterDrinks(filter.getCategory(), filter.getIsAlcoholic(), filter.getGlassType()).stream().map(drinkMapper::mapToDto).toList();
     }
 
 }

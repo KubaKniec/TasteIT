@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DBuilder {
     private final DrinkService drinkService;
-//    @PostConstruct
+    @PostConstruct
     public void buildDataBase(){
         Fetcher f = new Fetcher();
         f.fetchAll();

@@ -1,7 +1,20 @@
-<h1>MixIT</h1>
 
-<div class="drinks" *ngIf="allDrinks.length > 0">
-  <div class="drink" *ngFor="let drink of allDrinks">
-    <p (click)="gotoDrink(drink.idDrink)"> {{drink.name}} </p>
-  </div>
+<div class="content">
+    <app-daily-drink
+      *ngIf="dailyDrink"
+      [dailyDrink]="dailyDrink"
+    />
+
+  <section>
+  <mat-chip-listbox aria-label="select" (change)="selectChip($event.value)" [(ngModel)]="selectedChip">
+    <mat-chip-option selected value="popular">Popular 🔥</mat-chip-option>
+    <mat-chip-option value="noalc">Alcohol free</mat-chip-option>
+    <mat-chip-option value="All">All</mat-chip-option>
+  </mat-chip-listbox>
+
+  <app-drinks-grid
+      [iterableDrinks]="getIterableDrinkBasedOnSelectedChip()"
+    />
+  </section>
 </div>
+

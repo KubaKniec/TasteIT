@@ -15,7 +15,7 @@ import { YourBarComponent } from './components/your-bar/your-bar.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SearchComponent } from './components/search/search.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
-import {DemoService} from "./service/DemoService";
+import {PublicDrinkService} from "./service/PublicDrinkService";
 import { DrinkViewComponent } from './components/drink-view/drink-view.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatRippleModule} from "@angular/material/core";
@@ -23,6 +23,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { InstructionsViewComponent } from './components/instructions-view/instructions-view.component';
 import {InstructionsFactoryService} from "./service/InstructionsFactoryService";
 import {BodyScrollService} from "./service/BodyScrollService";
+import { DailyDrinkComponent } from './components/daily-drink/daily-drink.component';
+import {FormsModule} from "@angular/forms";
+import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +37,9 @@ import {BodyScrollService} from "./service/BodyScrollService";
     ProfileComponent,
     SearchComponent,
     DrinkViewComponent,
-    InstructionsViewComponent
+    InstructionsViewComponent,
+    DailyDrinkComponent,
+    DrinksGridComponent
   ],
   imports: [
     BrowserModule,
@@ -51,10 +56,11 @@ import {BodyScrollService} from "./service/BodyScrollService";
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    })
+    }),
+    FormsModule
   ],
   providers: [
-    DemoService,
+    PublicDrinkService,
     HotToastService,
     InstructionsFactoryService,
     BodyScrollService

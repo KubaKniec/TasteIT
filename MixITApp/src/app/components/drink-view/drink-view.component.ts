@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewContainerRef} from '@angular/core';
 import {Drink} from "../../model/Drink";
 import {ActivatedRoute} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
-import {DemoService} from "../../service/DemoService";
+import {PublicDrinkService} from "../../service/PublicDrinkService";
 import {InstructionsFactoryService} from "../../service/InstructionsFactoryService";
 import {BodyScrollService} from "../../service/BodyScrollService";
 @Component({
@@ -15,7 +15,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
  drinkId!: number;
  constructor(private route: ActivatedRoute,
              private toast: HotToastService,
-             private demoService: DemoService,
+             private demoService: PublicDrinkService,
              private instructionsFactoryService: InstructionsFactoryService,
              private viewContainerRef: ViewContainerRef,
              private bodyScrollService: BodyScrollService

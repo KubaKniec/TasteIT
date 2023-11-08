@@ -50,7 +50,7 @@ export class PublicDrinkService {
     if (category) queryParams.category = category;
     if (alcoholic !== null) queryParams.alcoholic = alcoholic;
     if (glassType) queryParams.glassType = glassType;
-    const response = await publicAPI.get('/drink/drink/filter',{
+    const response = await publicAPI.get('/drink/filter',{
       params: queryParams
     })
     if(response.status === 200){

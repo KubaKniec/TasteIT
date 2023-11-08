@@ -98,12 +98,16 @@ public class Fetcher {
         for(Integer id : tcdbIds){
             try {
                 Drink drink = fetchDrinkById(id);
+                //sleep for some time to avoid being blocked by the API
+                Thread.sleep(100);
                 if(drink != null){
                     System.out.println(x++ + " " + drink.getName());
                     drinks.add(drink);
                 }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }

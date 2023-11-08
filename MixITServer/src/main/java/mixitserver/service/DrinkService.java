@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import mixitserver.model.additional.Filter;
 import mixitserver.model.domain.Drink;
 import mixitserver.model.dto.DrinkDTO;
+import mixitserver.model.enums.IngredientMatchType;
 import mixitserver.repository.DrinkRepository;
 import mixitserver.service.mapper.DrinkMapper;
 import mixitserver.service.mapper.DrinkMapperImpl;
@@ -12,10 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -108,6 +106,31 @@ public class DrinkService {
 
     public List<DrinkDTO> filterDrinks(Filter filter){
         return drinkRepository.filterDrinks(filter.getCategory(), filter.getIsAlcoholic(), filter.getGlassType()).stream().map(drinkMapper::mapToDto).toList();
+    }
+
+    public List<DrinkDTO> getDrinksWithFilters(Filter filter, String matchType, List<String> ingredientNames, Integer minIngredientCount) {
+//        if (matchType == null) {
+//            throw new IllegalStateException("MatchType must be provided");
+//        }
+//
+//        if (ingredientNames == null || ingredientNames.isEmpty()) {
+//            throw new IllegalStateException("Ingredient Names must be provided");
+//        }
+
+        if (matchType.equals("ALL") && (minIngredientCount != null)) {
+            throw new IllegalStateException("When matchType is ALL ingredientCount must be null");
+        }
+
+
+        if (matchType.equals("AT_LEAST") && (minIngredientCount == null || minIngredientCount == 0 || minIngredientCount > ingredientNames.size())) {
+            throw new IllegalStateException("When matchType is AT_LEAST ingredientCount must be provided and be at least 1 and can not be larger than amount of given Ingredients.");
+        }
+
+
+        return drinkRepository.findDrinksWithFilters(filter.getCategory(), filter.getIsAlcoholic(), filter.getGlassType(), matchType, ingredientNames, minIngredientCount)
+                .stream()
+                .map(drinkMapper::mapToDto)
+                .toList();
     }
 
 }

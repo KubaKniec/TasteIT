@@ -4,6 +4,16 @@
       <p class="title-text"> DrinkBuilder </p>
       <p class="beta-alert"> Beta </p>
     </div>
+<!--    -->
+    <div class="selected">
+      <mat-chip-grid>
+        <mat-chip *ngFor="let selected of selectedIngredients" (click)="handleIngredientClick(selected)"> {{selected}} </mat-chip>
+      </mat-chip-grid>
+    </div>
+    <input type="text" [(ngModel)]="searchPhrase" (ngModelChange)="filterIngredientsByPhrase()">
+    <div class="ingredient-list">
+      <p *ngFor="let ingredient of filteredIngredients" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient}}</p>
+    </div>
   </div>
   <div class="controls">
     <button class="button-primary" matRipple> Continue </button>

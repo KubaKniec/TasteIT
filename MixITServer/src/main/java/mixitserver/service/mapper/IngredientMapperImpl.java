@@ -1,10 +1,12 @@
 package mixitserver.service.mapper;
 
+import lombok.RequiredArgsConstructor;
 import mixitserver.model.domain.Ingredient;
 import mixitserver.model.dto.IngredientDTO;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class IngredientMapperImpl {
 
     public IngredientDTO mapToDto(Ingredient ingredient) {

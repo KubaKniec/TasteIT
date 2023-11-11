@@ -6,7 +6,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
-
 public interface IngredientMapper {
     static IngredientMapper getInstace() {
         return Mappers.getMapper(IngredientMapper.class);

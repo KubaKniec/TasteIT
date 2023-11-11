@@ -21,9 +21,9 @@
   </div>
     <!--  CONTROLS -->
     <div class="controls">
-      <button (click)="nextStep()" *ngIf="!isDone" class="continue-btn" matRipple>Continue</button>
+      <button (click)="nextStep()" *ngIf="!isDone" class="button-primary" matRipple>Continue</button>
       <button (click)="onClose()" *ngIf="!isDone" class="close-btn">Close</button>
-      <button (click)="onClose()" *ngIf="isDone" class="continue-btn" matRipple> Finish </button>
+      <button (click)="onClose()" *ngIf="isDone" class="button-primary" matRipple> Finish </button>
     </div>
 
 </div>

@@ -26,6 +26,14 @@ import {BodyScrollService} from "./service/BodyScrollService";
 import { DailyDrinkComponent } from './components/daily-drink/daily-drink.component';
 import {FormsModule} from "@angular/forms";
 import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.component';
+import {MatBadgeModule} from "@angular/material/badge";
+import {PublicIngredientsService} from "./service/PublicIngredientsService";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {MatInputModule} from "@angular/material/input";
+import { DrinkBuilderConfigurationComponent } from './components/drink-builder-configuration/drink-builder-configuration.component';
+import { DrinkBuilderResultsComponent } from './components/drink-builder-results/drink-builder-results.component';
+import {DrinkBuilderConfigurationFactoryService} from "./service/DrinkBuilderConfigurationFactoryService";
+import {DrinkBuilderResultsFactoryService} from "./service/DrinkBuilderResultsFactoryService";
 
 @NgModule({
   declarations: [
@@ -39,7 +47,9 @@ import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.compon
     DrinkViewComponent,
     InstructionsViewComponent,
     DailyDrinkComponent,
-    DrinksGridComponent
+    DrinksGridComponent,
+    DrinkBuilderConfigurationComponent,
+    DrinkBuilderResultsComponent
   ],
   imports: [
     BrowserModule,
@@ -57,13 +67,19 @@ import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.compon
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    FormsModule
+    FormsModule,
+    MatBadgeModule,
+    MatAutocompleteModule,
+    MatInputModule
   ],
   providers: [
     PublicDrinkService,
     HotToastService,
     InstructionsFactoryService,
-    BodyScrollService
+    BodyScrollService,
+    PublicIngredientsService,
+    DrinkBuilderConfigurationFactoryService,
+    DrinkBuilderResultsFactoryService
   ],
   bootstrap: [AppComponent]
 })

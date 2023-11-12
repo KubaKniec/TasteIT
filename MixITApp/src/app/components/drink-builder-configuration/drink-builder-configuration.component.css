@@ -1,0 +1,69 @@
+.content{
+  display: flex;
+  flex-direction: column;
+}
+.title-text{
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--theme-color-50);
+  text-align: center;
+  letter-spacing: 0.05em;
+  line-height: 26pt;
+}
+.filter-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.question{
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--theme-color-50);
+  text-align: center;
+  letter-spacing: 0.05em;
+  line-height: 26pt;
+}
+.selection{
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: space-evenly;
+}
+.choice{
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  padding: 0.2rem;
+  border: 1px solid var(--theme-color-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
+}
+.choice-text{
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--theme-color-50);
+  text-align: center;
+  letter-spacing: 0.05em;
+  line-height: 26pt;
+}
+.selected{
+  border: 1px solid var(--accent-color);
+  transition: 0.1s ease-in-out;
+  transform: scale(1.05);
+  box-shadow: 0 0 5px var(--accent-color);
+}
+.selected-text{
+  color: var(--accent-color);
+}
+.warning-text{
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: indianred;
+  text-align: center;
+  letter-spacing: 0.05em;
+  line-height: 26pt;
+  margin-top: 0.5rem;
+}

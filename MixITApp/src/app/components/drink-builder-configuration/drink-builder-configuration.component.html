@@ -1,0 +1,21 @@
+<div class="modal" [@dialog]="state">
+  <div class="content">
+    <p class="title-text"> Customize additional details for the cocktail. </p>
+    <div class="filter-container">
+      <p class="question">What type of cocktail are you looking for?</p>
+      <p class="warning-text" *ngIf="this.alcohol"> By selecting an alcoholic cocktail, you confirm that you are of legal drinking age and acknowledge the potential health risks associated with alcohol consumption. Please drink responsibly.  </p>
+      <div class="selection">
+        <div class="choice" (click)="setAlcoholicTrue()" [ngClass]="{'selected': alcohol}">
+          <p class="choice-text" [ngClass]="{'selected-text': alcohol}">Alcoholic</p>
+        </div>
+        <div class="choice" (click)="setAlcoholicFalse()" [ngClass]="{'selected': !alcohol}">
+          <p class="choice-text" [ngClass]="{'selected-text': !alcohol}">Non-Alcoholic</p>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+  <button (click)="buildFilter()" class="button-primary"> Continue </button>
+</div>
+

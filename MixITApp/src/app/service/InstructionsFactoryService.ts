@@ -1,11 +1,12 @@
-import {ComponentRef, Injectable, ViewContainerRef} from "@angular/core";
+import { ComponentRef, Injectable, ViewContainerRef} from "@angular/core";
 import {InstructionsViewComponent} from "../components/instructions-view/instructions-view.component";
 import {Drink} from "../model/Drink";
+import {IComponentFactory} from "../helpers/IComponentFactory";
 
 @Injectable({
   providedIn: 'root'
 })
-export class InstructionsFactoryService{
+export class InstructionsFactoryService implements IComponentFactory<InstructionsViewComponent>{
   private rootViewContainer!: ViewContainerRef;
 
   constructor() {

@@ -1,5 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {PublicIngredientsService} from "../../service/PublicIngredientsService";
+import {DrinkBuilderConfigurationFactoryService} from "../../service/DrinkBuilderConfigurationFactoryService";
+import {HotToastService} from "@ngneat/hot-toast";
 
 @Component({
   selector: 'app-drink-builder',
@@ -9,8 +11,12 @@ import {PublicIngredientsService} from "../../service/PublicIngredientsService";
 export class DrinkBuilderComponent implements OnInit{
   constructor(
     private publicIngredientsService: PublicIngredientsService,
-
-              ){}
+    private drinkBuilderConfigurationFactoryService: DrinkBuilderConfigurationFactoryService,
+    private viewContainerRef: ViewContainerRef,
+    private toast: HotToastService
+              ){
+    this.drinkBuilderConfigurationFactoryService.setRootViewContainerRef(this.viewContainerRef);
+  }
   ingredients: String[] = [];
   filteredIngredients: String[] = [];
   searchPhrase: String = "";
@@ -37,5 +43,16 @@ export class DrinkBuilderComponent implements OnInit{
 
   filterIngredientsByPhrase() {
     this.filteredIngredients = this.ingredients.filter((ingredient) => ingredient.toLowerCase().includes(this.searchPhrase.toLowerCase()));
+  }
+  initializeDrinkBuilderConfigurationView(){
+    if(this.selectedIngredients.length === 0){
+      this.toast.error("Please select at least one ingredient");
+      return;
+    }
+    const componentRef = this.drinkBuilderConfigurationFactoryService.addDynamicComponent(this.selectedIngredients);
+
+    componentRef.instance.close.subscribe(() => {
+      this.drinkBuilderConfigurationFactoryService.removeDynamicComponent(componentRef)
+    });
   }
 }

@@ -30,6 +30,9 @@ import {MatBadgeModule} from "@angular/material/badge";
 import {PublicIngredientsService} from "./service/PublicIngredientsService";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatInputModule} from "@angular/material/input";
+import { DrinkBuilderConfigurationComponent } from './components/drink-builder-configuration/drink-builder-configuration.component';
+import { DrinkBuilderResultsComponent } from './components/drink-builder-results/drink-builder-results.component';
+import {DrinkBuilderConfigurationFactoryService} from "./service/DrinkBuilderConfigurationFactoryService";
 
 @NgModule({
   declarations: [
@@ -43,7 +46,9 @@ import {MatInputModule} from "@angular/material/input";
     DrinkViewComponent,
     InstructionsViewComponent,
     DailyDrinkComponent,
-    DrinksGridComponent
+    DrinksGridComponent,
+    DrinkBuilderConfigurationComponent,
+    DrinkBuilderResultsComponent
   ],
   imports: [
     BrowserModule,
@@ -71,7 +76,8 @@ import {MatInputModule} from "@angular/material/input";
     HotToastService,
     InstructionsFactoryService,
     BodyScrollService,
-    PublicIngredientsService
+    PublicIngredientsService,
+    DrinkBuilderConfigurationFactoryService
   ],
   bootstrap: [AppComponent]
 })

@@ -29,4 +29,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   font-weight: 700;
   cursor: pointer;
 }
+.modal{
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--theme-color-950);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 1rem;
+}
 

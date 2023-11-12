@@ -1,1 +1,8 @@
-<p>drink-builder-results works!</p>
+<div class="modal">
+  <p class="title-text"> Look what we found for you  </p>
+  <app-drinks-grid
+    *ngIf="isLoaded"
+    [iterableDrinks]="generatedDrinks"
+  />
+  <button class="button-primary" (click)="onClose()"> Close </button>
+</div>

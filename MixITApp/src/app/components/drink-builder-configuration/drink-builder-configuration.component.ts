@@ -1,5 +1,7 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewContainerRef} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
+import {DrinkBuilderResultsFactoryService} from "../../service/DrinkBuilderResultsFactoryService";
+import {Filter} from "../../model/Filter";
 
 @Component({
   selector: 'app-drink-builder-configuration',
@@ -30,6 +32,10 @@ export class DrinkBuilderConfigurationComponent {
   @Output() close = new EventEmitter<void>();
   state: string = 'enter'
   alcohol: boolean = false;
+  constructor(private viewContainerRef: ViewContainerRef,
+              private drinkBuilderResultsFactoryService: DrinkBuilderResultsFactoryService) {
+    this.drinkBuilderResultsFactoryService.setRootViewContainerRef(this.viewContainerRef);
+  }
 
   onClose(){
     this.state = 'void';
@@ -45,11 +51,14 @@ export class DrinkBuilderConfigurationComponent {
     this.alcohol = true;
   }
   buildFilter(){
-    let filter = {
+    let filter: Filter = {
       ingredients: this.ingredients,
       alcohol: this.alcohol
     }
-    this.additionalFilters?.emit(filter)
-    this.onClose();
+    const componentRef = this.drinkBuilderResultsFactoryService.addDynamicComponent(filter);
+    componentRef.instance.close.subscribe(() => {
+      this.drinkBuilderResultsFactoryService.removeDynamicComponent(componentRef)
+      this.onClose();
+    });
   }
 }

@@ -33,6 +33,7 @@ import {MatInputModule} from "@angular/material/input";
 import { DrinkBuilderConfigurationComponent } from './components/drink-builder-configuration/drink-builder-configuration.component';
 import { DrinkBuilderResultsComponent } from './components/drink-builder-results/drink-builder-results.component';
 import {DrinkBuilderConfigurationFactoryService} from "./service/DrinkBuilderConfigurationFactoryService";
+import {DrinkBuilderResultsFactoryService} from "./service/DrinkBuilderResultsFactoryService";
 
 @NgModule({
   declarations: [
@@ -77,7 +78,8 @@ import {DrinkBuilderConfigurationFactoryService} from "./service/DrinkBuilderCon
     InstructionsFactoryService,
     BodyScrollService,
     PublicIngredientsService,
-    DrinkBuilderConfigurationFactoryService
+    DrinkBuilderConfigurationFactoryService,
+    DrinkBuilderResultsFactoryService
   ],
   bootstrap: [AppComponent]
 })

@@ -15,7 +15,9 @@ export class SearchComponent {
   foundDrinks: Drink[] = []
   query: string = ''
   isLoading: boolean = false;
+  didComponentJustLoad: boolean = true;
   searchDrink(query: string){
+    this.didComponentJustLoad = false;
     this.isLoading = true;
     if(query === '' || query.length < 2){
       this.isLoading = false;

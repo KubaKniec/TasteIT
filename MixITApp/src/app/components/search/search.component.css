@@ -12,13 +12,17 @@
   gap: 0.5rem;
 }
 .search-input{
+  padding: 0.5rem;
+  width: 100%;
   display: flex;
   align-items: center;
-  width: 100%;
-  gap: 0.5rem;
-  padding: 0.2rem;
+  gap: 0.1rem;
+  box-sizing: border-box;
   border: 1px solid var(--theme-color-500);
   border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: var(--theme-color-300);
 }
 .input{
   flex: 1;
@@ -26,12 +30,34 @@
   outline: none;
   background-color: transparent;
   font-size: 20px;
-  color: var(--theme-color-100);
+  color: var(--theme-color-950);
 }
 .content{
   display: flex;
-  justify-content: center;
   align-items: center;
   flex: 1;
   height: 100%;
+  width: 100%;
+}
+.centered-content{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+.not-found{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+}
+.not-found > h1{
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--theme-color-100);
+  letter-spacing: 0.05em;
 }

@@ -1,7 +1,10 @@
 <div class="container">
   <div class="search-controls">
     <div class="search-input">
-      <mat-icon>search</mat-icon>
+      <mat-icon
+      style="color: var(--theme-color-950)"
+      >
+        search</mat-icon>
       <input
         type="text"
         class="input"
@@ -11,13 +14,23 @@
         [(ngModel)]="query">
     </div>
   </div>
-  <div class="content">
-    <app-drinks-grid
-      [iterableDrinks]="foundDrinks"
-      *ngIf="foundDrinks.length > 0 && !isLoading"
-      />
-    <mat-spinner *ngIf="isLoading">
-
+  <app-drinks-grid
+    [iterableDrinks]="foundDrinks"
+    *ngIf="foundDrinks.length > 0 && !isLoading"
+  />
+  <div class="centered-content" *ngIf="isLoading">
+    <mat-spinner
+                 style="color: var(--theme-color-200)">
     </mat-spinner>
+  </div>
+    <div class="centered-content not-found"
+         *ngIf="foundDrinks.length == 0 && !isLoading && !didComponentJustLoad">
+      <img src="assets/sad_cocktail.png" width="150px" height="150px">
+      <h1>
+        No drinks found
+      </h1>
+    </div>
+  <div class="centered-content not-found">
+    <h1> What are you looking for?</h1>
   </div>
 </div>

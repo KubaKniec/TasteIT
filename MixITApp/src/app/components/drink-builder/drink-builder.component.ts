@@ -34,6 +34,7 @@ export class DrinkBuilderComponent implements OnInit{
     return ingredients.filter((ingredient, index) => ingredients.indexOf(ingredient) === index);
   }
   handleIngredientClick(ingredient: String) {
+    this.searchPhrase = "";
     if (this.selectedIngredients.includes(ingredient)) {
       this.selectedIngredients = this.selectedIngredients.filter((selectedIngredient) => selectedIngredient !== ingredient);
     } else {

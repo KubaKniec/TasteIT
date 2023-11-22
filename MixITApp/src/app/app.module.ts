@@ -34,6 +34,7 @@ import { DrinkBuilderConfigurationComponent } from './components/drink-builder-c
 import { DrinkBuilderResultsComponent } from './components/drink-builder-results/drink-builder-results.component';
 import {DrinkBuilderConfigurationFactoryService} from "./service/DrinkBuilderConfigurationFactoryService";
 import {DrinkBuilderResultsFactoryService} from "./service/DrinkBuilderResultsFactoryService";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -51,27 +52,28 @@ import {DrinkBuilderResultsFactoryService} from "./service/DrinkBuilderResultsFa
     DrinkBuilderConfigurationComponent,
     DrinkBuilderResultsComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatChipsModule,
-    MatSlideToggleModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatRippleModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
-    }),
-    FormsModule,
-    MatBadgeModule,
-    MatAutocompleteModule,
-    MatInputModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatChipsModule,
+        MatSlideToggleModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatRippleModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            // Register the ServiceWorker as soon as the application is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
+        }),
+        FormsModule,
+        MatBadgeModule,
+        MatAutocompleteModule,
+        MatInputModule,
+        MatProgressSpinnerModule
+    ],
   providers: [
     PublicDrinkService,
     HotToastService,

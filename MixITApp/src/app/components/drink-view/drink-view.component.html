@@ -22,7 +22,15 @@
       </div>
     </div>
     <div class="ingredients">
-      <p *ngFor="let ingr of activeDrink.ingredients" class="ingr-text">{{ingr.name}}</p>
+<!--      <p *ngFor="let ingr of activeDrink.ingredients" class="ingr-text">{{ingr.name}}</p>-->
+      <mat-chip-set>
+        <mat-chip
+          *ngFor="let ingr of activeDrink.ingredients"
+          highlighted
+          style="background-color: var(--theme-color-600); color:var(--theme-color-50)">
+          {{ingr.name}}
+        </mat-chip>
+      </mat-chip-set>
     </div>
     <div class="buttons">
       <button class="btn" matRipple (click)="initializeInstructionsView(activeDrink!)"> <mat-icon>list_alt </mat-icon>Mix It Up</button>

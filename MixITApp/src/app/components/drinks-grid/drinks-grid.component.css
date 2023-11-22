@@ -3,7 +3,7 @@
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 1rem;
     padding: 1rem;
-  margin-bottom: 80px;
+    margin-bottom: 80px;
 }
 .single-drink{
     display: flex;

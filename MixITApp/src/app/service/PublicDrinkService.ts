@@ -79,4 +79,19 @@ export class PublicDrinkService {
     }
     throw new Error("Error getting filtered drinks");
   }
+  async searchForDrinks(query: string): Promise<Drink[]>{
+    let drinks: Drink[] = [];
+    const response = await publicAPI.get('/drink/search',{
+      params: {
+        query: query
+      }
+    })
+    if(response.status === 200){
+      for(let drink of response.data){
+        drinks.push(drink);
+      }
+      return drinks;
+    }
+    throw new Error("Error getting search drinks");
+  }
 }

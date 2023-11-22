@@ -1,1 +1,23 @@
-<p>search works!</p>
+<div class="container">
+  <div class="search-controls">
+    <div class="search-input">
+      <mat-icon>search</mat-icon>
+      <input
+        type="text"
+        class="input"
+        placeholder="Search for cocktail..."
+        (keydown.enter)="searchDrink(query)"
+        (ngModelChange)="searchDrink(query)"
+        [(ngModel)]="query">
+    </div>
+  </div>
+  <div class="content">
+    <app-drinks-grid
+      [iterableDrinks]="foundDrinks"
+      *ngIf="foundDrinks.length > 0 && !isLoading"
+      />
+    <mat-spinner *ngIf="isLoading">
+
+    </mat-spinner>
+  </div>
+</div>

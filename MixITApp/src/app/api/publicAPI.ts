@@ -1,7 +1,8 @@
 import axios from "axios";
+import {GlobalConfiguration} from "../config/GlobalConfiguration";
 
 export default axios.create({
-  baseURL: "http://localhost:8080/v1/public",
+  baseURL: GlobalConfiguration.API_URL+"v1/public",
   headers:{
     Accept : "application/json",
   }

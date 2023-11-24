@@ -37,6 +37,7 @@ import {DrinkBuilderResultsFactoryService} from "./service/DrinkBuilderResultsFa
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { AdultWarningComponent } from './components/adult-warning/adult-warning.component';
 import { InstallAppModalComponent } from './components/install-app-modal/install-app-modal.component';
+import {NgOptimizedImage} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { InstallAppModalComponent } from './components/install-app-modal/install
         MatBadgeModule,
         MatAutocompleteModule,
         MatInputModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        NgOptimizedImage
     ],
   providers: [
     PublicDrinkService,

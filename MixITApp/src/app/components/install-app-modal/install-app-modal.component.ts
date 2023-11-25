@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 
 @Component({
   selector: 'app-install-app-modal',
@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./install-app-modal.component.css']
 })
 export class InstallAppModalComponent {
+  @Output() close: EventEmitter<void> = new EventEmitter<void>();
 
 }

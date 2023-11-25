@@ -48,5 +48,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   justify-content: space-between;
   box-sizing: border-box;
   padding: 1rem;
+  align-items: center;
 }
 

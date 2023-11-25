@@ -1,1 +1,17 @@
-<p>adult-warning works!</p>
+<div class="modal-container">
+  <div class="container">
+    <div class="text">
+      <h2>Disclaimer: Important Legal Information!</h2>
+      <p class="warning-content">This application provides cocktail recipes for informational and educational purposes only.
+        It does not endorse or encourage alcohol consumption.
+        Users must be of legal drinking age and are advised to drink responsibly.
+        Alcohol can have adverse health effects, and individuals with health concerns should consult a professional.
+        The accuracy of information is not guaranteed. The inclusion of specific brands does not constitute an endorsement.
+        The creators are not liable for any damages resulting from application use. Users are responsible for compliance with local laws.
+        By using the application, users agree to these terms. This disclaimer is subject to change without notice.</p>
+      <p class="confirm-text">If you agree, type 'I agree.'</p>
+      <input type="text" class="input" placeholder="Agree to continue" [(ngModel)]="confirmInput" (ngModelChange)="checkConfirmation()">
+      <button class="button-primary" [disabled]="isButtonDisabled" >Confirm</button>
+    </div>
+  </div>
+</div>

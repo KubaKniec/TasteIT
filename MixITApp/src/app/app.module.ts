@@ -35,6 +35,9 @@ import { DrinkBuilderResultsComponent } from './components/drink-builder-results
 import {DrinkBuilderConfigurationFactoryService} from "./service/DrinkBuilderConfigurationFactoryService";
 import {DrinkBuilderResultsFactoryService} from "./service/DrinkBuilderResultsFactoryService";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { AdultWarningComponent } from './components/adult-warning/adult-warning.component';
+import { InstallAppModalComponent } from './components/install-app-modal/install-app-modal.component';
+import {NgOptimizedImage} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -50,7 +53,9 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     DailyDrinkComponent,
     DrinksGridComponent,
     DrinkBuilderConfigurationComponent,
-    DrinkBuilderResultsComponent
+    DrinkBuilderResultsComponent,
+    AdultWarningComponent,
+    InstallAppModalComponent
   ],
     imports: [
         BrowserModule,
@@ -72,7 +77,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
         MatBadgeModule,
         MatAutocompleteModule,
         MatInputModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        NgOptimizedImage
     ],
   providers: [
     PublicDrinkService,

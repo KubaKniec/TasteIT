@@ -1,1 +1,65 @@
-<p>profile works!</p>
+<div class="container">
+  <div class="profile-tab" matRipple>
+    <img src="assets/user_placeholder.png" width="50px" height="50px" class="profile-picture">
+    <div class="texts">
+      <p class="profile-text"> You're not logged in!</p>
+      <p class="profile-subtitle"> Log in to manage your account</p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <p class="section-title"> Profile </p>
+
+    <div class="action" matRipple>
+      <div>
+          <mat-icon>history</mat-icon>
+          <p> Cocktails History </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+    <div class="action" matRipple>
+      <div>
+        <mat-icon>favorite</mat-icon>
+        <p> Favorite </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+    <div class="action" matRipple>
+      <div>
+        <mat-icon>group</mat-icon>
+        <p> Friends </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+  </div>
+
+  <div class="actions">
+    <p class="section-title"> App </p>
+
+    <div class="action" matRipple>
+      <div>
+        <mat-icon>info</mat-icon>
+        <p> Info </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+    <div class="action" matRipple>
+      <div>
+        <mat-icon>contact_support</mat-icon>
+        <p> Contact us </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+    <div class="action" matRipple>
+      <div>
+        <mat-icon>settings</mat-icon>
+        <p> Settings </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+  </div>
+  <div class="app-info">
+    <p> {{GlobalConfiguration.APP_NAME}}</p>
+    <p> {{GlobalConfiguration.APP_VERSION}}</p>
+  </div>
+</div>

@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit{
   popularDrinks: Drink[] = [];
   nonAlkDrinks: Drink[] = [];
   selectedChip: string = 'popular'
+  greeting: string = ''
   constructor(private publicDrinkService: PublicDrinkService, private router: Router) {
   }
   selectChip(chip: string): void {
@@ -23,6 +24,7 @@ export class HomeComponent implements OnInit{
     }
   }
   async ngOnInit(): Promise<void> {
+    this.greeting = this.getGreetingDependingOnTime();
     this.publicDrinkService.getAllDrinks().then((drinks) => {
       this.allDrinks = drinks;
     }).catch((error) => {
@@ -34,6 +36,16 @@ export class HomeComponent implements OnInit{
   }
   gotoDrink(id: number){
     this.router.navigate([`/drink/${id}`]).then();
+  }
+  getGreetingDependingOnTime(): string {
+    const currentHour = new Date().getHours();
+    if (currentHour >= 5 && currentHour < 12) {
+      return "Good Morning!";
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return "Good Afternoon!";
+    } else {
+      return "Good Evening!";
+    }
   }
 
     getIterableDrinkBasedOnSelectedChip(): Drink[] {

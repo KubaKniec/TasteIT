@@ -1,6 +1,13 @@
-<div class="container" *ngIf="dailyDrink">
-  <div class="image-container">
-    <img src="{{dailyDrink.image}}" alt="Drink Image">
-    <p class="drink-name">{{dailyDrink.name}}</p>
+
+<div class="whole-content" *ngIf="dailyDrink">
+  <div class="container">
+    <div class="image-container">
+      <img src="{{dailyDrink.image}}" alt="Drink Image" >
+    </div>
+  </div>
+  <div class="drink-info">
+    <p class="title"> Daily Cocktail</p>
+    <p class="drink-name"> {{dailyDrink.name}}</p>
   </div>
 </div>
+

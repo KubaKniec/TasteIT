@@ -19,6 +19,7 @@ export class AppComponent implements OnInit{
     this.adultWarningFactoryService.setRootViewContainerRef(this.viewContainerRef);
     this.installAppModalFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
+  isAppRunningAsPWA: boolean = window.matchMedia('(display-mode: standalone)').matches;
   ngOnInit(): void {
     if(GlobalConfiguration.SHOW_WARNINGS){
       this.bodyScrollService.disableScroll();
@@ -28,7 +29,7 @@ export class AppComponent implements OnInit{
         this.bodyScrollService.enableScroll();
       });
     }
-    if(!GlobalConfiguration.ALLOW_ALL_DEVICES && !window.matchMedia('(display-mode: standalone)').matches){
+    if(!GlobalConfiguration.ALLOW_ALL_DEVICES && !this.isAppRunningAsPWA){
       this.bodyScrollService.disableScroll();
       const componentRef = this.installAppModalFactoryService.addDynamicComponent();
       componentRef.instance.close.subscribe(() => {
@@ -37,5 +38,6 @@ export class AppComponent implements OnInit{
       });
     }
   }
+
 
 }

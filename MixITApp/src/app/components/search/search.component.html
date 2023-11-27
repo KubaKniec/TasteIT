@@ -9,9 +9,9 @@
         type="text"
         class="input"
         placeholder="Search for cocktail..."
+        [(ngModel)]="query"
         (keydown.enter)="searchDrink(query)"
-        (ngModelChange)="searchDrink(query)"
-        [(ngModel)]="query">
+        (ngModelChange)="searchDrink(query)">
     </div>
   </div>
   <app-drinks-grid

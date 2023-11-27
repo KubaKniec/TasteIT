@@ -19,7 +19,7 @@ export class SearchComponent {
   searchDrink(query: string){
     this.didComponentJustLoad = false;
     this.isLoading = true;
-    if(query === '' || query.length < 2){
+    if(query === ''){
       this.isLoading = false;
       this.foundDrinks = [];
       return;

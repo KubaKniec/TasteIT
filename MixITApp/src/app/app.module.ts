@@ -38,6 +38,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { AdultWarningComponent } from './components/adult-warning/adult-warning.component';
 import { InstallAppModalComponent } from './components/install-app-modal/install-app-modal.component';
 import {NgOptimizedImage} from "@angular/common";
+import { BetaBadgeComponent } from './components/beta-badge/beta-badge.component';
+import {MatSelectModule} from "@angular/material/select";
 
 @NgModule({
   declarations: [
@@ -55,7 +57,8 @@ import {NgOptimizedImage} from "@angular/common";
     DrinkBuilderConfigurationComponent,
     DrinkBuilderResultsComponent,
     AdultWarningComponent,
-    InstallAppModalComponent
+    InstallAppModalComponent,
+    BetaBadgeComponent
   ],
     imports: [
         BrowserModule,
@@ -78,7 +81,8 @@ import {NgOptimizedImage} from "@angular/common";
         MatAutocompleteModule,
         MatInputModule,
         MatProgressSpinnerModule,
-        NgOptimizedImage
+        NgOptimizedImage,
+        MatSelectModule
     ],
   providers: [
     PublicDrinkService,

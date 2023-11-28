@@ -94,4 +94,26 @@ export class PublicDrinkService {
     }
     throw new Error("Error getting search drinks");
   }
+  async getAllCategories(): Promise<string[]>{
+    let categories: string[] = [];
+    const response = await publicAPI.get("/categories/getAll");
+    if(response.status === 200){
+      for(let category of response.data){
+        categories.push(category);
+      }
+      return categories;
+    }
+    throw new Error("Error getting all categories");
+  }
+  async getAllGlassTypes(): Promise<string[]>{
+    let glassTypes: string[] = [];
+    const response = await publicAPI.get("/glassTypes/getAll");
+    if(response.status === 200){
+      for(let glassType of response.data){
+        glassTypes.push(glassType);
+      }
+      return glassTypes;
+    }
+    throw new Error("Error getting all glass types");
+  }
 }

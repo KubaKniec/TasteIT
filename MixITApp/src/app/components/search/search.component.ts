@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PublicDrinkService} from "../../service/PublicDrinkService";
 import {HotToastService} from "@ngneat/hot-toast";
 import {Drink} from "../../model/Drink";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-search',
@@ -16,7 +17,8 @@ export class SearchComponent implements OnInit{
   glassTypes: string[] = [];
   visibleCategories: number = 6;
   constructor(private publicDrinkService: PublicDrinkService,
-              private toast: HotToastService
+              private toast: HotToastService,
+              private router: Router
               ) {}
   ngOnInit(): void {
     this.publicDrinkService.getAllCategories().then((drinkCategories) => {
@@ -45,6 +47,9 @@ export class SearchComponent implements OnInit{
       this.isLoading = false
       }
     )
+  }
+  handleCategoryClick(category: string) {
+    this.router.navigate(['/category', category]).then();
   }
 
   showAllCategories() {

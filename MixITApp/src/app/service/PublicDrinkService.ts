@@ -62,7 +62,7 @@ export class PublicDrinkService {
     }
     throw new Error("Error getting popular drinks");
   }
-  async getFilteredDrinks(category: string, alcoholic: boolean, glassType: string): Promise<Drink[]>{
+  async getFilteredDrinks(category: string, alcoholic?: boolean, glassType?: string): Promise<Drink[]>{
     let drinks: Drink[] = [];
     let queryParams: any = {}
     if (category) queryParams.category = category;

@@ -24,7 +24,7 @@
   <div class="filters" *ngIf="query === ''">
   <p class="title"> Categories: </p>
     <div class="categories">
-      <p *ngFor="let category of drinkCategories.slice(0, visibleCategories)" class="category">
+      <p *ngFor="let category of drinkCategories.slice(0, visibleCategories)" class="category" matRipple (click)="handleCategoryClick(category)">
         {{category}} </p>
     </div>
     <button class="see-more-btn" *ngIf="visibleCategories < drinkCategories.length" (click)="showAllCategories()">See more <mat-icon>expand_more</mat-icon></button>

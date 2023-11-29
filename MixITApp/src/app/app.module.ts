@@ -40,6 +40,7 @@ import { InstallAppModalComponent } from './components/install-app-modal/install
 import {NgOptimizedImage} from "@angular/common";
 import { BetaBadgeComponent } from './components/beta-badge/beta-badge.component';
 import {MatSelectModule} from "@angular/material/select";
+import { CategoryViewComponent } from './components/category-view/category-view.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import {MatSelectModule} from "@angular/material/select";
     DrinkBuilderResultsComponent,
     AdultWarningComponent,
     InstallAppModalComponent,
-    BetaBadgeComponent
+    BetaBadgeComponent,
+    CategoryViewComponent
   ],
     imports: [
         BrowserModule,

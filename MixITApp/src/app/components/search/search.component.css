@@ -66,21 +66,25 @@
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
+  height: auto;
+  overflow: hidden;
   flex: 1;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  overflow: hidden;
-  transition: height 0.3s ease-out;
+  transition: 0.5s ease-out;
 }
 .categories{
   display: grid;
-  grid-template-columns: repeat(2, minmax(100px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
+  align-content: start;
+  align-items: start;
   gap: 1rem;
-  transition: ease-in-out 0.5s;
+  transition: 0.5s ease-in-out;
   height: 100%;
 }
 .category{
   display: flex;
+  height: 3.5rem;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -92,6 +96,7 @@
   background-color: var(--theme-color-800);
   cursor: pointer;
   margin: 0;
+  box-sizing: border-box;
 }
 .title{
   font-size: 1.2rem;

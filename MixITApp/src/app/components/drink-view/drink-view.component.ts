@@ -15,7 +15,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
  drinkId!: number;
  constructor(private route: ActivatedRoute,
              private toast: HotToastService,
-             private demoService: PublicDrinkService,
+             private publicDrinkService: PublicDrinkService,
              private instructionsFactoryService: InstructionsFactoryService,
              private viewContainerRef: ViewContainerRef,
              private bodyScrollService: BodyScrollService
@@ -27,7 +27,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
     this.bodyScrollService.disableScroll();
     this.drinkId = this.route.snapshot.params['id'];
     try {
-      this.activeDrink = await this.demoService.getDrinkById(this.drinkId)
+      this.activeDrink = await this.publicDrinkService.getDrinkById(this.drinkId)
     } catch (e) {
       this.toast.error("Drink not found or backend is down")
     }

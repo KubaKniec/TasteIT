@@ -78,3 +78,6 @@ li{
 .am{
   color: var(--theme-color-200);
 }
+.margin-bottom-1rem{
+  margin-bottom: 1rem;
+}

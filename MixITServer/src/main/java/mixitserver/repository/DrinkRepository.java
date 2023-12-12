@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface DrinkRepository extends JpaRepository<Drink, Integer> {
@@ -41,5 +42,10 @@ public interface DrinkRepository extends JpaRepository<Drink, Integer> {
                              @Param("ingredientNames") List<String> ingredientNames,
                              @Param("minIngredientCount") Integer minIngredientCount);
 
+    @Query("SELECT DISTINCT d.glassType FROM Drink d")
+    Set<String> findAllGlassTypes();
+
+    @Query("SELECT DISTINCT d.category FROM Drink d")
+    Set<String> findAllCategories();
 
 }

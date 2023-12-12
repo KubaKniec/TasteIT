@@ -23,15 +23,18 @@ export class DrinkBuilderComponent implements OnInit{
   selectedIngredients: String[] = [];
   ngOnInit(): void {
     this.publicIngredientsService.getAllIngredientsNames().then((ingredients) => {
-      this.ingredients = ingredients;
-      this.ingredients = this.removeDuplicateIngredients(this.ingredients);
-      this.filteredIngredients = ingredients;
+      this.ingredients = this.removeDuplicatesFromList(ingredients);
+      this.filteredIngredients = this.ingredients;
     }).catch((error) => {
       console.log(error);
     });
   }
-  removeDuplicateIngredients(ingredients: String[]): String[] {
-    return ingredients.filter((ingredient, index) => ingredients.indexOf(ingredient) === index);
+  removeDuplicatesFromList(list: String[]): String[] {
+    const uniqueSet = new Set<string>();
+    list.forEach((item) => {
+      uniqueSet.add(item.toLowerCase());
+    });
+    return Array.from(uniqueSet);
   }
   handleIngredientClick(ingredient: String) {
     this.searchPhrase = "";
@@ -51,7 +54,6 @@ export class DrinkBuilderComponent implements OnInit{
       return;
     }
     const componentRef = this.drinkBuilderConfigurationFactoryService.addDynamicComponent(this.selectedIngredients);
-
     componentRef.instance.close.subscribe(() => {
       this.drinkBuilderConfigurationFactoryService.removeDynamicComponent(componentRef)
     });

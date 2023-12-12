@@ -40,15 +40,6 @@
   align-self: flex-end;
   width: 100%;
 }
-.beta-alert{
-  margin: 0;
-  border: 1px solid orange;
-  padding: 0.1rem 1rem;
-  color: orange;
-  font-size: 0.8rem;
-  border-radius: 10px;
-  letter-spacing: 0.05em;
-}
 .ingredient-list{
   flex: 1;
   max-height: 20rem;

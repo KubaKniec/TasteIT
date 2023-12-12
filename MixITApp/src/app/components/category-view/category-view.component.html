@@ -1,0 +1,9 @@
+<div class="centered-content" *ngIf="!isLoaded">
+  <mat-spinner style="color: var(--theme-color-200)" />
+</div>
+<div class="container" *ngIf="category && isLoaded">
+  <p class="title"> {{category}}</p>
+  <app-drinks-grid
+    *ngIf="drinks.length > 0"
+    [iterableDrinks]="drinks"/>
+</div>

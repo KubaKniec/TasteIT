@@ -6,6 +6,7 @@ import {YourBarComponent} from "./components/your-bar/your-bar.component";
 import {ProfileComponent} from "./components/profile/profile.component";
 import {SearchComponent} from "./components/search/search.component";
 import {DrinkViewComponent} from "./components/drink-view/drink-view.component";
+import {CategoryViewComponent} from "./components/category-view/category-view.component";
 
 const routes: Routes = [
   {path: '', redirectTo:'/home', pathMatch: 'full'},
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'yourBar', component: YourBarComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'search', component: SearchComponent},
-  {path: "drink/:id", component: DrinkViewComponent}
+  {path: "drink/:id", component: DrinkViewComponent},
+  {path: "category/:category", component: CategoryViewComponent}
 
 ];
 

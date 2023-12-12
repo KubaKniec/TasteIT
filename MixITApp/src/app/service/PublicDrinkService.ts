@@ -22,12 +22,9 @@ export class PublicDrinkService {
   }
   async getGeneratedDrinks(filter: Filter): Promise<Drink[]> {
     let drinks: Drink[] = [];
+    console.log(filter)
     const response = await publicAPI.get('/drink/filter/withIngredients', {
-      params: {
-        ingredientNames: filter.ingredients.join(','), //?
-        alcoholic: filter.alcohol,
-        matchType : 'ALL'
-      }
+      params: filter
     })
     if(response.status === 200){
       for(let drink of response.data){

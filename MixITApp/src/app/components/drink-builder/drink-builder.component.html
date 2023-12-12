@@ -38,16 +38,27 @@
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <div style="color: var(--theme-color-50)">Results(0)</div>
+          <div style="color: var(--theme-color-50)">Results({{generatedDrinks.length}})</div>
         </ng-template>
-        <p> Results </p>
+        <app-drinks-grid
+        [iterableDrinks]="generatedDrinks"
+        *ngIf="generatedDrinks.length > 0"/>
+
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">settings</mat-icon>
         </ng-template>
-        <p> Builder Mode</p>
-
+        <div class="settings">
+          <div class="setting">
+            <mat-slide-toggle color="primary" [(ngModel)]="flexibleMatching"></mat-slide-toggle>
+            <p class="setting-text"> Flexible Matching</p>
+          </div>
+          <div class="setting">
+            <mat-slide-toggle color="primary" [(ngModel)]="allowAlcohol"></mat-slide-toggle>
+            <p class="setting-text"> Allow drinks with alcohol</p>
+          </div>
+        </div>
       </mat-tab>
     </mat-tab-group>
   </div>

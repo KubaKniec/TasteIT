@@ -52,8 +52,8 @@ export class DrinkBuilderConfigurationComponent {
   }
   buildFilter(){
     let filter: Filter = {
-      ingredients: this.ingredients,
-      alcohol: this.alcohol
+      // ingredients: this.ingredients,
+      alcoholic: this.alcohol
     }
     const componentRef = this.drinkBuilderResultsFactoryService.addDynamicComponent(filter);
     componentRef.instance.close.subscribe(() => {

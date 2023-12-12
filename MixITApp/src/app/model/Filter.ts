@@ -1,4 +1,6 @@
 export interface Filter{
-  ingredients: String[];
-  alcohol: boolean;
+  ingredientNames?: String;
+  alcoholic: boolean;
+  matchType?: string;
+  minIngredientCount?: number;
 }

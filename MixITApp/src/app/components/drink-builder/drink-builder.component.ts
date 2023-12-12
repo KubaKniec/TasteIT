@@ -2,6 +2,9 @@ import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {PublicIngredientsService} from "../../service/PublicIngredientsService";
 import {DrinkBuilderConfigurationFactoryService} from "../../service/DrinkBuilderConfigurationFactoryService";
 import {HotToastService} from "@ngneat/hot-toast";
+import {Filter} from "../../model/Filter";
+import {PublicDrinkService} from "../../service/PublicDrinkService";
+import {Drink} from "../../model/Drink";
 
 @Component({
   selector: 'app-drink-builder',
@@ -13,7 +16,8 @@ export class DrinkBuilderComponent implements OnInit{
     private publicIngredientsService: PublicIngredientsService,
     private drinkBuilderConfigurationFactoryService: DrinkBuilderConfigurationFactoryService,
     private viewContainerRef: ViewContainerRef,
-    private toast: HotToastService
+    private toast: HotToastService,
+    private publicDrinkService: PublicDrinkService
               ){
     this.drinkBuilderConfigurationFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
@@ -21,6 +25,9 @@ export class DrinkBuilderComponent implements OnInit{
   filteredIngredients: String[] = [];
   searchPhrase: String = "";
   selectedIngredients: String[] = [];
+  flexibleMatching: boolean = false;
+  allowAlcohol: boolean = true;
+  generatedDrinks: Drink[] = []
   ngOnInit(): void {
     this.publicIngredientsService.getAllIngredientsNames().then((ingredients) => {
       this.ingredients = this.removeDuplicatesFromList(ingredients);
@@ -29,10 +36,25 @@ export class DrinkBuilderComponent implements OnInit{
       console.log(error);
     });
   }
+  generateDrinkRequest(){
+    if (this.selectedIngredients.length === 0) return;
+    const filter: Filter = {
+      ingredientNames: this.selectedIngredients.join(','),
+      alcoholic: this.allowAlcohol,
+      ...(this.flexibleMatching ? { minIngredientCount: 2 } : {}),
+      matchType: this.flexibleMatching ? 'AT_LEAST' : 'ALL'
+    }
+    this.publicDrinkService.getGeneratedDrinks(filter).then((drinks) => {
+      // HERE
+      this.generatedDrinks = drinks;
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
   removeDuplicatesFromList(list: String[]): String[] {
-    const uniqueSet = new Set<string>();
+    const uniqueSet = new Set<String>();
     list.forEach((item) => {
-      uniqueSet.add(item.toLowerCase());
+      uniqueSet.add(item);
     });
     return Array.from(uniqueSet);
   }
@@ -44,6 +66,7 @@ export class DrinkBuilderComponent implements OnInit{
     } else {
       this.selectedIngredients.push(ingredient);
     }
+    this.generateDrinkRequest();
   }
 
   filterIngredientsByPhrase() {

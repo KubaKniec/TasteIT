@@ -41,6 +41,8 @@ import {NgOptimizedImage} from "@angular/common";
 import { BetaBadgeComponent } from './components/beta-badge/beta-badge.component';
 import {MatSelectModule} from "@angular/material/select";
 import { CategoryViewComponent } from './components/category-view/category-view.component';
+import {MatRadioModule} from "@angular/material/radio";
+import {MatTabsModule} from "@angular/material/tabs";
 
 @NgModule({
   declarations: [
@@ -62,30 +64,32 @@ import { CategoryViewComponent } from './components/category-view/category-view.
     BetaBadgeComponent,
     CategoryViewComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatChipsModule,
-        MatSlideToggleModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatRippleModule,
-        ServiceWorkerModule.register('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            // Register the ServiceWorker as soon as the application is stable
-            // or after 30 seconds (whichever comes first).
-            registrationStrategy: 'registerWhenStable:30000'
-        }),
-        FormsModule,
-        MatBadgeModule,
-        MatAutocompleteModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        NgOptimizedImage,
-        MatSelectModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatChipsModule,
+    MatSlideToggleModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatRippleModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    FormsModule,
+    MatBadgeModule,
+    MatAutocompleteModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    NgOptimizedImage,
+    MatSelectModule,
+    MatRadioModule,
+    MatTabsModule
+  ],
   providers: [
     PublicDrinkService,
     HotToastService,

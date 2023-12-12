@@ -22,7 +22,6 @@ export class PublicDrinkService {
   }
   async getGeneratedDrinks(filter: Filter): Promise<Drink[]> {
     let drinks: Drink[] = [];
-    console.log(filter)
     const response = await publicAPI.get('/drink/filter/withIngredients', {
       params: filter
     })

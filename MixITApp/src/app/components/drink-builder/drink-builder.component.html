@@ -1,15 +1,16 @@
 <div class="container">
   <div class="content">
-    <div class="title">
-      <p class="title-text"> DrinkBuilder </p>
-      <app-beta-badge />
-    </div>
+<!--    <div class="title">-->
+<!--      <p class="title-text"> DrinkBuilder </p>-->
+<!--      <app-beta-badge />-->
+<!--    </div>-->
 <!--    -->
     <mat-tab-group dynamicHeight>
       <mat-tab>
         <ng-template mat-tab-label>
           <div style="color: var(--theme-color-50)">Ingredients</div>
         </ng-template>
+        <div class="wrapper">
           <div class="selected" *ngIf="selectedIngredients.length>0">
             <p class="selected-text"> Selected ingredients: </p>
             <div class="chip-set-wrapper">
@@ -35,14 +36,18 @@
           <div class="ingredient-list">
             <p *ngFor="let ingredient of filteredIngredients" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient}}</p>
           </div>
+        </div>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <div style="color: var(--theme-color-50)">Results({{generatedDrinks.length}})</div>
+          <div style="color: var(--theme-color-50)">Results ({{generatedDrinks.length}})</div>
         </ng-template>
-        <app-drinks-grid
-        [iterableDrinks]="generatedDrinks"
-        *ngIf="generatedDrinks.length > 0"/>
+        <div class="drinks-grid">
+          <app-drinks-grid
+            [iterableDrinks]="generatedDrinks"
+            *ngIf="generatedDrinks.length > 0"/>
+        </div>
+
 
       </mat-tab>
       <mat-tab>

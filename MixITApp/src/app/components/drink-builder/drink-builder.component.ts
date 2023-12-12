@@ -1,7 +1,5 @@
-import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {PublicIngredientsService} from "../../service/PublicIngredientsService";
-import {DrinkBuilderConfigurationFactoryService} from "../../service/DrinkBuilderConfigurationFactoryService";
-import {HotToastService} from "@ngneat/hot-toast";
 import {Filter} from "../../model/Filter";
 import {PublicDrinkService} from "../../service/PublicDrinkService";
 import {Drink} from "../../model/Drink";
@@ -14,13 +12,7 @@ import {Drink} from "../../model/Drink";
 export class DrinkBuilderComponent implements OnInit{
   constructor(
     private publicIngredientsService: PublicIngredientsService,
-    private drinkBuilderConfigurationFactoryService: DrinkBuilderConfigurationFactoryService,
-    private viewContainerRef: ViewContainerRef,
-    private toast: HotToastService,
-    private publicDrinkService: PublicDrinkService
-              ){
-    this.drinkBuilderConfigurationFactoryService.setRootViewContainerRef(this.viewContainerRef);
-  }
+    private publicDrinkService: PublicDrinkService){}
   ingredients: String[] = [];
   filteredIngredients: String[] = [];
   searchPhrase: String = "";
@@ -41,11 +33,10 @@ export class DrinkBuilderComponent implements OnInit{
     const filter: Filter = {
       ingredientNames: this.selectedIngredients.join(','),
       alcoholic: this.allowAlcohol,
-      ...(this.flexibleMatching ? { minIngredientCount: 2 } : {}),
+      ...(this.flexibleMatching ? { minIngredientCount: 1 } : {}),
       matchType: this.flexibleMatching ? 'AT_LEAST' : 'ALL'
     }
     this.publicDrinkService.getGeneratedDrinks(filter).then((drinks) => {
-      // HERE
       this.generatedDrinks = drinks;
     }).catch((error) => {
       console.log(error);
@@ -71,15 +62,5 @@ export class DrinkBuilderComponent implements OnInit{
 
   filterIngredientsByPhrase() {
     this.filteredIngredients = this.ingredients.filter((ingredient) => ingredient.toLowerCase().includes(this.searchPhrase.toLowerCase()));
-  }
-  initializeDrinkBuilderConfigurationView(){
-    if(this.selectedIngredients.length === 0){
-      this.toast.error("Please select at least one ingredient");
-      return;
-    }
-    const componentRef = this.drinkBuilderConfigurationFactoryService.addDynamicComponent(this.selectedIngredients);
-    componentRef.instance.close.subscribe(() => {
-      this.drinkBuilderConfigurationFactoryService.removeDynamicComponent(componentRef)
-    });
   }
 }

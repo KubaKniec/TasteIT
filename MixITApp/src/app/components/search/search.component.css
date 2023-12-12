@@ -84,7 +84,7 @@
 }
 .category{
   display: flex;
-  height: 3.5rem;
+  height: 3rem;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;

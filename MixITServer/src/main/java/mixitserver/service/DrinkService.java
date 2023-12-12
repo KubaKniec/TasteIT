@@ -126,8 +126,11 @@ public class DrinkService {
             throw new IllegalStateException("When matchType is AT_LEAST ingredientCount must be provided and be at least 1 and can not be larger than amount of given Ingredients.");
         }
 
+        List<String> lowerCaseIngredientNames = ingredientNames.stream()
+                .map(String::toLowerCase)
+                .toList();
 
-        return drinkRepository.findDrinksWithFilters(filter.getCategory(), filter.getIsAlcoholic(), filter.getGlassType(), matchType, ingredientNames, minIngredientCount)
+        return drinkRepository.findDrinksWithFilters(filter.getCategory(), filter.getIsAlcoholic(), filter.getGlassType(), matchType, lowerCaseIngredientNames, minIngredientCount)
                 .stream()
                 .map(drinkMapper::mapToDto)
                 .toList();

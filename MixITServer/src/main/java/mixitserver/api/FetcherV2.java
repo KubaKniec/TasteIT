@@ -101,7 +101,7 @@ public class FetcherV2 {
 
                 Ingredient ingredient = fetchIngredientByName(ingredientName);
 
-                Thread.sleep(100);
+                Thread.sleep(400);
 
                 if(ingredient.getName() == null || ingredient.getName().isEmpty()) ingredient.setName(ingredientName);
                 ingredient.setImageURL("www.thecocktaildb.com/images/ingredients/"+ingredient.getName().toLowerCase().replace(" ", "%20")+".png");

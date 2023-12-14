@@ -23,7 +23,7 @@ public interface DrinkRepository extends JpaRepository<Drink, Integer> {
 //    List<Drink> findByNameContainingOrderByPopularityDesc(String drinkName);
     List<Drink> findByNameContainingIgnoreCaseOrderByPopularityDesc(String drinkName);
 
-    @Query("SELECT drink FROM Drink drink WHERE " +
+/*    @Query("SELECT drink FROM Drink drink WHERE " +
             "(:category IS NULL OR drink.category = :category) " +
             "AND (:isAlcoholic IS NULL OR drink.isAlcoholic = :isAlcoholic) " +
             "AND (:glassType IS NULL OR drink.glassType = :glassType) " +
@@ -40,7 +40,7 @@ public interface DrinkRepository extends JpaRepository<Drink, Integer> {
                              @Param("glassType") String glassType,
                              @Param("matchType") String matchType,
                              @Param("ingredientNames") List<String> ingredientNames,
-                             @Param("minIngredientCount") Integer minIngredientCount);
+                             @Param("minIngredientCount") Integer minIngredientCount);*/
 
     @Query("SELECT DISTINCT d.glassType FROM Drink d")
     Set<String> findAllGlassTypes();

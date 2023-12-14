@@ -16,14 +16,22 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Drink{
+public class Drink implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idDrink;
     private Integer apiId;
     private String name;
-    @OneToMany(mappedBy = "drink", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "drink_ingredient",
+            joinColumns = @JoinColumn(name = "drink_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id")
+    )
+    @JsonIgnore
     private List<Ingredient> ingredients = new ArrayList<>();
+    @ElementCollection
+    private List<String> amounts = new ArrayList<>();
     @ElementCollection
     @CollectionTable(name = "drink_instructions", joinColumns = @JoinColumn(name = "drink_id"))
     @Column(name = "instruction", columnDefinition = "TEXT")

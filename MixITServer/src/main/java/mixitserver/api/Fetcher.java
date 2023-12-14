@@ -82,7 +82,7 @@ public class Fetcher {
                 Ingredient ingredient = new Ingredient();
                 ingredient.setName(ingredientName);
                 ingredient.setAmount(ingredientAmount);
-                ingredient.setDrink(newDrink);
+                //ingredient.setDrink(newDrink);
                 ingredients.add(ingredient);
             } else {
                 break;

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class IngredientService {
     private final IngredientRepository ingredientRepository;
     private final IngredientMapperImpl ingredientMapper;
+    private final DrinkMapperImpl drinkMapper;
     public List<IngredientDTO> getAll() {
         return ingredientRepository.findAll()
                 .stream()
@@ -49,5 +50,11 @@ public class IngredientService {
             }
             ingredientRepository.save(ingredient);
         }
+    }
+
+    public List<DrinkDTO> searchDrinksFromIngredientsById(int id){
+        return ingredientRepository.findAllDrinksByIngredient(id)
+                .stream().map(drinkMapper::mapToDto).toList();
+        //return null;
     }
 }

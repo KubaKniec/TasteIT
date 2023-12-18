@@ -30,8 +30,8 @@ public class Ingredient implements Serializable{
     private String isAlcohol;
     @Column(nullable = true)
     private String strenght;
-    @Column(nullable = true)
-    private String amount;
+    //@Column(nullable = true)
+    //private String amount;
     private String imageURL;
     @ManyToMany(mappedBy = "ingredients")
     @JsonIgnore

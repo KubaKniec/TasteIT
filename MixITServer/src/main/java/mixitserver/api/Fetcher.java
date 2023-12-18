@@ -81,7 +81,7 @@ public class Fetcher {
             if(ingredientName != null && !ingredientName.isEmpty()) {
                 Ingredient ingredient = new Ingredient();
                 ingredient.setName(ingredientName);
-                ingredient.setAmount(ingredientAmount);
+                //ingredient.setAmount(ingredientAmount);
                 //ingredient.setDrink(newDrink);
                 ingredients.add(ingredient);
             } else {

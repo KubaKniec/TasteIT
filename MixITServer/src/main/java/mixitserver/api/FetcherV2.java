@@ -137,12 +137,12 @@ public class FetcherV2 {
 
     public void fetchAll(){
         int x = 0;
-/*        List<Integer> testIdArray = new ArrayList<>(List.of(12518,
+        List<Integer> testIdArray = new ArrayList<>(List.of(12518/*,
                 12528,
                 12560,
                 12562,
-                12564)); */
-        for(Integer id : tcdbIds){
+                12564*/));
+        for(Integer id : testIdArray){
             try {
                 Drink drink = fetchDrinkById(id);
                 //sleep for some time to avoid being blocked by the API

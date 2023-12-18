@@ -24,7 +24,8 @@ public class DrinkDTO {
     private String glassType;
     private String image;
     private String category;
-    private List<IngredientDTO> ingredients;
+    private List<String> amounts = new ArrayList<>();
+    private List<IngredientDTO> ingredients = new ArrayList<>();
     private Integer popularity;     // get request count
 }
 

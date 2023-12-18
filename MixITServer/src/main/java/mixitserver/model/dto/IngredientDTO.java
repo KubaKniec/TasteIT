@@ -1,13 +1,15 @@
 package mixitserver.model.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mixitserver.model.domain.Drink;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -17,5 +19,11 @@ import mixitserver.model.domain.Drink;
 public class IngredientDTO {
     private Integer idIngredient;
     private String name;
+    private String description;
+    private String type;
+    private String isAlcohol;
+    private String strenght;
     private String amount;
+    private String imageURL;
+    private List<Drink> drinks = new ArrayList<>();
 }

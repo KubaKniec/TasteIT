@@ -16,7 +16,11 @@ public class IngredientMapperImpl {
         return IngredientDTO.builder()
                 .idIngredient(ingredient.getIdIngredient())
                 .name(ingredient.getName())
-                .amount(ingredient.getAmount())
+                .description(ingredient.getDescription())
+                .type(ingredient.getType())
+                .strenght(ingredient.getStrenght())
+                .imageURL(ingredient.getImageURL())
+                .drinks(ingredient.getDrinks())
                 .build();
     }
 
@@ -27,7 +31,11 @@ public class IngredientMapperImpl {
         return Ingredient.builder()
                 .idIngredient(ingredientDTO.getIdIngredient())
                 .name(ingredientDTO.getName())
-                .amount(ingredientDTO.getAmount())
+                .description(ingredientDTO.getDescription())
+                .type(ingredientDTO.getType())
+                .strenght(ingredientDTO.getStrenght())
+                .imageURL(ingredientDTO.getImageURL())
+                .drinks(ingredientDTO.getDrinks())
                 .build();
     }
 }

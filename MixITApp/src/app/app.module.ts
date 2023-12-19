@@ -30,10 +30,6 @@ import {MatBadgeModule} from "@angular/material/badge";
 import {PublicIngredientsService} from "./service/PublicIngredientsService";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatInputModule} from "@angular/material/input";
-import { DrinkBuilderConfigurationComponent } from './components/drink-builder-configuration/drink-builder-configuration.component';
-import { DrinkBuilderResultsComponent } from './components/drink-builder-results/drink-builder-results.component';
-import {DrinkBuilderConfigurationFactoryService} from "./service/DrinkBuilderConfigurationFactoryService";
-import {DrinkBuilderResultsFactoryService} from "./service/DrinkBuilderResultsFactoryService";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { AdultWarningComponent } from './components/adult-warning/adult-warning.component';
 import { InstallAppModalComponent } from './components/install-app-modal/install-app-modal.component';
@@ -41,6 +37,8 @@ import {NgOptimizedImage} from "@angular/common";
 import { BetaBadgeComponent } from './components/beta-badge/beta-badge.component';
 import {MatSelectModule} from "@angular/material/select";
 import { CategoryViewComponent } from './components/category-view/category-view.component';
+import {MatRadioModule} from "@angular/material/radio";
+import {MatTabsModule} from "@angular/material/tabs";
 
 @NgModule({
   declarations: [
@@ -55,45 +53,43 @@ import { CategoryViewComponent } from './components/category-view/category-view.
     InstructionsViewComponent,
     DailyDrinkComponent,
     DrinksGridComponent,
-    DrinkBuilderConfigurationComponent,
-    DrinkBuilderResultsComponent,
     AdultWarningComponent,
     InstallAppModalComponent,
     BetaBadgeComponent,
     CategoryViewComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatChipsModule,
-        MatSlideToggleModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatRippleModule,
-        ServiceWorkerModule.register('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            // Register the ServiceWorker as soon as the application is stable
-            // or after 30 seconds (whichever comes first).
-            registrationStrategy: 'registerWhenStable:30000'
-        }),
-        FormsModule,
-        MatBadgeModule,
-        MatAutocompleteModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        NgOptimizedImage,
-        MatSelectModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatChipsModule,
+    MatSlideToggleModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatRippleModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    FormsModule,
+    MatBadgeModule,
+    MatAutocompleteModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    NgOptimizedImage,
+    MatSelectModule,
+    MatRadioModule,
+    MatTabsModule
+  ],
   providers: [
     PublicDrinkService,
     HotToastService,
     InstructionsFactoryService,
     BodyScrollService,
     PublicIngredientsService,
-    DrinkBuilderConfigurationFactoryService,
-    DrinkBuilderResultsFactoryService
   ],
   bootstrap: [AppComponent]
 })

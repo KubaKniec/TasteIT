@@ -1,31 +1,70 @@
 <div class="container">
   <div class="content">
-    <div class="title">
-      <p class="title-text"> DrinkBuilder </p>
-      <app-beta-badge />
-    </div>
+<!--    <div class="title">-->
+<!--      <p class="title-text"> DrinkBuilder </p>-->
+<!--      <app-beta-badge />-->
+<!--    </div>-->
 <!--    -->
-    <div class="selected" *ngIf="selectedIngredients.length>0">
-      <p class="selected-text"> Selected ingredients: </p>
-      <div class="chip-set-wrapper">
-        <mat-chip-set>
-          <mat-chip
-            *ngFor="let selected of selectedIngredients"
-            (click)="handleIngredientClick(selected)"
-            highlighted
-            style="background-color: var(--theme-color-600); color:var(--theme-color-50)">
-            {{selected}}
-          </mat-chip>
-        </mat-chip-set>
-      </div>
-    </div>
-    <input type="text" class="search-input" [(ngModel)]="searchPhrase" (ngModelChange)="filterIngredientsByPhrase()" placeholder="Search for ingredient">
-    <p class="selected-text"> All ingredients: </p>
-    <div class="ingredient-list">
-      <p *ngFor="let ingredient of filteredIngredients" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient}}</p>
-    </div>
-  </div>
-  <div class="controls">
-    <button class="button-primary" matRipple (click)="initializeDrinkBuilderConfigurationView()"> Continue </button>
+    <mat-tab-group dynamicHeight>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <div style="color: var(--theme-color-50)">Ingredients</div>
+        </ng-template>
+        <div class="wrapper">
+          <div class="selected" *ngIf="selectedIngredients.length>0">
+            <p class="selected-text"> Selected ingredients: </p>
+            <div class="chip-set-wrapper">
+              <mat-chip-set>
+                <mat-chip
+                  *ngFor="let selected of selectedIngredients; let i = index"
+                  (click)="handleIngredientClick(selected)"
+                  highlighted
+                  style="background-color: var(--theme-color-600); color:var(--theme-color-50)"
+                  [style.display]="i < 6 ? 'inline-flex' : 'none'">
+                  {{selected}}
+                </mat-chip>
+                <mat-chip
+                  *ngIf="selectedIngredients.length > 6"
+                  style="background-color: var(--theme-color-600); color:var(--theme-color-50)"
+                  highlighted>
+                  +{{ selectedIngredients.length - 6 }} more</mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+          <input type="text" class="search-input" [(ngModel)]="searchPhrase" (ngModelChange)="filterIngredientsByPhrase()" placeholder="Search for ingredient">
+          <p class="selected-text"> All ingredients: </p>
+          <div class="ingredient-list">
+            <p *ngFor="let ingredient of filteredIngredients" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient}}</p>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <div style="color: var(--theme-color-50)">Results ({{generatedDrinks.length}})</div>
+        </ng-template>
+        <div class="drinks-grid">
+          <app-drinks-grid
+            [iterableDrinks]="generatedDrinks"
+            *ngIf="generatedDrinks.length > 0"/>
+        </div>
+
+
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">settings</mat-icon>
+        </ng-template>
+        <div class="settings">
+          <div class="setting">
+            <mat-slide-toggle color="primary" [(ngModel)]="flexibleMatching"></mat-slide-toggle>
+            <p class="setting-text"> Flexible Matching</p>
+          </div>
+          <div class="setting">
+            <mat-slide-toggle color="primary" [(ngModel)]="allowAlcohol"></mat-slide-toggle>
+            <p class="setting-text"> Allow drinks with alcohol</p>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>

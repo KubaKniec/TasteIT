@@ -126,7 +126,6 @@ public class DrinkService {
             throw new IllegalStateException("When matchType is AT_LEAST ingredientCount must be provided and be at least 1 and can not be larger than amount of given Ingredients.");
         }
 
-        //return null;
         return drinkRepository.findDrinksWithFilters(filter.getCategory(), filter.getIsAlcoholic(), filter.getGlassType(), matchType, ingredientNames, minIngredientCount)
                 .stream()
                 .map(drinkMapper::mapToDto)

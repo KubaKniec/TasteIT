@@ -6,8 +6,10 @@ import mixitserver.model.domain.Ingredient;
 import mixitserver.model.dto.DrinkDTO;
 import mixitserver.model.dto.IngredientDTO;
 import org.springframework.stereotype.Component;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
@@ -30,10 +32,16 @@ public class DrinkMapperImpl {
                 .category(drink.getCategory())
                 .popularity(drink.getPopularity());
 
-        List<IngredientDTO> ingredientDTOs = drink.getIngredients().stream()
-                .map(ingredientMapper::mapToDto)
+        List<IngredientDTO> combinedIngredientDTOs = IntStream.range(0, drink.getIngredients().size())
+                .mapToObj(i -> {
+                    IngredientDTO tempIngredient = ingredientMapper.mapToDto(drink.getIngredients().get(i));
+                    tempIngredient.setAmount(drink.getAmounts().get(i));
+                    tempIngredient.setDrinks(null);
+                    return tempIngredient;
+                })
                 .toList();
-        drinkDTO.ingredients(ingredientDTOs);
+
+        drinkDTO.ingredients(combinedIngredientDTOs);
 
         return drinkDTO.build();
     }

@@ -13,7 +13,7 @@ public class DBuilder {
 
     @PostConstruct
     public void buildDataBase(){
-        FetcherV2 f = new FetcherV2();
+        Fetcher f = new Fetcher();
         f.fetchAll();
         ingredientService.saveAll(f.getIngredients());
         drinkService.saveAll(f.getDrinks());

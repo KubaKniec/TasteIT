@@ -1,0 +1,18 @@
+<div class="ingredient-modal" [@dialog]="ingredient ? 'enter' : 'void'">
+  <div class="content" *ngIf="ingredient">
+    <div class="ingredient-details">
+      <p class="ingredient-name">{{ingredient.name}}</p>
+      <p class="ingredient-type">{{ingredient.type}}</p>
+      <div class="image-container">
+        <img src="{{getUrl()}}" width="200px" height="200px">
+      </div>
+      <div class="info">
+        <p class="ingredient-str"><mat-icon>bolt</mat-icon>{{ingredient.strenght ? ingredient.strenght : 0}}%</p>
+        <p class="ingredient-desc">{{ingredient.description}}</p>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="button-primary" (click)="onClose()">Close</button>
+    </div>
+  </div>
+</div>

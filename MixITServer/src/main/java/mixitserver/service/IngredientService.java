@@ -28,6 +28,9 @@ public class IngredientService {
                 .map(ingredientMapper::mapToDto)
                 .toList();
     }
+    public IngredientDTO getById(int id) {
+        return ingredientMapper.mapToDto(ingredientRepository.findById(id).orElseThrow());
+    }
 
     public List<IngredientDTO> searchByname(String name) {
         return ingredientRepository.findByName(name)

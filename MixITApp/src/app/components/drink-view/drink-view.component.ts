@@ -5,6 +5,8 @@ import {HotToastService} from "@ngneat/hot-toast";
 import {PublicDrinkService} from "../../service/PublicDrinkService";
 import {InstructionsFactoryService} from "../../service/InstructionsFactoryService";
 import {BodyScrollService} from "../../service/BodyScrollService";
+import {PublicIngredientsService} from "../../service/PublicIngredientsService";
+import {IngredientViewFactoryService} from "../../service/IngredientViewFactoryService";
 @Component({
   selector: 'app-drink-view',
   templateUrl: './drink-view.component.html',
@@ -18,9 +20,12 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
              private publicDrinkService: PublicDrinkService,
              private instructionsFactoryService: InstructionsFactoryService,
              private viewContainerRef: ViewContainerRef,
-             private bodyScrollService: BodyScrollService
+             private bodyScrollService: BodyScrollService,
+             private publicIngredientsService: PublicIngredientsService,
+             private ingredientViewFactoryService: IngredientViewFactoryService
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
+   this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
  }
 
   async ngOnInit(): Promise<void> {
@@ -45,5 +50,17 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
    componentRef.instance.close.subscribe(() => {
      this.instructionsFactoryService.removeDynamicComponent(componentRef)
    });
+  }
+  initializeIngredientView(id: number){
+    this.publicIngredientsService.getById(id).then((ingredient) => {
+      const componentRef = this.ingredientViewFactoryService.addDynamicComponent(ingredient);
+      componentRef.instance.close.subscribe(() => {
+        this.ingredientViewFactoryService.removeDynamicComponent(componentRef)
+      });
+    }).catch((e) => {
+      this.toast.error("Cannot fetch ingredient with id: "+id)
+    })
+
+
   }
 }

@@ -25,6 +25,10 @@ public class IngredientController {
     public ResponseEntity<List<IngredientDTO>> searchByName(@RequestParam String name){
         return ResponseEntity.ok(ingredientService.searchByname(name));
     }
+    @GetMapping("/id")
+    public ResponseEntity<IngredientDTO> getById(@RequestParam int id){
+        return ResponseEntity.ok(ingredientService.getById(id));
+    }
     @GetMapping("/allDrinksById")
     public ResponseEntity<List<DrinkDTO>> searchDrinksFromIngredientsById(@RequestParam int id){
         return ResponseEntity.ok(ingredientService.searchDrinksFromIngredientsById(id));

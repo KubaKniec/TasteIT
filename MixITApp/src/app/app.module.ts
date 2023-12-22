@@ -39,6 +39,9 @@ import {MatSelectModule} from "@angular/material/select";
 import { CategoryViewComponent } from './components/category-view/category-view.component';
 import {MatRadioModule} from "@angular/material/radio";
 import {MatTabsModule} from "@angular/material/tabs";
+import { IngredientViewComponent } from './components/ingredient-view/ingredient-view.component';
+import {IngredientViewFactoryService} from "./service/IngredientViewFactoryService";
+import {MatListModule} from "@angular/material/list";
 
 @NgModule({
   declarations: [
@@ -56,7 +59,8 @@ import {MatTabsModule} from "@angular/material/tabs";
     AdultWarningComponent,
     InstallAppModalComponent,
     BetaBadgeComponent,
-    CategoryViewComponent
+    CategoryViewComponent,
+    IngredientViewComponent
   ],
   imports: [
     BrowserModule,
@@ -82,7 +86,8 @@ import {MatTabsModule} from "@angular/material/tabs";
     NgOptimizedImage,
     MatSelectModule,
     MatRadioModule,
-    MatTabsModule
+    MatTabsModule,
+    MatListModule
   ],
   providers: [
     PublicDrinkService,
@@ -90,6 +95,7 @@ import {MatTabsModule} from "@angular/material/tabs";
     InstructionsFactoryService,
     BodyScrollService,
     PublicIngredientsService,
+    IngredientViewFactoryService
   ],
   bootstrap: [AppComponent]
 })

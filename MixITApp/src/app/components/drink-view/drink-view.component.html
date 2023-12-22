@@ -27,7 +27,8 @@
         <mat-chip
           *ngFor="let ingr of activeDrink.ingredients"
           highlighted
-          style="background-color: var(--theme-color-600); color:var(--theme-color-50)">
+          style="background-color: var(--theme-color-600); color:var(--theme-color-50)"
+          (click)="initializeIngredientView(ingr.idIngredient)">
           {{ingr.name}}
         </mat-chip>
       </mat-chip-set>

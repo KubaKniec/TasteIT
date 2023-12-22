@@ -24,8 +24,10 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 export class IngredientViewComponent implements OnInit{
   @Output() close = new EventEmitter<void>();
   @Input() ingredient!: IngredientObj
+  state = 'enter'
 
   onClose() {
+    this.state = 'void';
     this.close.emit()
   }
   getUrl(){

@@ -42,6 +42,7 @@ import {MatTabsModule} from "@angular/material/tabs";
 import { IngredientViewComponent } from './components/ingredient-view/ingredient-view.component';
 import {IngredientViewFactoryService} from "./service/IngredientViewFactoryService";
 import {MatListModule} from "@angular/material/list";
+import {UserAuthenticationService} from "./service/UserAuthenticationService";
 
 @NgModule({
   declarations: [
@@ -95,7 +96,8 @@ import {MatListModule} from "@angular/material/list";
     InstructionsFactoryService,
     BodyScrollService,
     PublicIngredientsService,
-    IngredientViewFactoryService
+    IngredientViewFactoryService,
+    UserAuthenticationService
   ],
   bootstrap: [AppComponent]
 })

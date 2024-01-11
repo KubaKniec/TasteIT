@@ -11,12 +11,11 @@ public class DBuilder {
     private final DrinkService drinkService;
     private final IngredientService ingredientService;
 
-    @PostConstruct
+//    @PostConstruct
     public void buildDataBase(){
         Fetcher f = new Fetcher();
         f.fetchAll();
         ingredientService.saveAll(f.getIngredients());
         drinkService.saveAll(f.getDrinks());
-        //ingredientService.saveAll(f.getIngredients());
     }
 }

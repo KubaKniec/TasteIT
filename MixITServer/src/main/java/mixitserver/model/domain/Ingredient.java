@@ -36,4 +36,7 @@ public class Ingredient implements Serializable{
     @ManyToMany(mappedBy = "ingredients")
     @JsonIgnore
     private List<Drink> drinks = new ArrayList<>();
+    @ManyToMany(mappedBy = "ingredients")
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
 }

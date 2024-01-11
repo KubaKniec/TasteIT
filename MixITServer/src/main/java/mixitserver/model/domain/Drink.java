@@ -42,4 +42,9 @@ public class Drink implements Serializable{
     private String category;
 //    @Column(columnDefinition = "integer default 0")   // nie działczy :(
     private Integer popularity = 0;     // get request count
+
+    @ManyToMany(mappedBy = "favouriteDrinks")
+    private List<User> users;
+    @ManyToMany(mappedBy = "drinks")
+    private List<Bar> bars;
 }

@@ -43,6 +43,8 @@ import { IngredientViewComponent } from './components/ingredient-view/ingredient
 import {IngredientViewFactoryService} from "./service/IngredientViewFactoryService";
 import {MatListModule} from "@angular/material/list";
 import {UserAuthenticationService} from "./service/UserAuthenticationService";
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +63,9 @@ import {UserAuthenticationService} from "./service/UserAuthenticationService";
     InstallAppModalComponent,
     BetaBadgeComponent,
     CategoryViewComponent,
-    IngredientViewComponent
+    IngredientViewComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

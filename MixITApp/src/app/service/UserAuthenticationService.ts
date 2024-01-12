@@ -9,7 +9,7 @@ export class UserAuthenticationService{
   constructor(private hotToastService: HotToastService) {
 
   }
-  registerWithEmailAndPassword(email: string, password: string, username: string) {
+  register(email: string, password: string, username: string) {
     let user = {
       email: email,
       username: username,

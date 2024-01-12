@@ -10,7 +10,5 @@ export class YourBarComponent {
   constructor(private userAuthenticationService: UserAuthenticationService) {
   }
 
-  loginTest() {
-    this.userAuthenticationService.registerWithEmailAndPassword('kuba', 'kuba', 'kuba');
-  }
+
 }

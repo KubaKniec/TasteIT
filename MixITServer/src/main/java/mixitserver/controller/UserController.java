@@ -3,6 +3,7 @@ package mixitserver.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import mixitserver.jwt.JwtTokenProvider;
 import mixitserver.model.additional.AuthenticationRequest;
 import mixitserver.model.additional.AuthenticationResponse;
 import mixitserver.model.dto.UserDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody UserDto userDto) {
@@ -45,6 +47,8 @@ public class UserController {
     }
     @GetMapping("/readToken")
     public String readCookie(@CookieValue(value = "sessionToken") String token) {
-        return "Hey, token is: " + token;
+        System.out.println("\t: "+token);
+        String username = jwtTokenProvider.extractUsername(token);
+        return "Hey, token is: " + username;
     }
 }

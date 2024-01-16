@@ -28,6 +28,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**").permitAll()
                         .requestMatchers("/v1/auth/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/v1/users/readToken").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

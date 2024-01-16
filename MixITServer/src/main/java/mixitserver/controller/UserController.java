@@ -1,5 +1,7 @@
 package mixitserver.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import mixitserver.model.additional.AuthenticationRequest;
 import mixitserver.model.additional.AuthenticationResponse;
@@ -24,9 +26,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<String> login(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticationResponse = authenticationService.authenticate(request);
-        return ResponseEntity.ok(authenticationResponse);
+        response.addCookie(new Cookie("sessionToken", authenticationResponse.getToken()));
+        return ResponseEntity.ok("a");
     }
 
     @GetMapping("/profile")
@@ -39,5 +42,9 @@ public class UserController {
     public ResponseEntity<UserDto> updateUserInfo(@RequestParam Long idUser, @RequestBody UserDto updatedUserDto) {
         UserDto updatedUserInfo = userService.updateUserInfo(idUser, updatedUserDto);
         return ResponseEntity.ok(updatedUserInfo);
+    }
+    @GetMapping("/readToken")
+    public String readCookie(@CookieValue(value = "sessionToken") String token) {
+        return "Hey, token is: " + token;
     }
 }

@@ -42,6 +42,9 @@ import {MatTabsModule} from "@angular/material/tabs";
 import { IngredientViewComponent } from './components/ingredient-view/ingredient-view.component';
 import {IngredientViewFactoryService} from "./service/IngredientViewFactoryService";
 import {MatListModule} from "@angular/material/list";
+import {UserAuthenticationService} from "./service/UserAuthenticationService";
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +63,9 @@ import {MatListModule} from "@angular/material/list";
     InstallAppModalComponent,
     BetaBadgeComponent,
     CategoryViewComponent,
-    IngredientViewComponent
+    IngredientViewComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -95,7 +100,8 @@ import {MatListModule} from "@angular/material/list";
     InstructionsFactoryService,
     BodyScrollService,
     PublicIngredientsService,
-    IngredientViewFactoryService
+    IngredientViewFactoryService,
+    UserAuthenticationService
   ],
   bootstrap: [AppComponent]
 })

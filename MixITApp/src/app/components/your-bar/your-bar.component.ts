@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {UserAuthenticationService} from "../../service/UserAuthenticationService";
 
 @Component({
   selector: 'app-your-bar',
@@ -6,5 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./your-bar.component.css']
 })
 export class YourBarComponent {
+  constructor(private userAuthenticationService: UserAuthenticationService) {
+  }
+
 
 }

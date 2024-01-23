@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatChipsModule} from "@angular/material/chips";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatIconModule} from "@angular/material/icon";
-import {HotToastService} from "@ngneat/hot-toast";
+import {HotToastModule, HotToastService, provideHotToastConfig} from "@ngneat/hot-toast";
 import { HomeComponent } from './components/home/home.component';
 import { DrinkBuilderComponent } from './components/drink-builder/drink-builder.component';
 import { YourBarComponent } from './components/your-bar/your-bar.component';
@@ -24,7 +24,7 @@ import { InstructionsViewComponent } from './components/instructions-view/instru
 import {InstructionsFactoryService} from "./service/InstructionsFactoryService";
 import {BodyScrollService} from "./service/BodyScrollService";
 import { DailyDrinkComponent } from './components/daily-drink/daily-drink.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.component';
 import {MatBadgeModule} from "@angular/material/badge";
 import {PublicIngredientsService} from "./service/PublicIngredientsService";
@@ -42,7 +42,7 @@ import {MatTabsModule} from "@angular/material/tabs";
 import { IngredientViewComponent } from './components/ingredient-view/ingredient-view.component';
 import {IngredientViewFactoryService} from "./service/IngredientViewFactoryService";
 import {MatListModule} from "@angular/material/list";
-import {UserAuthenticationService} from "./service/UserAuthenticationService";
+import {AuthService} from "./service/AuthService";
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 
@@ -92,7 +92,8 @@ import { RegisterComponent } from './components/register/register.component';
     MatSelectModule,
     MatRadioModule,
     MatTabsModule,
-    MatListModule
+    MatListModule,
+    ReactiveFormsModule,
   ],
   providers: [
     PublicDrinkService,
@@ -101,7 +102,8 @@ import { RegisterComponent } from './components/register/register.component';
     BodyScrollService,
     PublicIngredientsService,
     IngredientViewFactoryService,
-    UserAuthenticationService
+    AuthService,
+    provideHotToastConfig(),
   ],
   bootstrap: [AppComponent]
 })

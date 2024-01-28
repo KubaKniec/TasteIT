@@ -51,6 +51,7 @@ public class UserService {
 
         userDto.setFavouriteDrinks(user.getFavouriteDrinks().stream()
                 .map(drink -> DrinkDTO.builder()
+                        .idDrink(drink.getIdDrink())
                         .name(drink.getName())
                         .instructions(drink.getInstructions())
                         .isAlcoholic(drink.isAlcoholic())

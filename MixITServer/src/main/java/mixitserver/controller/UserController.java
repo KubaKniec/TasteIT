@@ -43,9 +43,9 @@ public class UserController {
         return "Hey, token is: " + username;
     }
 
-    @PostMapping("/favourites")
+    @PostMapping("/favourites/{drinkId}")
     public ResponseEntity<List<Integer>> addFavouriteDrink(@CookieValue("sessionToken") String token,
-                                                           @RequestParam Integer drinkId) {
+                                                           @PathVariable Integer drinkId) {
         List<Integer> favourites = userService.addFavouriteDrink(token, drinkId);
         return ResponseEntity.ok(favourites);
     }

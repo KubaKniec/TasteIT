@@ -9,6 +9,7 @@ import {DrinkViewComponent} from "./components/drink-view/drink-view.component";
 import {CategoryViewComponent} from "./components/category-view/category-view.component";
 import {LoginComponent} from "./components/login/login.component";
 import {RegisterComponent} from "./components/register/register.component";
+import {FavouritesComponent} from "./components/favourites/favourites.component";
 
 const routes: Routes = [
   {path: '', redirectTo:'/home', pathMatch: 'full'},
@@ -20,7 +21,8 @@ const routes: Routes = [
   {path: "drink/:id", component: DrinkViewComponent},
   {path: "category/:category", component: CategoryViewComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'register', component: RegisterComponent}
+  {path: 'register', component: RegisterComponent},
+  {path: 'favourites', component: FavouritesComponent}
 
 ];
 

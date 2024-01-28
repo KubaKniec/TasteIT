@@ -11,6 +11,7 @@ export class AuthService {
 
   }
   async register(email: string, username: string, password: string) {
+    console.log(email, username, password);
     await authAPI.post('/register', {
       email,
       username,
@@ -31,8 +32,11 @@ export class AuthService {
     }
     throw new Error("Error logging in");
   }
-  isAuthenticated() {
-    const sessionToken = this.cookieService.get('sessionToken');
-    return !!sessionToken;
+  async logout(){
+    await authAPI.post('/logout').then(res => {
+      return res.status;
+    }).catch(err => {
+      return err.response.status;
+    })
   }
 }

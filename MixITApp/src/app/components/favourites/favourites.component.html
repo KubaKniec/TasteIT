@@ -1,0 +1,6 @@
+<div class="container" *ngIf="shouldShow">
+  <p class="title"> Favourites </p>
+  <app-drinks-grid
+    [iterableDrinks]="favouriteDrinks"
+  />
+</div>

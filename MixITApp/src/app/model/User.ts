@@ -4,14 +4,14 @@ import {Ingredient} from "./Ingredient";
 import {Drink} from "./Drink";
 
 export interface User {
-  idUser: number;
-  username: string;
-  email: string;
-  password: string;
-  role: Role;
-  bars: Bar[];
-  ingredients: Ingredient[];
-  favourite: Drink[];
+  idUser?: number;
+  username?: string;
+  email?: string;
+  password?: string;
+  role?: Role;
+  bars?: Bar[];
+  ingredients?: Ingredient[];
+  favouriteDrinks?: Drink[];
   token?: string;
 
 }

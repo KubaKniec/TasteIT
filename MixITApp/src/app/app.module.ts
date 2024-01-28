@@ -46,6 +46,8 @@ import {AuthService} from "./service/AuthService";
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import {CookieService} from "ngx-cookie-service";
+import {UserService} from "./service/UserService";
+import { FavouritesComponent } from './components/favourites/favourites.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +68,8 @@ import {CookieService} from "ngx-cookie-service";
     CategoryViewComponent,
     IngredientViewComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    FavouritesComponent
   ],
   imports: [
     BrowserModule,
@@ -105,7 +108,8 @@ import {CookieService} from "ngx-cookie-service";
     IngredientViewFactoryService,
     AuthService,
     provideHotToastConfig(),
-    CookieService
+    CookieService,
+    UserService
   ],
   bootstrap: [AppComponent]
 })

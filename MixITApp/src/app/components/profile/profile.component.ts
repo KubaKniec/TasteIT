@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {GlobalConfiguration} from "../../config/GlobalConfiguration";
 import {Router} from "@angular/router";
 import {AuthService} from "../../service/AuthService";
+import {UserService} from "../../service/UserService";
+import {User} from "../../model/User";
+import {HotToastService} from "@ngneat/hot-toast";
 
 @Component({
   selector: 'app-profile',
@@ -11,12 +14,36 @@ import {AuthService} from "../../service/AuthService";
 export class ProfileComponent implements OnInit{
 
   protected readonly GlobalConfiguration = GlobalConfiguration;
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private authService: AuthService,
+    private toast: HotToastService) { }
   isAuthenticated: boolean = false;
+  user: User = {};
   ngOnInit(): void {
-    this.isAuthenticated = this.authService.isAuthenticated();
+    this.userService.getUser().then(user => {
+      this.isAuthenticated = true;
+      this.user = user;
+      console.log(user);
+    }).catch(err => {
+      console.log('Not logged in');
+    })
+  }
+  logout() {
+    this.authService.logout()
+      .then(res => {
+        this.toast.success("Logged out");
+        this.router.navigate(['/profile']).then();
+        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+          this.router.navigate(['/profile']);
+        });
+      })
   }
   goto(url: string) {
-    this.router.navigateByUrl(url).then(r => console.log(r));
+    if(url === 'login' && this.isAuthenticated){
+      return;
+    }
+    this.router.navigateByUrl(url).then();
   }
 }

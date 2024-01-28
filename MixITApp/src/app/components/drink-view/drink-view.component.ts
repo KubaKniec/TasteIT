@@ -7,6 +7,7 @@ import {InstructionsFactoryService} from "../../service/InstructionsFactoryServi
 import {BodyScrollService} from "../../service/BodyScrollService";
 import {PublicIngredientsService} from "../../service/PublicIngredientsService";
 import {IngredientViewFactoryService} from "../../service/IngredientViewFactoryService";
+import {UserService} from "../../service/UserService";
 @Component({
   selector: 'app-drink-view',
   templateUrl: './drink-view.component.html',
@@ -22,7 +23,8 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
              private viewContainerRef: ViewContainerRef,
              private bodyScrollService: BodyScrollService,
              private publicIngredientsService: PublicIngredientsService,
-             private ingredientViewFactoryService: IngredientViewFactoryService
+             private ingredientViewFactoryService: IngredientViewFactoryService,
+             private userService: UserService
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
@@ -36,6 +38,17 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
     } catch (e) {
       this.toast.error("Drink not found or backend is down")
     }
+  }
+  addToFavorite(){
+   this.userService.getUser().then((user) => {
+      this.userService.addDrinkToFavorite(this.drinkId).then(() => {
+        this.toast.success("Added to favorite");
+      }).catch((e) => {
+        this.toast.error("You must be logged in to add to favorite");
+      })
+   }).catch((e) => {
+      this.toast.error("You must be logged in to add to favorite");
+   })
   }
 
   ngOnDestroy(): void {

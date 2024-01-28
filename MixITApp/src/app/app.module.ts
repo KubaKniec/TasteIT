@@ -45,6 +45,7 @@ import {MatListModule} from "@angular/material/list";
 import {AuthService} from "./service/AuthService";
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import {CookieService} from "ngx-cookie-service";
 
 @NgModule({
   declarations: [
@@ -104,6 +105,7 @@ import { RegisterComponent } from './components/register/register.component';
     IngredientViewFactoryService,
     AuthService,
     provideHotToastConfig(),
+    CookieService
   ],
   bootstrap: [AppComponent]
 })

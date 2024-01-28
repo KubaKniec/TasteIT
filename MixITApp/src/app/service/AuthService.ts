@@ -1,12 +1,13 @@
 import {Injectable} from "@angular/core";
 import authAPI from "../api/authAPI";
+import {CookieService} from "ngx-cookie-service";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor() {
+  constructor(private cookieService: CookieService) {
 
   }
   async register(email: string, username: string, password: string) {
@@ -21,14 +22,17 @@ export class AuthService {
     })
   }
   async loginWithEmailAndPassword(email: string, password: string) {
-    await authAPI.post('/login', {
+    const response = await authAPI.post('/login', {
       email,
       password
-    }).then(res => {
-      console.log(res);
-      return res.status;
-    }).catch(err => {
-      return err.response.status;
     })
+    if(response.status === 200){
+      return response.data;
+    }
+    throw new Error("Error logging in");
+  }
+  isAuthenticated() {
+    const sessionToken = this.cookieService.get('sessionToken');
+    return !!sessionToken;
   }
 }

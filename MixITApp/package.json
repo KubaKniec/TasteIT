@@ -25,6 +25,7 @@
     "@ngneat/overview": "^5.1.0",
     "axios": "^1.6.0",
     "body-scroll-lock": "^4.0.0-beta.0",
+    "ngx-cookie-service": "^16.0.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.3"

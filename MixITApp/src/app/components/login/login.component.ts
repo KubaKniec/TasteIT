@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../service/AuthService";
 import {HotToastService} from "@ngneat/hot-toast";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -9,7 +10,7 @@ import {HotToastService} from "@ngneat/hot-toast";
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private authService: AuthService, private hotToast: HotToastService) {
+  constructor(private authService: AuthService, private hotToast: HotToastService, private router: Router) {
   }
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -25,6 +26,9 @@ export class LoginComponent {
     const password = this.loginForm.get('password')!.value;
     this.authService.loginWithEmailAndPassword(email!, password!).then(()=>{
       this.hotToast.success('Login successfully!');
+      this.router.navigate(['/profile']);
+    }).catch(err => {
+      this.hotToast.error('Login failed!');
     });
   }
 }

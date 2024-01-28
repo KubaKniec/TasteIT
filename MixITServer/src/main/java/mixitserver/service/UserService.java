@@ -37,7 +37,8 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("No user found with id: " + userId));
 
         UserDto userDto = new UserDto();
-        userDto.setUsername(user.getUsername());
+        userDto.setUsername(user.getActualUsername());
+        userDto.setIdUser(user.getIdUser());
         userDto.setEmail(user.getEmail());
 
         userDto.setBars(user.getBars().stream()

@@ -32,14 +32,14 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Bar> bars;
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(
             name = "User_Ingredient",
             joinColumns = { @JoinColumn(name = "idUser") },
             inverseJoinColumns = { @JoinColumn(name = "idIngredient") }
     )
     private List<Ingredient> ingredients;
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(
             name = "User_Drink",
             joinColumns = { @JoinColumn(name = "idUser") },

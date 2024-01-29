@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {GlobalConfiguration} from "./config/GlobalConfiguration";
-import {AdultWarningFactoryService} from "./service/AdultWarningFactoryService";
+import {AdultWarningFactoryService} from "./service/factories/AdultWarningFactoryService";
 import {BodyScrollService} from "./service/BodyScrollService";
-import {InstallAppModalFactoryService} from "./service/InstallAppModalFactoryService";
+import {InstallAppModalFactoryService} from "./service/factories/InstallAppModalFactoryService";
 
 @Component({
   selector: 'app-root',

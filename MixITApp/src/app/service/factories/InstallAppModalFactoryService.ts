@@ -1,6 +1,6 @@
 import {ComponentRef, Injectable, ViewContainerRef} from "@angular/core";
-import {IComponentFactory} from "../helpers/IComponentFactory";
-import {InstallAppModalComponent} from "../components/install-app-modal/install-app-modal.component";
+import {IComponentFactory} from "../../helpers/IComponentFactory";
+import {InstallAppModalComponent} from "../../components/install-app-modal/install-app-modal.component";
 
 @Injectable({
   providedIn: 'root'

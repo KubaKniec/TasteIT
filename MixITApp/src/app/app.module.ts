@@ -21,7 +21,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatRippleModule} from "@angular/material/core";
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { InstructionsViewComponent } from './components/instructions-view/instructions-view.component';
-import {InstructionsFactoryService} from "./service/InstructionsFactoryService";
+import {InstructionsFactoryService} from "./service/factories/InstructionsFactoryService";
 import {BodyScrollService} from "./service/BodyScrollService";
 import { DailyDrinkComponent } from './components/daily-drink/daily-drink.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -40,7 +40,7 @@ import { CategoryViewComponent } from './components/category-view/category-view.
 import {MatRadioModule} from "@angular/material/radio";
 import {MatTabsModule} from "@angular/material/tabs";
 import { IngredientViewComponent } from './components/ingredient-view/ingredient-view.component';
-import {IngredientViewFactoryService} from "./service/IngredientViewFactoryService";
+import {IngredientViewFactoryService} from "./service/factories/IngredientViewFactoryService";
 import {MatListModule} from "@angular/material/list";
 import {AuthService} from "./service/AuthService";
 import { LoginComponent } from './components/login/login.component';
@@ -48,6 +48,9 @@ import { RegisterComponent } from './components/register/register.component';
 import {CookieService} from "ngx-cookie-service";
 import {UserService} from "./service/UserService";
 import { FavouritesComponent } from './components/favourites/favourites.component';
+import { AddToBarModalComponent } from './components/add-to-bar-modal/add-to-bar-modal.component';
+import {AddToBarModalFactoryService} from "./service/factories/AddToBarModalFactoryService";
+import { BarViewComponent } from './components/bar-view/bar-view.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +72,9 @@ import { FavouritesComponent } from './components/favourites/favourites.componen
     IngredientViewComponent,
     LoginComponent,
     RegisterComponent,
-    FavouritesComponent
+    FavouritesComponent,
+    AddToBarModalComponent,
+    BarViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -109,7 +114,8 @@ import { FavouritesComponent } from './components/favourites/favourites.componen
     AuthService,
     provideHotToastConfig(),
     CookieService,
-    UserService
+    UserService,
+    AddToBarModalFactoryService
   ],
   bootstrap: [AppComponent]
 })

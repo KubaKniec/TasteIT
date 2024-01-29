@@ -69,9 +69,9 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/bar/{barId}")
+    @PostMapping("/bar/{barId}/{drinkId}")
     public ResponseEntity<List<DrinkDTO>> addDrinkToBar(@CookieValue("sessionToken") String token, @PathVariable Integer barId,
-                                                        @RequestParam Integer drinkId) {
+                                                        @PathVariable Integer drinkId) {
         List<DrinkDTO> barDrinks = userService.addDrinkToBar(token, barId, drinkId);
         return ResponseEntity.ok(barDrinks);
     }

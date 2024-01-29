@@ -22,7 +22,7 @@ export class DrinkBuilderComponent implements OnInit{
   generatedDrinks: Drink[] = []
   ngOnInit(): void {
     this.publicIngredientsService.getAllIngredientsNames().then((ingredients) => {
-      this.ingredients = this.removeDuplicatesFromList(ingredients);
+      this.ingredients = this.removeDuplicatesFromList(ingredients).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
       this.filteredIngredients = this.ingredients;
     }).catch((error) => {
       console.log(error);

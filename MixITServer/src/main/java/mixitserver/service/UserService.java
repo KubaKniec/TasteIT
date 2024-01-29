@@ -103,8 +103,8 @@ public class UserService {
         user.getFavouriteDrinks().add(drink);
         userRepository.save(user);
 
-        drink.getUsers().add(user);
-        drinkRepository.save(drink);
+/*        drink.getUsers().add(user);
+        drinkRepository.save(drink);*/
 
         return user.getFavouriteDrinks().stream()
                 .map(Drink::getIdDrink)
@@ -190,8 +190,8 @@ public class UserService {
         bar.getDrinks().add(drink);
         barRepository.save(bar);
 
-        drink.getBars().add(bar);
-        drinkRepository.save(drink);
+/*        drink.getBars().add(bar);
+        drinkRepository.save(drink);*/
 
         return bar.getDrinks().stream().map(barDrink -> DrinkDTO.builder()
                 .name(barDrink.getName())
@@ -219,8 +219,8 @@ public class UserService {
         user.getIngredients().add(ingredient);
         userRepository.save(user);
 
-        ingredient.getUsers().add(user);
-        ingredientRepository.save(ingredient);
+/*        ingredient.getUsers().add(user);
+        ingredientRepository.save(ingredient);*/
 
         return user.getIngredients().stream()
                 .map(userIngredient -> IngredientDTO.builder()

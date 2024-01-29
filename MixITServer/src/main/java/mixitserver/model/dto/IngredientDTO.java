@@ -25,5 +25,6 @@ public class IngredientDTO {
     private String strenght;
     private String amount;
     private String imageURL;
-    private List<Drink> drinks = new ArrayList<>();
+    //TODO
+/*    private List<DrinkDTO> drinks = new ArrayList<>();*/
 }

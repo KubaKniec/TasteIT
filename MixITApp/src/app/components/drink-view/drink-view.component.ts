@@ -3,11 +3,12 @@ import {Drink} from "../../model/Drink";
 import {ActivatedRoute} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
 import {PublicDrinkService} from "../../service/PublicDrinkService";
-import {InstructionsFactoryService} from "../../service/InstructionsFactoryService";
+import {InstructionsFactoryService} from "../../service/factories/InstructionsFactoryService";
 import {BodyScrollService} from "../../service/BodyScrollService";
 import {PublicIngredientsService} from "../../service/PublicIngredientsService";
-import {IngredientViewFactoryService} from "../../service/IngredientViewFactoryService";
+import {IngredientViewFactoryService} from "../../service/factories/IngredientViewFactoryService";
 import {UserService} from "../../service/UserService";
+import {AddToBarModalFactoryService} from "../../service/factories/AddToBarModalFactoryService";
 @Component({
   selector: 'app-drink-view',
   templateUrl: './drink-view.component.html',
@@ -24,10 +25,12 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
              private bodyScrollService: BodyScrollService,
              private publicIngredientsService: PublicIngredientsService,
              private ingredientViewFactoryService: IngredientViewFactoryService,
-             private userService: UserService
+             private userService: UserService,
+             private addToBarModalFactoryService: AddToBarModalFactoryService,
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
+   this.addToBarModalFactoryService.setRootViewContainerRef(this.viewContainerRef);
  }
 
   async ngOnInit(): Promise<void> {
@@ -73,7 +76,15 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
     }).catch((e) => {
       this.toast.error("Cannot fetch ingredient with id: "+id)
     })
-
-
+  }
+  initializeAddToBarView(drinkId: number){
+   this.userService.getUser().then((user) => {
+     const componentRef = this.addToBarModalFactoryService.addDynamicComponent(drinkId);
+     componentRef.instance.close.subscribe(() => {
+       this.addToBarModalFactoryService.removeDynamicComponent(componentRef)
+     });
+   }).catch((e) => {
+      this.toast.error("You must be logged in to add to bar");
+   })
   }
 }

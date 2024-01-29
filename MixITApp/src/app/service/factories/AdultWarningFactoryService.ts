@@ -1,6 +1,6 @@
 import {ComponentRef, Injectable, ViewContainerRef} from "@angular/core";
-import {IComponentFactory} from "../helpers/IComponentFactory";
-import {AdultWarningComponent} from "../components/adult-warning/adult-warning.component";
+import {IComponentFactory} from "../../helpers/IComponentFactory";
+import {AdultWarningComponent} from "../../components/adult-warning/adult-warning.component";
 
 @Injectable({
   providedIn: 'root'

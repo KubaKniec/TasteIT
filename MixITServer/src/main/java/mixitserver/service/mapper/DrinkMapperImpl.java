@@ -5,6 +5,7 @@ import mixitserver.model.domain.Drink;
 import mixitserver.model.domain.Ingredient;
 import mixitserver.model.dto.DrinkDTO;
 import mixitserver.model.dto.IngredientDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +37,7 @@ public class DrinkMapperImpl {
                 .mapToObj(i -> {
                     IngredientDTO tempIngredient = ingredientMapper.mapToDto(drink.getIngredients().get(i));
                     tempIngredient.setAmount(drink.getAmounts().get(i));
-                    tempIngredient.setDrinks(null);
+                    /*tempIngredient.setDrinks(null);*/
                     return tempIngredient;
                 })
                 .toList();

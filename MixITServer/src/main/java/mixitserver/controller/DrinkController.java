@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping(value = "/v1/public/drink")
 @RequiredArgsConstructor
 public class DrinkController {
-    private final DrinkService drinkService;
+    private final DrinkService  drinkService;
     @PostMapping("/save")
     public ResponseEntity<Drink> save(@RequestBody Drink drink){
         return ResponseEntity.ok(drinkService.save(drink));

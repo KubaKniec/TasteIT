@@ -8,15 +8,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatChipsModule} from "@angular/material/chips";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatIconModule} from "@angular/material/icon";
-import {HotToastModule, HotToastService, provideHotToastConfig} from "@ngneat/hot-toast";
-import { HomeComponent } from './components/home/home.component';
-import { DrinkBuilderComponent } from './components/drink-builder/drink-builder.component';
-import { YourBarComponent } from './components/your-bar/your-bar.component';
-import { ProfileComponent } from './components/profile/profile.component';
-import { SearchComponent } from './components/search/search.component';
+import {HotToastService, provideHotToastConfig} from "@ngneat/hot-toast";
+import { HomeComponent } from './pages/home/home.component';
+import { DrinkBuilderComponent } from './pages/drink-builder/drink-builder.component';
+import { YourBarComponent } from './pages/your-bar/your-bar.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { SearchComponent } from './pages/search/search.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {PublicDrinkService} from "./service/PublicDrinkService";
-import { DrinkViewComponent } from './components/drink-view/drink-view.component';
+import { DrinkViewComponent } from './pages/drink-view/drink-view.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatRippleModule} from "@angular/material/core";
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -31,23 +31,22 @@ import {PublicIngredientsService} from "./service/PublicIngredientsService";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatInputModule} from "@angular/material/input";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import { AdultWarningComponent } from './components/adult-warning/adult-warning.component';
 import { InstallAppModalComponent } from './components/install-app-modal/install-app-modal.component';
 import {NgOptimizedImage} from "@angular/common";
 import { BetaBadgeComponent } from './components/beta-badge/beta-badge.component';
 import {MatSelectModule} from "@angular/material/select";
-import { CategoryViewComponent } from './components/category-view/category-view.component';
+import { CategoryViewComponent } from './pages/category-view/category-view.component';
 import {MatRadioModule} from "@angular/material/radio";
 import {MatTabsModule} from "@angular/material/tabs";
 import { IngredientViewComponent } from './components/ingredient-view/ingredient-view.component';
 import {IngredientViewFactoryService} from "./service/factories/IngredientViewFactoryService";
 import {MatListModule} from "@angular/material/list";
 import {AuthService} from "./service/AuthService";
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
 import {CookieService} from "ngx-cookie-service";
 import {UserService} from "./service/UserService";
-import { FavouritesComponent } from './components/favourites/favourites.component';
+import { FavouritesComponent } from './pages/favourites/favourites.component';
 import { AddToBarModalComponent } from './components/add-to-bar-modal/add-to-bar-modal.component';
 import {AddToBarModalFactoryService} from "./service/factories/AddToBarModalFactoryService";
 import { BarViewComponent } from './components/bar-view/bar-view.component';
@@ -65,7 +64,6 @@ import { BarViewComponent } from './components/bar-view/bar-view.component';
     InstructionsViewComponent,
     DailyDrinkComponent,
     DrinksGridComponent,
-    AdultWarningComponent,
     InstallAppModalComponent,
     BetaBadgeComponent,
     CategoryViewComponent,

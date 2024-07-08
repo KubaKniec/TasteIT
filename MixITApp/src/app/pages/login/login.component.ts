@@ -26,17 +26,19 @@ export class LoginComponent implements OnInit{
   })
 
   login() {
-    if(this.loginForm.invalid) {
-      this.hotToast.error('Incorrect login or password!');
-      return;
-    }
-    const email = this.loginForm.get('email')!.value;
-    const password = this.loginForm.get('password')!.value;
-    this.authService.loginWithEmailAndPassword(email!, password!).then(()=>{
-      this.hotToast.success('Login successfully!');
-      this.router.navigate(['/profile']);
-    }).catch(err => {
-      this.hotToast.error('Incorrect login or password!');
-    });
+    // if(this.loginForm.invalid) {
+    //   this.hotToast.error('Incorrect login or password!');
+    //   return;
+    // }
+    // const email = this.loginForm.get('email')!.value;
+    // const password = this.loginForm.get('password')!.value;
+    // this.authService.loginWithEmailAndPassword(email!, password!).then(()=>{
+    //   this.hotToast.success('Login successfully!');
+    //   this.router.navigate(['/profile']);
+    // }).catch(err => {
+    //   this.hotToast.error('Incorrect login or password!');
+    // });
+
+    this.router.navigate(['/home'])
   }
 }

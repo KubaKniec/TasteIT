@@ -1,11 +1,19 @@
 <div class="container">
-  <p class="title-text"> Create your account</p>
-  <form class="form" [formGroup]="registerForm">
-    <input type="email" name="email" placeholder="Email" formControlName="email">
-    <input type="text" name="username" placeholder="Username" formControlName="username">
-    <input type="password" name="password" placeholder="Password" formControlName="password">
-    <input type="password" name="cpassword" placeholder="Confirm Password" formControlName="confirmPassword">
-    <button type="submit" name="submit" class="button-primary" (click)="register()">Create Account</button>
-  </form>
-  <p class="text">Already have account? <a href="/login">Log in</a></p>
+  <div class="top">
+    <img src="assets/icons/icon-128x128.png" width="80px" height="80px">
+    <p> TasteIT </p>
+  </div>
+  <div class="content">
+    <form class="form" [formGroup]="registerForm">
+      <p class="title-text"> Create your account</p>
+      <input type="email" name="email" placeholder="Email" formControlName="email">
+      <input type="text" name="username" placeholder="Username" formControlName="username">
+      <input type="password" name="password" placeholder="Password" formControlName="password">
+      <input type="password" name="cpassword" placeholder="Confirm Password" formControlName="confirmPassword">
+      <button type="submit" name="submit" class="button-primary" (click)="register()">Create Account</button>
+    </form>
+  </div>
+  <div>
+    <p class="text">Already have account? <a href="/login">Log in</a></p>
+  </div>
 </div>

@@ -2,6 +2,7 @@ import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {GlobalConfiguration} from "./config/GlobalConfiguration";
 import {BodyScrollService} from "./service/BodyScrollService";
 import {InstallAppModalFactoryService} from "./service/factories/InstallAppModalFactoryService";
+import {NavigationEnd, Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -10,15 +11,31 @@ import {InstallAppModalFactoryService} from "./service/factories/InstallAppModal
 })
 export class AppComponent implements OnInit{
   title = 'MixIT';
+  showNav: boolean = true;
   constructor(
               private viewContainerRef: ViewContainerRef,
               private bodyScrollService: BodyScrollService,
-              private installAppModalFactoryService: InstallAppModalFactoryService
+              private installAppModalFactoryService: InstallAppModalFactoryService,
+              private router: Router
   ) {
     this.installAppModalFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
   isAppRunningAsPWA: boolean = window.matchMedia('(display-mode: standalone)').matches;
+
+  noNavUrls: string[] = [
+    '/welcome',
+    '/login',
+    '/register'
+  ]
   ngOnInit(): void {
+    // hide navBar depending on current route
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.showNav = !this.noNavUrls.some(url => event.url.includes(url));
+      }
+    })
+
+    // show install modal if app isn't running as PWA
     if(!GlobalConfiguration.ALLOW_ALL_DEVICES && !this.isAppRunningAsPWA){
       this.bodyScrollService.disableScroll();
       const componentRef = this.installAppModalFactoryService.addDynamicComponent();

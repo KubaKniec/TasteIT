@@ -10,9 +10,11 @@ import {CategoryViewComponent} from "./pages/category-view/category-view.compone
 import {LoginComponent} from "./pages/login/login.component";
 import {RegisterComponent} from "./pages/register/register.component";
 import {FavouritesComponent} from "./pages/favourites/favourites.component";
+import {WelcomeComponent} from "./pages/welcome/welcome.component";
 
 const routes: Routes = [
-  {path: '', redirectTo:'/home', pathMatch: 'full'},
+  {path: '', redirectTo:'/welcome', pathMatch: 'full'},
+  {path: 'welcome', component: WelcomeComponent},
   {path: 'home', component: HomeComponent},
   {path: 'drinkBuilder', component: DrinkBuilderComponent},
   {path: 'yourBar', component: YourBarComponent},

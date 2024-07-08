@@ -50,6 +50,7 @@ import { FavouritesComponent } from './pages/favourites/favourites.component';
 import { AddToBarModalComponent } from './components/add-to-bar-modal/add-to-bar-modal.component';
 import {AddToBarModalFactoryService} from "./service/factories/AddToBarModalFactoryService";
 import { BarViewComponent } from './components/bar-view/bar-view.component';
+import { WelcomeComponent } from './pages/welcome/welcome.component';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { BarViewComponent } from './components/bar-view/bar-view.component';
     FavouritesComponent,
     AddToBarModalComponent,
     BarViewComponent,
+    WelcomeComponent,
   ],
   imports: [
     BrowserModule,

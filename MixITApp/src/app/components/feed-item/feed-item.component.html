@@ -1,0 +1,23 @@
+<div class="feed-item" *ngIf="feedItem">
+  <div class="image-wrapper">
+    <div class="profile-info">
+      <img src="assets/user_placeholder.png">
+      <p> username</p>
+    </div>
+    <img src="{{feedItem.image}}">
+    <div class="actions">
+      <div class="like">
+        <mat-icon>favorite_border</mat-icon>
+        <p> 4.5k </p>
+      </div>
+      <div class="comment">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <p> 1.7k </p>
+      </div>
+    </div>
+  </div>
+
+  <p class="item-name"> {{feedItem.name}} </p>
+  <p class="item-desc"> Very nice womp womp </p>
+  <p class="item-date"> 7 hours ago </p>
+</div>

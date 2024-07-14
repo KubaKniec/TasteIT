@@ -1,0 +1,36 @@
+<div class="container">
+  <div class="top">
+    <img src="assets/icons/icon-128x128.png" width="80px" height="80px">
+    <p> TasteIT </p>
+  </div>
+  <div class="content">
+    <form class="form" [formGroup]="registerForm">
+      <p class="title-text"> Create your account</p>
+      <div class="input-field">
+        <mat-icon>mail</mat-icon>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          formControlName="email">
+      </div>
+      <div class="input-field">
+        <mat-icon>person</mat-icon>
+        <input type="text" name="username" placeholder="Username" formControlName="username">
+      </div>
+      <div class="input-field">
+        <mat-icon>lock</mat-icon>
+        <input type="password" name="password" placeholder="Password" formControlName="password">
+      </div>
+      <div class="input-field">
+        <mat-icon>lock</mat-icon>
+        <input type="password" name="cpassword" placeholder="Confirm Password" formControlName="confirmPassword">
+      </div>
+
+      <button type="submit" name="submit" class="button-primary" (click)="register()">Create Account</button>
+    </form>
+  </div>
+  <div>
+    <p class="text">Already have account? <a href="/login">Log in</a></p>
+  </div>
+</div>

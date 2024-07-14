@@ -1,0 +1,11 @@
+<div class="content">
+  <div class="separator">
+    <p> {{greeting}} </p>
+  </div>
+
+  <app-feed-item
+    *ngFor="let drink of getIterableDrinkBasedOnSelectedChip()"
+    [feedItem]="drink"
+    />
+</div>
+

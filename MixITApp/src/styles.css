@@ -1,30 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: var(--theme-color-950) }
 :root{
-  --theme-color-50: #f3f7fb;
-  --theme-color-100: #e4eaf5;
-  --theme-color-200: #d0dced;
-  --theme-color-300: #afc5e1;
-  --theme-color-400: #89a6d1;
-  --theme-color-500: #6d8bc4;
-  --theme-color-600: #5a74b6;
-  --theme-color-700: #4f63a6;
-  --theme-color-800: #455388;
-  --theme-color-900: #3b466d;
-  --theme-color-950: #24293e;
+  /*--theme-color-50: #f3f7fb;*/
+  /*--theme-color-100: #e4eaf5;*/
+  /*--theme-color-200: #d0dced;*/
+  /*--theme-color-300: #afc5e1;*/
+  /*--theme-color-400: #89a6d1;*/
+  /*--theme-color-500: #6d8bc4;*/
+  /*--theme-color-600: #5a74b6;*/
+  /*--theme-color-700: #4f63a6;*/
+  /*--theme-color-800: #455388;*/
+  /*--theme-color-900: #3b466d;*/
+  /*--theme-color-950: #24293e;*/
+  /*--accent-color: #FFD2E5;*/
 
+  --theme-color-50: #f5f7fa;
+  --theme-color-100: #e9ecf5;
+  --theme-color-200: #ced8e9;
+  --theme-color-300: #a3b6d6;
+  --theme-color-400: #7291be;
+  --theme-color-500: #5073a7;
+  --theme-color-600: #3e5a8b;
+  --theme-color-700: #334971;
+  --theme-color-800: #2d3f5f;
+  --theme-color-900: #2a3750;
+  --theme-color-950: #0e121b;
   --accent-color: #FFD2E5;
-
   --logo-font: 'Pacifico', cursive;
 }
 .button-primary{
   width: 100%;
   height: 3rem;
-  background-color: var(--theme-color-500);
+  background-color: var(--theme-color-100);
   color: var(--theme-color-950);
   box-shadow: 0 0 5px 0 rgba(0,0,0,0.5);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.2rem;
   font-size: 1.2rem;
   font-weight: 700;
   cursor: pointer;
@@ -33,6 +45,17 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   background-color: var(--theme-color-300);
   color: var(--theme-color-950);
   cursor: not-allowed;
+}
+.button-tertiary{
+  height: 3rem;
+  background-color: transparent;
+  color: var(--theme-color-300);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
 }
 .modal{
   width: 100vw;

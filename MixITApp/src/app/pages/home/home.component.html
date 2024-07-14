@@ -2,21 +2,10 @@
   <div class="separator">
     <p> {{greeting}} </p>
   </div>
-    <app-daily-drink
-      *ngIf="dailyDrink"
-      [dailyDrink]="dailyDrink"
-      class="margin-bottom-1rem"
-      (click)="gotoDrink(dailyDrink.idDrink)"
-      matRipple
-    />
-  <mat-chip-listbox aria-label="select" (change)="selectChip($event.value)" [(ngModel)]="selectedChip">
-    <mat-chip-option selected value="popular" style="background-color: var(--theme-color-800)">Popular 🔥</mat-chip-option>
-    <mat-chip-option value="noalc" style="background-color: var(--theme-color-800)">Alcohol free</mat-chip-option>
-    <mat-chip-option value="All" style="background-color: var(--theme-color-800)">All</mat-chip-option>
-  </mat-chip-listbox>
 
-  <app-drinks-grid
-      [iterableDrinks]="getIterableDrinkBasedOnSelectedChip()"
+  <app-feed-item
+    *ngFor="let drink of getIterableDrinkBasedOnSelectedChip()"
+    [feedItem]="drink"
     />
 </div>
 

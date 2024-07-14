@@ -6,8 +6,14 @@
   <div class="content">
     <form class="form" [formGroup]="loginForm">
       <p class="title-text"> Welcome back! Please Log in.</p>
-      <input type="email" name="email" placeholder="Email" formControlName="email">
-      <input type="password" name="password" placeholder="Password" formControlName="password">
+      <div class="input-field">
+        <mat-icon>mail</mat-icon>
+        <input type="email" name="email" placeholder="Email" formControlName="email">
+      </div>
+      <div class="input-field">
+        <mat-icon>lock</mat-icon>
+        <input type="password" name="password" placeholder="Password" formControlName="password">
+      </div>
       <button type="submit" name="submit" class="button-primary" (click)="login()">Log in</button>
     </form>
   </div>

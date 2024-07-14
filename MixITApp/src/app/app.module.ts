@@ -51,6 +51,7 @@ import { AddToBarModalComponent } from './components/add-to-bar-modal/add-to-bar
 import {AddToBarModalFactoryService} from "./service/factories/AddToBarModalFactoryService";
 import { BarViewComponent } from './components/bar-view/bar-view.component';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
+import { FeedItemComponent } from './components/feed-item/feed-item.component';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { WelcomeComponent } from './pages/welcome/welcome.component';
     AddToBarModalComponent,
     BarViewComponent,
     WelcomeComponent,
+    FeedItemComponent,
   ],
   imports: [
     BrowserModule,

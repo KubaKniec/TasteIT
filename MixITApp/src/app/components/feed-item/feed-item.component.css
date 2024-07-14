@@ -1,0 +1,89 @@
+.feed-item {
+  color: #fff;
+  margin-bottom: 20px;
+  max-width: 400px;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.image-wrapper {
+  position: relative;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
+.profile-info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  padding: 5px 10px;
+}
+
+.profile-info img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.profile-info p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  position: absolute;
+  gap: 1rem;
+  bottom: 15px;
+  left: 10px;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.actions .like,
+.actions .comment {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.actions mat-icon {
+  color: #fff;
+  font-size: 24px;
+}
+
+.actions p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.item-name {
+  font-weight: bold;
+  margin: 5px;
+  font-size: 18px;
+  color: var(--accent-color);
+  letter-spacing: 0.1em;
+}
+
+.item-desc {
+  font-size: 14px;
+  margin: 5px;
+  color: #ddd;
+}
+
+.item-date {
+  font-size: 12px;
+  margin: 5px;
+  color: #aaa;
+}

@@ -15,7 +15,7 @@ import {NavigationService} from "../../service/navigation.service";
   templateUrl: './drink-view.component.html',
   styleUrls: ['./drink-view.component.css']
 })
-export class DrinkViewComponent implements OnInit, OnDestroy{
+export class DrinkViewComponent implements OnInit{
  activeDrink!: Drink;
  drinkId!: number;
  constructor(private route: ActivatedRoute,
@@ -54,9 +54,6 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
    }).catch((e) => {
       this.toast.error("You must be logged in to add to favorite");
    })
-  }
-  ngOnDestroy(): void {
-    this.bodyScrollService.enableScroll();
   }
   initializeInstructionsView(drink: Drink){
    const componentRef = this.instructionsFactoryService.addDynamicComponent(drink);

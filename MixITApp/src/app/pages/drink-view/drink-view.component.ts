@@ -2,13 +2,14 @@ import {Component, OnDestroy, OnInit, ViewContainerRef} from '@angular/core';
 import {Drink} from "../../model/Drink";
 import {ActivatedRoute} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
-import {PublicDrinkService} from "../../service/PublicDrinkService";
-import {InstructionsFactoryService} from "../../service/factories/InstructionsFactoryService";
-import {BodyScrollService} from "../../service/BodyScrollService";
-import {PublicIngredientsService} from "../../service/PublicIngredientsService";
-import {IngredientViewFactoryService} from "../../service/factories/IngredientViewFactoryService";
-import {UserService} from "../../service/UserService";
-import {AddToBarModalFactoryService} from "../../service/factories/AddToBarModalFactoryService";
+import {PublicDrinkService} from "../../service/public.drink.service";
+import {InstructionsFactoryService} from "../../service/factories/instructions-factory.service";
+import {BodyScrollService} from "../../service/body-scroll.service";
+import {PublicIngredientsService} from "../../service/public.ingredients.service";
+import {IngredientViewFactoryService} from "../../service/factories/ingredient-view-factory.service";
+import {UserService} from "../../service/user.service";
+import {AddToBarModalFactoryService} from "../../service/factories/add-to-bar-modal-factory.service";
+import {NavigationService} from "../../service/navigation.service";
 @Component({
   selector: 'app-drink-view',
   templateUrl: './drink-view.component.html',
@@ -27,6 +28,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
              private ingredientViewFactoryService: IngredientViewFactoryService,
              private userService: UserService,
              private addToBarModalFactoryService: AddToBarModalFactoryService,
+             public navigationService: NavigationService
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
@@ -34,7 +36,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
  }
 
   async ngOnInit(): Promise<void> {
-    this.bodyScrollService.disableScroll();
+    // this.bodyScrollService.disableScroll();
     this.drinkId = this.route.snapshot.params['id'];
     try {
       this.activeDrink = await this.publicDrinkService.getDrinkById(this.drinkId)
@@ -53,12 +55,8 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
       this.toast.error("You must be logged in to add to favorite");
    })
   }
-
   ngOnDestroy(): void {
     this.bodyScrollService.enableScroll();
-  }
-  showTestToast() {
-    this.toast.success("Test toast");
   }
   initializeInstructionsView(drink: Drink){
    const componentRef = this.instructionsFactoryService.addDynamicComponent(drink);

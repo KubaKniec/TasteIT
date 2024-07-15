@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {PublicIngredientsService} from "../../service/PublicIngredientsService";
+import {PublicIngredientsService} from "../../service/public.ingredients.service";
 import {Filter} from "../../model/Filter";
-import {PublicDrinkService} from "../../service/PublicDrinkService";
+import {PublicDrinkService} from "../../service/public.drink.service";
 import {Drink} from "../../model/Drink";
 
 @Component({

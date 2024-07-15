@@ -1,20 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: var(--theme-color-950) }
+body { margin: 0; font-family: "Raleway", sans-serif; background-color: var(--theme-color-950) }
 :root{
-  /*--theme-color-50: #f3f7fb;*/
-  /*--theme-color-100: #e4eaf5;*/
-  /*--theme-color-200: #d0dced;*/
-  /*--theme-color-300: #afc5e1;*/
-  /*--theme-color-400: #89a6d1;*/
-  /*--theme-color-500: #6d8bc4;*/
-  /*--theme-color-600: #5a74b6;*/
-  /*--theme-color-700: #4f63a6;*/
-  /*--theme-color-800: #455388;*/
-  /*--theme-color-900: #3b466d;*/
-  /*--theme-color-950: #24293e;*/
-  /*--accent-color: #FFD2E5;*/
-
   --theme-color-50: #f5f7fa;
   --theme-color-100: #e9ecf5;
   --theme-color-200: #ced8e9;
@@ -28,6 +16,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   --theme-color-950: #0e121b;
   --accent-color: #FFD2E5;
   --logo-font: 'Pacifico', cursive;
+}
+.tasteit-typography{
+  font-family: "Raleway", sans-serif;
+  line-height: 1.5;
+  letter-spacing: .0178em;
+}
+.tasteit-typography p{
+  margin: 0 0 12px;
+  font-feature-settings: "lnum" 1;
 }
 .button-primary{
   width: 100%;
@@ -73,4 +70,3 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
   padding: 1rem;
   align-items: center;
 }
-

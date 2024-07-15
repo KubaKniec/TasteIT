@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
-import {PublicDrinkService} from "../../service/PublicDrinkService";
+import {PublicDrinkService} from "../../service/public.drink.service";
 import {Drink} from "../../model/Drink";
 
 @Component({

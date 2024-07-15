@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {UserService} from "../../service/UserService";
+import {UserService} from "../../service/user.service";
 import {User} from "../../model/User";
 import {Bar} from "../../model/Bar";
 import {HotToastService} from "@ngneat/hot-toast";

@@ -1,18 +1,18 @@
 <div class="feed-item" *ngIf="feedItem">
-  <div class="image-wrapper">
+  <div class="image-wrapper" (click)="emitGotoDrink()">
     <div class="profile-info">
       <img src="assets/user_placeholder.png">
       <p> username</p>
     </div>
     <img src="{{feedItem.image}}">
     <div class="actions">
-      <div class="like">
+      <div class="like" (click)="emitLike($event)">
         <mat-icon>favorite_border</mat-icon>
-        <p> 4.5k </p>
+        <p> 6.9k </p>
       </div>
-      <div class="comment">
+      <div class="comment" (click)="emitComment($event)">
         <mat-icon>chat_bubble_outline</mat-icon>
-        <p> 1.7k </p>
+        <p> 420 </p>
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {GlobalConfiguration} from "./config/GlobalConfiguration";
-import {BodyScrollService} from "./service/BodyScrollService";
-import {InstallAppModalFactoryService} from "./service/factories/InstallAppModalFactoryService";
+import {BodyScrollService} from "./service/body-scroll.service";
+import {InstallAppModalFactoryService} from "./service/factories/install-app-modal-factory.service";
 import {NavigationEnd, Router} from "@angular/router";
 
 @Component({
@@ -25,7 +25,8 @@ export class AppComponent implements OnInit{
   noNavUrls: string[] = [
     '/welcome',
     '/login',
-    '/register'
+    '/register',
+    '/drink'
   ]
   ngOnInit(): void {
     // hide navBar depending on current route

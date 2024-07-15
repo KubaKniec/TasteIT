@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from "../../model/User";
 import {Bar} from "../../model/Bar";
-import {UserService} from "../../service/UserService";
+import {UserService} from "../../service/user.service";
 import {HotToastService} from "@ngneat/hot-toast";
 
 @Component({

@@ -1,5 +1,6 @@
 package com.example.testeitserver.model;
 
+import com.example.testeitserver.model.enums.PostType;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -15,6 +16,7 @@ public class Post {
     @Id
     private String postId;
     private String userId;
+    private PostType postType;
     @DBRef
     private PostMedia postMedia;
     @DBRef

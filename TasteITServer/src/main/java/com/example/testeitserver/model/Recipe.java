@@ -17,6 +17,5 @@ public class Recipe {
     private String recipeId;
     private Map<Integer, String> steps = new HashMap<>();
     private Map<Integer, String> pictures = new HashMap<>();
-    @DBRef
-    private List<Ingredient> ingredients = new ArrayList<>();
+    private List<IngredientWrapper> ingredientsMeasurements = new ArrayList<>();
 }

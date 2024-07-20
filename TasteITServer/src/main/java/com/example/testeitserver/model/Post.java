@@ -1,5 +1,6 @@
 package com.example.testeitserver.model;
 
+import com.example.testeitserver.model.enums.PostType;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -15,9 +16,8 @@ public class Post {
     @Id
     private String postId;
     private String userId;
-    @DBRef
+    private PostType postType;
     private PostMedia postMedia;
-    @DBRef
     private Recipe recipe;
     @DBRef
     private List<Tag> tags = new ArrayList<>();

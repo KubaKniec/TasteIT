@@ -2,6 +2,7 @@ package com.example.testeitserver.model;
 
 import com.example.testeitserver.model.enums.PostType;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,15 +18,15 @@ public class Post {
     private String postId;
     private String userId;
     private PostType postType;
-    @DBRef
     private PostMedia postMedia;
-    @DBRef
     private Recipe recipe;
     @DBRef
     private List<Tag> tags = new ArrayList<>();
-    private Date date;
     @DBRef
     private List<Like> likes = new ArrayList<>();
     @DBRef
     private List<Comment> comments = new ArrayList<>();
+
+    @CreatedDate
+    private Date createdDate;
 }

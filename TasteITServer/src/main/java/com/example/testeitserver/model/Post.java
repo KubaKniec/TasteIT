@@ -17,9 +17,7 @@ public class Post {
     private String postId;
     private String userId;
     private PostType postType;
-    @DBRef
     private PostMedia postMedia;
-    @DBRef
     private Recipe recipe;
     @DBRef
     private List<Tag> tags = new ArrayList<>();

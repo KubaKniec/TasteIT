@@ -12,7 +12,7 @@
   <div class="details">
     <div class="drink-info">
       <p class="name-text"> {{activeDrink.name}}</p>
-      <p class="desc-text">Very nice drink with very nice description</p>
+      <p class="desc-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer felis quam, tempor nec tortor ac, congue sollicitudin risus. Duis maximus sapien ac neque laoreet, vel viverra libero fringilla. Pellentesque eget tortor in erat pretium auctor eget in leo. Nam tristique varius odio et blandit. Fusce commodo porttitor quam sed volutpat.</p>
       <p class="category-text"> {{activeDrink.category}}</p>
     </div>
 
@@ -35,8 +35,12 @@
 
 
 <!--  BUTTONS-->
-<!--  <div class="buttons">-->
-<!--    <button class="btn" matRipple (click)="initializeInstructionsView(activeDrink!)"> <mat-icon>list_alt </mat-icon>Mix It Up</button>-->
-<!--    <button class="btn" matRipple (click)="initializeAddToBarView(activeDrink.idDrink)"> <mat-icon>liquor </mat-icon>Add to bar</button>-->
-<!--  </div>-->
+  <div class="buttons">
+    <div class="left-action">
+      <button class="button-actions-small"><mat-icon>favorite</mat-icon></button>
+      <button class="button-actions-small"><mat-icon>chat</mat-icon></button>
+      <button class="button-actions-small"><mat-icon>bookmark</mat-icon></button>
+    </div>
+    <button class="button-actions-big">Let's cook</button>
+  </div>
 </div>

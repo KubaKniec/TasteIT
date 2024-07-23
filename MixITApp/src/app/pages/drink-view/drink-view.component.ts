@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewContainerRef} from '@angular/core';
 import {Drink} from "../../model/Drink";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
 import {PublicDrinkService} from "../../service/public.drink.service";
 import {InstructionsFactoryService} from "../../service/factories/instructions-factory.service";
@@ -28,7 +28,8 @@ export class DrinkViewComponent implements OnInit{
              private ingredientViewFactoryService: IngredientViewFactoryService,
              private userService: UserService,
              private addToBarModalFactoryService: AddToBarModalFactoryService,
-             public navigationService: NavigationService
+             public navigationService: NavigationService,
+             private router: Router,
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
@@ -36,12 +37,13 @@ export class DrinkViewComponent implements OnInit{
  }
 
   async ngOnInit(): Promise<void> {
-    // this.bodyScrollService.disableScroll();
     this.drinkId = this.route.snapshot.params['id'];
     try {
       this.activeDrink = await this.publicDrinkService.getDrinkById(this.drinkId)
     } catch (e) {
-      this.toast.error("Drink not found or backend is down")
+      this.toast.error("Drink not found or server error");
+      //TODO: Redirect to not found page
+      await this.router.navigate(['/home']);
     }
   }
   addToFavorite(){
@@ -60,6 +62,7 @@ export class DrinkViewComponent implements OnInit{
 
    componentRef.instance.close.subscribe(() => {
      this.instructionsFactoryService.removeDynamicComponent(componentRef)
+     this.bodyScrollService.enableScroll();
    });
   }
   initializeIngredientView(id: number){

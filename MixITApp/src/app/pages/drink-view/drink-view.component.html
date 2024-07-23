@@ -37,10 +37,10 @@
 <!--  BUTTONS-->
   <div class="buttons">
     <div class="left-action">
-      <button class="button-actions-small"><mat-icon>favorite</mat-icon></button>
-      <button class="button-actions-small"><mat-icon>chat</mat-icon></button>
-      <button class="button-actions-small"><mat-icon>bookmark</mat-icon></button>
+      <button class="button-actions-small" matRipple><mat-icon>favorite</mat-icon></button>
+      <button class="button-actions-small" matRipple><mat-icon>chat</mat-icon></button>
+      <button class="button-actions-small" matRipple><mat-icon>bookmark</mat-icon></button>
     </div>
-    <button class="button-actions-big">Let's cook</button>
+    <button class="button-actions-big" matRipple (click)="initializeInstructionsView(activeDrink)">Let's cook</button>
   </div>
 </div>

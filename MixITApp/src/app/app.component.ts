@@ -2,7 +2,8 @@ import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {GlobalConfiguration} from "./config/GlobalConfiguration";
 import {BodyScrollService} from "./service/body-scroll.service";
 import {InstallAppModalFactoryService} from "./service/factories/install-app-modal-factory.service";
-import {NavigationEnd, Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {filter} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -16,25 +17,23 @@ export class AppComponent implements OnInit{
               private viewContainerRef: ViewContainerRef,
               private bodyScrollService: BodyScrollService,
               private installAppModalFactoryService: InstallAppModalFactoryService,
-              private router: Router
+              private router: Router,
+              private activatedRoute: ActivatedRoute
   ) {
     this.installAppModalFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
   isAppRunningAsPWA: boolean = window.matchMedia('(display-mode: standalone)').matches;
-
-  noNavUrls: string[] = [
-    '/welcome',
-    '/login',
-    '/register',
-    '/drink'
-  ]
   ngOnInit(): void {
-    // hide navBar depending on current route
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.showNav = !this.noNavUrls.some(url => event.url.includes(url));
-      }
-    })
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(()=>{
+        const currentRoute = this.activatedRoute.snapshot.firstChild;
+        if(currentRoute){
+          this.showNav = currentRoute.data['showNav'] !== false;
+        }else{
+          this.showNav = true;
+        }
+      })
 
     // show install modal if app isn't running as PWA
     if(!GlobalConfiguration.ALLOW_ALL_DEVICES && !this.isAppRunningAsPWA){

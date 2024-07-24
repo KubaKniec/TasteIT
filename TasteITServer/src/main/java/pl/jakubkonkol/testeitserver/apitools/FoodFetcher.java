@@ -1,23 +1,28 @@
 package pl.jakubkonkol.testeitserver.apitools;
 
 import io.micrometer.common.util.StringUtils;
-import pl.jakubkonkol.testeitserver.exception.ApiRequestException;
-import pl.jakubkonkol.testeitserver.factory.IngredientFactory;
-import pl.jakubkonkol.testeitserver.factory.PostFactory;
-import pl.jakubkonkol.testeitserver.model.*;
-import pl.jakubkonkol.testeitserver.service.IngredientService;
-import pl.jakubkonkol.testeitserver.service.PostService;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
+import pl.jakubkonkol.testeitserver.exception.ApiRequestException;
+import pl.jakubkonkol.testeitserver.factory.IngredientMealFactory;
+import pl.jakubkonkol.testeitserver.factory.PostMealFactory;
+import pl.jakubkonkol.testeitserver.model.Ingredient;
+import pl.jakubkonkol.testeitserver.model.Post;
+import pl.jakubkonkol.testeitserver.service.IngredientService;
+import pl.jakubkonkol.testeitserver.service.PostService;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Author: Jakub Konkol
@@ -27,35 +32,46 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class FoodFetcher {
+    private static final Logger LOGGER = Logger.getLogger(FoodFetcher.class.getName());
+
     private final IngredientService ingredientService;
     private final PostService postService;
     private final OkHttpClient client;
-    private final IngredientFactory ingredientFactory;
-    private final PostFactory postFactory;
+    private final IngredientMealFactory ingredientFactory;
+    private final PostMealFactory postFactory;
     private final String foodFinderURL = "https://themealdb.com/api/json/v1/1/search.php?f=";
     private final String ingredientListURL = "https://www.themealdb.com/api/json/v1/1/list.php?i=list";
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * Wipes ingredient and post collection and then populates it with food data
      */
-    public void populateDBWithFood(){
-        ingredientService.deleteAll();
-        postService.deleteAll();
+    public void populateDBWithFood() {
+        var ingredients = fetchIngredients();
+        var foodPosts = searchFoodForEveryLetter();
 
-        ingredientService.saveAll(fetchIngredients());
-        postService.saveAll(searchFoodForEveryLetter());
+        ingredientService.saveAll(ingredients);
+        postService.saveAll(foodPosts);
     }
 
     /**
      * Api call for food data for every letter of the alphabet
      * @return List of food data
-     *
      */
     public List<Post> searchFoodForEveryLetter() {
-        List<Post> foodList = new ArrayList<>();
+        List<Future<List<Post>>> futures = new ArrayList<>();
         for (char c = 'a'; c <= 'z'; c++) {
-            String url = foodFinderURL + c;
-            foodList.addAll(fetchFood(url));
+            var url = foodFinderURL + c;
+            futures.add(executor.submit(() -> fetchFood(url)));
+        }
+
+        List<Post> foodList = new ArrayList<>();
+        for (var future : futures) {
+            try {
+                foodList.addAll(future.get());
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error fetching food for a letter", e);
+            }
         }
         return foodList;
     }
@@ -65,8 +81,8 @@ public class FoodFetcher {
      * @return List of ingredients
      */
     public List<Ingredient> fetchIngredients() {
-        Request req = new Request.Builder().url(ingredientListURL).build();
-        try (Response response = client.newCall(req).execute()) {
+        var req = new Request.Builder().url(ingredientListURL).build();
+        try (var response = client.newCall(req).execute()) {
             if (!response.isSuccessful()) {
                 throw new ApiRequestException("Request failed with HTTP error code: " + response.code());
             }
@@ -82,12 +98,12 @@ public class FoodFetcher {
      * @return List of food data
      */
     public List<Post> fetchFood(String url) {
-        Request req = new Request.Builder().url(url).build();
-        try (Response response = client.newCall(req).execute()) {
+        var req = new Request.Builder().url(url).build();
+        try (var response = client.newCall(req).execute()) {
             if (!response.isSuccessful()) {
                 throw new ApiRequestException("Request failed with HTTP error code: " + response.code());
             }
-            String rawData = response.body().string();
+            var rawData = response.body().string();
             if (StringUtils.isBlank(rawData)) {
                 return new ArrayList<>();
             }
@@ -103,16 +119,16 @@ public class FoodFetcher {
      * @return List of food data
      */
     private List<Post> parseFood(String rawData) {
-        JSONObject foodData = new JSONObject(rawData);
+        var foodData = new JSONObject(rawData);
         List<Post> foodList = new ArrayList<>();
         if (!foodData.has("meals") || foodData.isNull("meals")) {
             return foodList;
         }
 
-        JSONArray food = foodData.getJSONArray("meals");
+        var food = foodData.getJSONArray("meals");
         food.forEach(foodItem -> {
-            JSONObject foodObj = (JSONObject) foodItem;
-            Post newPost = postFactory.createPost(foodObj);
+            var foodObj = (JSONObject) foodItem;
+            var newPost = postFactory.createPost(foodObj);
             foodList.add(newPost);
         });
 
@@ -125,16 +141,16 @@ public class FoodFetcher {
      * @return List of ingredients
      */
     private List<Ingredient> parseIngredients(String rawData) {
-        JSONObject ingredientData = new JSONObject(rawData);
+        var ingredientData = new JSONObject(rawData);
         List<Ingredient> ingredientsList = new ArrayList<>();
         if (!ingredientData.has("meals") || ingredientData.isNull("meals")) {
             return ingredientsList;
         }
 
-        JSONArray ingredients = ingredientData.getJSONArray("meals");
+        var ingredients = ingredientData.getJSONArray("meals");
         ingredients.forEach(ingredient -> {
-            JSONObject ingredientObj = (JSONObject) ingredient;
-            Ingredient newIngredient = ingredientFactory.createIngredient(ingredientObj);
+            var ingredientObj = (JSONObject) ingredient;
+            var newIngredient = ingredientFactory.createIngredient(ingredientObj);
             ingredientsList.add(newIngredient);
         });
 

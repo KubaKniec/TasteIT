@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
-public class PostFactory {
+public class PostMealFactory {
     private final IngredientService ingredientService;
     public Post createPost(JSONObject foodObj) {
         Post newPost = new Post();

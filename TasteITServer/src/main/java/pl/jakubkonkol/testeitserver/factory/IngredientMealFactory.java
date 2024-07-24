@@ -7,7 +7,7 @@ import pl.jakubkonkol.testeitserver.model.Ingredient;
 
 @Component
 @RequiredArgsConstructor
-public class IngredientFactory {
+public class IngredientMealFactory {
     public Ingredient createIngredient(JSONObject ingredientObj){
         Ingredient ingredient = new Ingredient();
         ingredient.setName(ingredientObj.getString("strIngredient"));

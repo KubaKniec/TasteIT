@@ -17,6 +17,23 @@ public class IngredientService {
     public Optional<Ingredient> findByName(String name) {
         return ingredientRepository.findByName(name);
     }
+    public Ingredient getByName(String name) {
+        if(name == null) {
+            throw new IllegalArgumentException("Name cannot be null.");
+        }
+        if(ingredientRepository.findByName(name).isEmpty()) {
+            return null;
+        }
+        else {
+            return ingredientRepository.findByName(name).get();
+        }
+    }
+    public void save(Ingredient ingredient) {
+        if (ingredient == null) {
+            throw new IllegalArgumentException("Ingredient cannot be null.");
+        }
+        ingredientRepository.save(ingredient);
+    }
     public void saveAll(List<Ingredient> ingredients) {
         if (ingredients == null) {
             throw new IllegalArgumentException("List of drinks cannot be null.");

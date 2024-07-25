@@ -1,18 +1,3 @@
-.container{
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--theme-color-950);
-  padding: 1rem;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-.container > *{
-  width: 100%;
-}
 .content{
   flex: 1;
   display: flex;

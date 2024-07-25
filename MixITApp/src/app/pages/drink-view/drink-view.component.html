@@ -1,28 +1,26 @@
 <div class="container" *ngIf="activeDrink">
-  <div class="menu">
-    <a [routerLink]="['/home']"><mat-icon style="color: var(--theme-color-500)">arrow_back_ios</mat-icon></a>
-    <p class="details-text"> Drink Details </p>
-    <mat-icon style="color: var(--theme-color-500)">ios_share</mat-icon>
-  </div>
-  <div class="details">
-    <img class="image" src="{{activeDrink.image}}" width="250px" height="250px">
-    <div class="drink-info">
-      <p class="name-text"> {{activeDrink.name}}</p>
-      <p class="category-text"> {{activeDrink.category}}</p>
-    </div>
-    <div class="controls">
-      <p class="nomargin"> ingriedients </p>
-      <div class="beans">
-        <div class="bean" matRipple (click)="addToFavorite()">
-          <mat-icon>favorite</mat-icon>
-        </div>
-        <div class="bean" matRipple>
-          <mat-icon>local_bar</mat-icon>
+<!--PHOTO -->
+  <div class="img-wrapper">
+      <div class="menu">
+        <div class="go-back" (click)="navigationService.goBack()">
+          <mat-icon style="color: var(--theme-color-500)">arrow_back</mat-icon>
         </div>
       </div>
+    <img class="image" src="{{activeDrink.image}}" alt="{{activeDrink.name}}">
+  </div>
+<!--WHOLE DETAILS-->
+  <div class="details">
+    <div class="drink-info">
+      <p class="name-text"> {{activeDrink.name}}</p>
+      <p class="desc-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer felis quam, tempor nec tortor ac, congue sollicitudin risus. Duis maximus sapien ac neque laoreet, vel viverra libero fringilla. Pellentesque eget tortor in erat pretium auctor eget in leo. Nam tristique varius odio et blandit. Fusce commodo porttitor quam sed volutpat.</p>
+      <p class="category-text"> {{activeDrink.category}}</p>
+    </div>
+
+    <div class="user-info">
+      <img src="assets/user_placeholder.png" alt="user" class="user-image" width="50px" height="50px">
+      <p class="user-name"> Posted by <b>KanesaTheCook</b></p>
     </div>
     <div class="ingredients">
-<!--      <p *ngFor="let ingr of activeDrink.ingredients" class="ingr-text">{{ingr.name}}</p>-->
       <mat-chip-set>
         <mat-chip
           *ngFor="let ingr of activeDrink.ingredients"
@@ -33,9 +31,16 @@
         </mat-chip>
       </mat-chip-set>
     </div>
-    <div class="buttons">
-      <button class="btn" matRipple (click)="initializeInstructionsView(activeDrink!)"> <mat-icon>list_alt </mat-icon>Mix It Up</button>
-      <button class="btn" matRipple (click)="initializeAddToBarView(activeDrink.idDrink)"> <mat-icon>liquor </mat-icon>Add to bar</button>
+  </div>
+
+
+<!--  BUTTONS-->
+  <div class="buttons">
+    <div class="left-action">
+      <button class="button-actions-small" matRipple><mat-icon>favorite</mat-icon></button>
+      <button class="button-actions-small" matRipple><mat-icon>chat</mat-icon></button>
+      <button class="button-actions-small" matRipple><mat-icon>bookmark</mat-icon></button>
     </div>
+    <button class="button-actions-big" matRipple (click)="initializeInstructionsView(activeDrink)">Let's cook</button>
   </div>
 </div>

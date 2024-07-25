@@ -15,19 +15,19 @@ import { YourBarComponent } from './pages/your-bar/your-bar.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { SearchComponent } from './pages/search/search.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
-import {PublicDrinkService} from "./service/PublicDrinkService";
+import {PublicDrinkService} from "./service/public.drink.service";
 import { DrinkViewComponent } from './pages/drink-view/drink-view.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatRippleModule} from "@angular/material/core";
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { InstructionsViewComponent } from './components/instructions-view/instructions-view.component';
-import {InstructionsFactoryService} from "./service/factories/InstructionsFactoryService";
-import {BodyScrollService} from "./service/BodyScrollService";
+import {InstructionsFactoryService} from "./service/factories/instructions-factory.service";
+import {BodyScrollService} from "./service/body-scroll.service";
 import { DailyDrinkComponent } from './components/daily-drink/daily-drink.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.component';
 import {MatBadgeModule} from "@angular/material/badge";
-import {PublicIngredientsService} from "./service/PublicIngredientsService";
+import {PublicIngredientsService} from "./service/public.ingredients.service";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatInputModule} from "@angular/material/input";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
@@ -39,19 +39,21 @@ import { CategoryViewComponent } from './pages/category-view/category-view.compo
 import {MatRadioModule} from "@angular/material/radio";
 import {MatTabsModule} from "@angular/material/tabs";
 import { IngredientViewComponent } from './components/ingredient-view/ingredient-view.component';
-import {IngredientViewFactoryService} from "./service/factories/IngredientViewFactoryService";
+import {IngredientViewFactoryService} from "./service/factories/ingredient-view-factory.service";
 import {MatListModule} from "@angular/material/list";
-import {AuthService} from "./service/AuthService";
+import {AuthService} from "./service/auth.service";
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import {CookieService} from "ngx-cookie-service";
-import {UserService} from "./service/UserService";
+import {UserService} from "./service/user.service";
 import { FavouritesComponent } from './pages/favourites/favourites.component';
 import { AddToBarModalComponent } from './components/add-to-bar-modal/add-to-bar-modal.component';
-import {AddToBarModalFactoryService} from "./service/factories/AddToBarModalFactoryService";
+import {AddToBarModalFactoryService} from "./service/factories/add-to-bar-modal-factory.service";
 import { BarViewComponent } from './components/bar-view/bar-view.component';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { FeedItemComponent } from './components/feed-item/feed-item.component';
+import {NgxPullToRefreshModule} from "ngx-pull-to-refresh";
+import {NavigationService} from "./service/navigation.service";
 
 @NgModule({
   declarations: [
@@ -105,6 +107,7 @@ import { FeedItemComponent } from './components/feed-item/feed-item.component';
     MatTabsModule,
     MatListModule,
     ReactiveFormsModule,
+    NgxPullToRefreshModule
   ],
   providers: [
     PublicDrinkService,
@@ -117,7 +120,8 @@ import { FeedItemComponent } from './components/feed-item/feed-item.component';
     provideHotToastConfig(),
     CookieService,
     UserService,
-    AddToBarModalFactoryService
+    AddToBarModalFactoryService,
+    NavigationService
   ],
   bootstrap: [AppComponent]
 })

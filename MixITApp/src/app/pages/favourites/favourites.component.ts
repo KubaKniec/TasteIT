@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {UserService} from "../../service/UserService";
+import {UserService} from "../../service/user.service";
 import {HotToastService} from "@ngneat/hot-toast";
 import {Router} from "@angular/router";
 import {Drink} from "../../model/Drink";
 import {User} from "../../model/User";
-import {PublicDrinkService} from "../../service/PublicDrinkService";
+import {PublicDrinkService} from "../../service/public.drink.service";
 
 @Component({
   selector: 'app-favourites',

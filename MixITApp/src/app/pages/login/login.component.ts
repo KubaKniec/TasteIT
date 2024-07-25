@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../service/AuthService";
+import {AuthService} from "../../service/auth.service";
 import {HotToastService} from "@ngneat/hot-toast";
 import {Router} from "@angular/router";
-import {UserService} from "../../service/UserService";
+import {UserService} from "../../service/user.service";
 
 @Component({
   selector: 'app-login',

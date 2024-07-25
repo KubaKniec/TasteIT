@@ -1,0 +1,10 @@
+.tasteit-typography {
+  font-family: "Raleway", sans-serif;
+  line-height: 1.5;
+  letter-spacing: .0178em;
+}
+
+.tasteit-typography p {
+  margin: 0 0 12px;
+  font-feature-settings: "lnum" 1;
+}

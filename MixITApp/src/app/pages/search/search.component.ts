@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {PublicDrinkService} from "../../service/PublicDrinkService";
+import {PublicDrinkService} from "../../service/public.drink.service";
 import {HotToastService} from "@ngneat/hot-toast";
 import {Drink} from "../../model/Drink";
 import {Router} from "@angular/router";

@@ -14,16 +14,16 @@ import {WelcomeComponent} from "./pages/welcome/welcome.component";
 
 const routes: Routes = [
   {path: '', redirectTo:'/welcome', pathMatch: 'full'},
-  {path: 'welcome', component: WelcomeComponent},
+  {path: 'welcome', component: WelcomeComponent, data: {showNav: false}},
   {path: 'home', component: HomeComponent},
   {path: 'drinkBuilder', component: DrinkBuilderComponent},
   {path: 'yourBar', component: YourBarComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'search', component: SearchComponent},
-  {path: "drink/:id", component: DrinkViewComponent},
+  {path: "drink/:id", component: DrinkViewComponent, data: {showNav: false}},
   {path: "category/:category", component: CategoryViewComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'register', component: RegisterComponent},
+  {path: 'login', component: LoginComponent, data: {showNav: false}},
+  {path: 'register', component: RegisterComponent, data: {showNav: false}},
   {path: 'favourites', component: FavouritesComponent}
 
 ];

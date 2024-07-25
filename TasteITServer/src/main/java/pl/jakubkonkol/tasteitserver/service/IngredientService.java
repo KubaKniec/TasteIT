@@ -1,5 +1,6 @@
 package pl.jakubkonkol.tasteitserver.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +14,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class IngredientService {
     private final IngredientRepository ingredientRepository;
-
+    @Cacheable("ingredients")
     public Optional<Ingredient> findByName(String name) {
-        List<Ingredient> ingredients = ingredientRepository.findByName(name);
-        return ingredients.stream().findFirst();
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null.");
+        }
+        return ingredientRepository.findByName(name);
     }
+
     public void save(Ingredient ingredient) {
         if (ingredient == null) {
             throw new IllegalArgumentException("Ingredient cannot be null.");
+        }
+        if(ingredientRepository.findByName(ingredient.getName()).isPresent()){
+            return;
         }
         ingredientRepository.save(ingredient);
     }
@@ -28,7 +35,12 @@ public class IngredientService {
         if (ingredients == null) {
             throw new IllegalArgumentException("List of drinks cannot be null.");
         }
-        ingredientRepository.saveAll(ingredients);
+        ingredients.forEach(ingredient -> {
+            if (ingredient == null) {
+                throw new IllegalArgumentException("Ingredient cannot be null.");
+            }
+            save(ingredient);
+        });
     }
     public void deleteAll() {
         ingredientRepository.deleteAll();

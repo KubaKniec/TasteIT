@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Drink} from "../../model/Drink";
-import {BodyScrollService} from "../../service/BodyScrollService";
+import {BodyScrollService} from "../../service/body-scroll.service";
 @Component({
   selector: 'app-instructions-view',
   templateUrl: './instructions-view.component.html',

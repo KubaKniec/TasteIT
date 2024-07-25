@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {GlobalConfiguration} from "../../config/GlobalConfiguration";
 import {Router} from "@angular/router";
-import {AuthService} from "../../service/AuthService";
-import {UserService} from "../../service/UserService";
+import {AuthService} from "../../service/auth.service";
+import {UserService} from "../../service/user.service";
 import {User} from "../../model/User";
 import {HotToastService} from "@ngneat/hot-toast";
 

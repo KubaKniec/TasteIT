@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Drink} from "../../model/Drink";
-import {PublicDrinkService} from "../../service/PublicDrinkService";
+import {PublicDrinkService} from "../../service/public.drink.service";
 import {Router} from "@angular/router";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-home',
@@ -15,6 +16,7 @@ export class HomeComponent implements OnInit{
   nonAlkDrinks: Drink[] = [];
   selectedChip: string = 'popular'
   greeting: string = ''
+  targetElement!: Element;
   constructor(private publicDrinkService: PublicDrinkService, private router: Router) {
   }
   selectChip(chip: string): void {
@@ -24,6 +26,8 @@ export class HomeComponent implements OnInit{
     }
   }
   async ngOnInit(): Promise<void> {
+
+    this.targetElement = document.querySelector('html') as Element;
     this.greeting = this.getGreetingDependingOnTime();
     this.publicDrinkService.getAllDrinks().then((drinks) => {
       this.allDrinks = drinks;
@@ -33,6 +37,12 @@ export class HomeComponent implements OnInit{
     this.dailyDrink = await this.publicDrinkService.getDailyDrink();
     this.popularDrinks = await this.publicDrinkService.getPopularDrinks();
     this.nonAlkDrinks = await this.publicDrinkService.getFilteredDrinks( '',false, '');
+  }
+  refreshEvent(event: Subject<any>, message: string): void {
+    setTimeout(() => {
+      // handle refreshing feed here
+      event.next(event);
+    }, 500);
   }
   gotoDrink(id: number){
     this.router.navigate([`/drink/${id}`]).then();

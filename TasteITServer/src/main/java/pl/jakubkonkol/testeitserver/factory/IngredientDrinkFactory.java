@@ -18,6 +18,7 @@ public class IngredientDrinkFactory {
         boolean isAlcohol = strAlcohol.equals("Yes");
         ingredient.setAlcohol(isAlcohol);
         ingredient.setStrength(ingredientObj.optString("strABV"));
+        ingredient.setType("Drink");
         return ingredient;
     }
 

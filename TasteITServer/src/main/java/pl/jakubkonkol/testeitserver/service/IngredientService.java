@@ -1,5 +1,6 @@
 package pl.jakubkonkol.testeitserver.service;
 
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import pl.jakubkonkol.testeitserver.model.Ingredient;
 import pl.jakubkonkol.testeitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,18 +16,8 @@ public class IngredientService {
     private final IngredientRepository ingredientRepository;
 
     public Optional<Ingredient> findByName(String name) {
-        return ingredientRepository.findByName(name);
-    }
-    public Ingredient getByName(String name) {
-        if(name == null) {
-            throw new IllegalArgumentException("Name cannot be null.");
-        }
-        if(ingredientRepository.findByName(name).isEmpty()) {
-            return null;
-        }
-        else {
-            return ingredientRepository.findByName(name).get();
-        }
+        List<Ingredient> ingredients = ingredientRepository.findByName(name);
+        return ingredients.stream().findFirst();
     }
     public void save(Ingredient ingredient) {
         if (ingredient == null) {

@@ -6,22 +6,28 @@ import org.springframework.stereotype.Component;
 import pl.jakubkonkol.testeitserver.service.IngredientService;
 import pl.jakubkonkol.testeitserver.service.PostService;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Component
 @RequiredArgsConstructor
 public class DBuilder {
     private final FoodFetcher foodFetcher;
+    private final IngredientFetcher ingredientFetcher;
     private final DrinkFetcher drinkFetcher;
     private final IngredientService ingredientService;
     private final PostService postService;
+    private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
     @PostConstruct
-    public void buildDataBase() {
+    public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
         postService.deleteAll();
-        System.out.println("Food fetcher started");
+        LOGGER.log(Level.INFO, "Database cleared, building new one");
         foodFetcher.populateDBWithFood();
-//        System.out.println("Drink fetcher started");
-//        drinkFetcher.populateDBWithDrinks();
+        ingredientFetcher.populateDBWithIngredients();
+        drinkFetcher.populateDBWithDrinks();
 
-        System.out.println("Database built");
+        LOGGER.log(Level.INFO, "Database built");
     }
 }

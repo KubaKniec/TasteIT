@@ -3,13 +3,10 @@ package pl.jakubkonkol.testeitserver.factory;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import pl.jakubkonkol.testeitserver.apitools.DrinkFetcher;
 import pl.jakubkonkol.testeitserver.model.*;
 import pl.jakubkonkol.testeitserver.model.enums.PostType;
 import pl.jakubkonkol.testeitserver.service.IngredientService;
-import pl.jakubkonkol.testeitserver.service.PostService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +45,7 @@ public class PostDrinkFactory {
         List<IngredientWrapper> ingredients = new ArrayList<>();
         for (int k = 1; k <= 15; k++) {
             var ingWrapper = new IngredientWrapper();
-            String ingredientName = postObj.optString("strIngredient" + k, "").toLowerCase();
+            String ingredientName = postObj.optString("strIngredient" + k, "");
             String ingredientAmount = postObj.optString("strMeasure" + k, "").trim();
 
             if (ingredientName.isBlank() || ingredientAmount.isBlank()) break;
@@ -57,8 +54,9 @@ public class PostDrinkFactory {
             measure.setValue(ingredientAmount);
             measure.setUnit("unit");
             ingWrapper.setMeasurement(measure);
-            if(this.ingredientService.getByName(ingredientName)!=null) {
-                ingWrapper.setIngredient(this.ingredientService.getByName(ingredientName));
+            if(this.ingredientService.findByName(ingredientName).isPresent()) {
+                var ingredient = this.ingredientService.findByName(ingredientName).get();
+                ingWrapper.setIngredient(ingredient);
             }else{
                 ingWrapper.setIngredient(new Ingredient());
             }

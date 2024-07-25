@@ -2,8 +2,8 @@ package pl.jakubkonkol.testeitserver.apitools;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
-import okhttp3.*;
-import org.json.JSONArray;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.testeitserver.exception.ApiRequestException;
@@ -17,7 +17,6 @@ import pl.jakubkonkol.testeitserver.service.PostService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;

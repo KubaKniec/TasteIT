@@ -11,7 +11,7 @@ import pl.jakubkonkol.tasteitserver.model.Ingredient;
 public class IngredientDrinkFactory {
     public Ingredient createIngredient(JSONObject ingredientObj){
         var ingredient = new Ingredient();
-        ingredient.setName(ingredientObj.getString("strIngredient"));
+        ingredient.setName(ingredientObj.getString("strIngredient").toLowerCase());
         ingredient.setDescription(ingredientObj.optString("strDescription"));
         ingredient.setType(ingredientObj.optString("strType"));
         String strAlcohol = ingredientObj.getString("strAlcohol");

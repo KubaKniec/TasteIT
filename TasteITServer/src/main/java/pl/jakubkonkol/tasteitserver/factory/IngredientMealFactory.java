@@ -10,7 +10,7 @@ import pl.jakubkonkol.tasteitserver.model.Ingredient;
 public class IngredientMealFactory {
     public Ingredient createIngredient(JSONObject ingredientObj){
         Ingredient ingredient = new Ingredient();
-        ingredient.setName(ingredientObj.getString("strIngredient"));
+        ingredient.setName(ingredientObj.getString("strIngredient").toLowerCase());
         ingredient.setDescription(ingredientObj.optString("strDescription", "No description available"));
         ingredient.setType("Food");
         ingredient.setStrength("0");

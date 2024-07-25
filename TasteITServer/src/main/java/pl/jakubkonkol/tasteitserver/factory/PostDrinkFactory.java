@@ -45,7 +45,7 @@ public class PostDrinkFactory {
         List<IngredientWrapper> ingredients = new ArrayList<>();
         for (int k = 1; k <= 15; k++) {
             var ingWrapper = new IngredientWrapper();
-            String ingredientName = postObj.optString("strIngredient" + k, "");
+            String ingredientName = postObj.optString("strIngredient" + k, "").toLowerCase();
             String ingredientAmount = postObj.optString("strMeasure" + k, "").trim();
 
             if (ingredientName.isBlank() || ingredientAmount.isBlank()) break;

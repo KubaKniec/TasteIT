@@ -1,9 +1,10 @@
 package pl.jakubkonkol.tasteitserver.config;
 
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 @Configuration
 @EnableMongoAuditing
-public class MongoConfig {
+public class MongoConfig{
 }

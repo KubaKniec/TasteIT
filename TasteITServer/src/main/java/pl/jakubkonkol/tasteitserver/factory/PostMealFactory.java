@@ -2,6 +2,7 @@ package pl.jakubkonkol.tasteitserver.factory;
 
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.model.*;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
@@ -10,14 +11,14 @@ import pl.jakubkonkol.tasteitserver.service.IngredientService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
 public class PostMealFactory {
-    private final IngredientService ingredientService;
+    @Autowired
+    private IngredientService ingredientService;
     public Post createPost(JSONObject foodObj) {
         Post newPost = new Post();
 
@@ -47,25 +48,26 @@ public class PostMealFactory {
         // Too much voodoo
         List<IngredientWrapper> ingredients = new ArrayList<>();
         for (int i = 1; i <= 15; i++) {
-            IngredientWrapper ingWrapper = new IngredientWrapper();
-            String ingredientName = foodObj.optString("strIngredient" + i, "");
-            String measurement = foodObj.optString("strMeasure" + i, "").trim();
-            if (ingredientName.isBlank() || measurement.isBlank()) break;
+            var ingWrapper = new IngredientWrapper();
+            String ingredientName = foodObj.optString("strIngredient" + i, "").toLowerCase();
+            String ingredientAmount = foodObj.optString("strMeasure" + i, "").trim();
 
-            Optional<Ingredient> optionalIngredient = ingredientService.findByName(ingredientName);
-            if (optionalIngredient.isEmpty()) break;
-
-            Ingredient ingredient = optionalIngredient.get();
-            ingWrapper.setIngredient(ingredient);
-            Measurement newMeasurement = new Measurement();
-            newMeasurement.setValue(measurement);
-            newMeasurement.setUnit("unit");
-            ingWrapper.setMeasurement(newMeasurement);
+            if (ingredientName.isBlank() || ingredientAmount.isBlank()) break;
+            var measurement = new Measurement();
+            measurement.setValue(ingredientAmount);
+            measurement.setUnit("unit");
+            ingWrapper.setMeasurement(measurement);
+            if(this.ingredientService.findByName(ingredientName).isPresent()) {
+                System.out.println("Match found: " + ingredientName);
+                var ingredient = this.ingredientService.findByName(ingredientName).get();
+                ingWrapper.setIngredient(ingredient);
+            }else{
+                ingWrapper.setIngredient(new Ingredient());
+            }
             ingredients.add(ingWrapper);
         }
 
         newRecipe.setIngredientsMeasurements(ingredients);
-
         newPost.setRecipe(newRecipe);
         newPost.setPostType(PostType.FOOD);
 //        TODO: set proper user and tags, likes, comments etc

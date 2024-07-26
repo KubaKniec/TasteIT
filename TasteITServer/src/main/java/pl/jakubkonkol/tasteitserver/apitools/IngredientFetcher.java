@@ -10,6 +10,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
 import pl.jakubkonkol.tasteitserver.service.IngredientService;
+
+import java.awt.image.LookupOp;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class IngredientFetcher {
     public void populateDBWithIngredients(){
         var ingredients = fetchIngredients();
         ingredientService.saveAll(ingredients);
+        LOGGER.log(Level.INFO, "Alcohol ingredients saved");
     }
 
     private List<Ingredient> fetchIngredients(){

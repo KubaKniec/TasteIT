@@ -1,6 +1,7 @@
 package pl.jakubkonkol.tasteitserver.service;
 
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;

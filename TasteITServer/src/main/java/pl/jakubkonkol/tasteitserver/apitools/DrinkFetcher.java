@@ -13,6 +13,7 @@ import pl.jakubkonkol.tasteitserver.service.PostService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -32,6 +33,7 @@ public class DrinkFetcher {
     public void populateDBWithDrinks() throws IOException {
         var drinks = fetchDrinks();
         postService.saveAll(drinks);
+        LOGGER.log(Level.INFO, "Drinks saved");
     }
 
     private List<Post> fetchDrinks() throws IOException {

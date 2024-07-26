@@ -40,17 +40,18 @@ public class FoodFetcher {
     private final PostMealFactory postFactory;
     private final String foodFinderURL = "https://themealdb.com/api/json/v1/1/search.php?f=";
     private final String ingredientListURL = "https://www.themealdb.com/api/json/v1/1/list.php?i=list";
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+//    private final ExecutorService executor = Executors.newFixedThreadPool(3);
 
     /**
-     * Wipes ingredient and post collection and then populates it with food data
+     * Populates the database with food data
      */
     public void populateDBWithFood() {
         var ingredients = fetchIngredients();
-        var foodPosts = searchFoodForEveryLetter();
-
         ingredientService.saveAll(ingredients);
+        LOGGER.log(Level.INFO, "Ingredients saved");
+        var foodPosts = searchFoodForEveryLetter();
         postService.saveAll(foodPosts);
+        LOGGER.log(Level.INFO, "Food posts saved");
     }
 
     /**
@@ -58,19 +59,10 @@ public class FoodFetcher {
      * @return List of food data
      */
     public List<Post> searchFoodForEveryLetter() {
-        List<Future<List<Post>>> futures = new ArrayList<>();
+        List<Post> foodList = new ArrayList<>();
         for (char c = 'a'; c <= 'z'; c++) {
             var url = foodFinderURL + c;
-            futures.add(executor.submit(() -> fetchFood(url)));
-        }
-
-        List<Post> foodList = new ArrayList<>();
-        for (var future : futures) {
-            try {
-                foodList.addAll(future.get());
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error fetching food for a letter", e);
-            }
+            foodList.addAll(fetchFood(url));
         }
         return foodList;
     }

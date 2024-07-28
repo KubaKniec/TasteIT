@@ -1,10 +1,12 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
+import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.service.PostService;
 
 import java.util.List;
@@ -18,6 +20,9 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable String postId) {
         PostDto postDto = postService.getPost(postId);
+        if (postDto == null) {
+            throw new ResourceNotFoundException("Post not found with ID: " + postId);
+        }
         return ResponseEntity.ok(postDto);
     }
 

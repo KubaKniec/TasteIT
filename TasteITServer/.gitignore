@@ -31,3 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/java/pl/jakubkonkol/tasteitserver/config/FirebaseConfig.java

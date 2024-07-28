@@ -15,7 +15,11 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 public class MongoConfig{
     @Bean
     public MongoClient mongoClient(){
-        ConnectionString connectionString = new ConnectionString("mongodb://tasteitroot:tasteitserver10@localhost:27017/tasteit_db?authSource=admin");
+        var MONGO_USERNAME = System.getenv("MONGO_USERNAME");
+        var MONGO_PASSWORD = System.getenv("MONGO_PASSWORD");
+        var MONGO_DB_NAME = System.getenv("MONGO_DB_NAME");
+        var MONGO_URL = ("mongodb://"+MONGO_USERNAME+':'+MONGO_PASSWORD+"@localhost:27017/"+MONGO_DB_NAME+"?authSource=admin");
+        ConnectionString connectionString = new ConnectionString(MONGO_URL);
         ConnectionPoolSettings connectionPoolSettings = ConnectionPoolSettings.builder()
                 .maxSize(150)
                 .minSize(10)

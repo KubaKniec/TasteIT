@@ -1,14 +1,13 @@
 package pl.jakubkonkol.tasteitserver.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class ErrorResponse {
+public class GenericResponse {
     private int status;
     private String message;
-
 }

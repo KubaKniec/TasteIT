@@ -23,6 +23,13 @@ public class IngredientService {
         return ingredientRepository.findByName(name);
     }
 
+    public List<Ingredient> searchByName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null.");
+        }
+        return ingredientRepository.findIngredientByNameContainingIgnoreCase(name);
+    }
+
     public void save(Ingredient ingredient) {
         if (ingredient == null) {
             throw new IllegalArgumentException("Ingredient cannot be null.");

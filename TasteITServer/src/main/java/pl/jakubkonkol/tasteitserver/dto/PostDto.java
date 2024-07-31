@@ -1,0 +1,18 @@
+package pl.jakubkonkol.tasteitserver.dto;
+
+import lombok.Data;
+import pl.jakubkonkol.tasteitserver.model.PostMedia;
+import pl.jakubkonkol.tasteitserver.model.Recipe;
+import pl.jakubkonkol.tasteitserver.model.enums.PostType;
+
+import java.util.Date;
+
+@Data
+public class PostDto {
+    private String postId;
+    private String userId;
+    private PostType postType;
+    private PostMedia postMedia;
+    private Recipe recipe;
+    private Date createdDate;
+}

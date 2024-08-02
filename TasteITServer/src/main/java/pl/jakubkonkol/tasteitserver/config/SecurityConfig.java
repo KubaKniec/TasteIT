@@ -19,7 +19,9 @@ public class SecurityConfig{
     private static final String[] WHITE_LIST_URL =
             {
                     "/api/v1/auth/register",
-                    "/api/v1/auth/login"
+                    "/api/v1/auth/login",
+                    "/swagger-ui/index.html",
+                    "/swagger-up.html"
             };
 
 
@@ -29,7 +31,9 @@ public class SecurityConfig{
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST_URL).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest()
+//                        .permitAll()
+                        .authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);

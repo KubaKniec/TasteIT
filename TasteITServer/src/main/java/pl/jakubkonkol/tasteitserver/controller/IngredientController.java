@@ -18,8 +18,32 @@ import java.util.Optional;
 public class IngredientController {
     private final IngredientService ingredientService;
 
+    @PostMapping("/save")
+    public ResponseEntity<String> save(@RequestBody Ingredient ingredient) {
+        ingredientService.save(ingredient);
+        return ResponseEntity.ok("Ingredient saved successfully, Id " + ingredient.getIngredientId());
+    }
+
+    @PostMapping("/saveAll")
+    public ResponseEntity<String> saveAll(@RequestBody List<Ingredient> ingredients) {
+        ingredientService.saveAll(ingredients);
+        return ResponseEntity.ok("Ingredients saved successfully");
+    }
+
+    @DeleteMapping("/deleteById")
+    public ResponseEntity<String> deleteById(@PathVariable String ingredientId) {
+        ingredientService.deleteById(ingredientId);
+        return ResponseEntity.ok("Ingredient deleted succesfully, Id: " + ingredientId);
+    }
+
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<String> deleteAll() {
+        ingredientService.deleteAll();
+        return ResponseEntity.ok("Ingredients deleted succesfully");
+    }
+
     @GetMapping("/search")
-    public ResponseEntity<List<IngredientDto>> ingedientList(@RequestParam String name) {
+    public ResponseEntity<List<IngredientDto>> searchIngredientByName(@RequestParam String name) {
         return ResponseEntity.ok(ingredientService.searchByName(name));
     }
 
@@ -34,9 +58,14 @@ public class IngredientController {
     }
 
     @GetMapping("/getAll")
-    public  ResponseEntity<List<IngredientDto>> getAll() {
+    public ResponseEntity<List<IngredientDto>> getAll() {
         return ResponseEntity.ok(ingredientService.getAll());
 
+    }
+
+    @GetMapping("/findByName")
+    public ResponseEntity<Ingredient> findByName(String name) {
+        return ResponseEntity.ok(ingredientService.findByName(name).get());
     }
 }
 

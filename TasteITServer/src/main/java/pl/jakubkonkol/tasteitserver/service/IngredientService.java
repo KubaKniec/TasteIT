@@ -58,6 +58,10 @@ public class IngredientService {
     public void deleteAll() {
         ingredientRepository.deleteAll();
     }
+
+    public void deleteById(String ingredientId) {
+        ingredientRepository.deleteById(ingredientId);
+    }
     public List<IngredientDto> getAll() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
         List<IngredientDto> ingredientDtos = ingredients.stream().map(this::convertToDto).toList();

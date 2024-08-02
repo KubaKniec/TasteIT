@@ -3,6 +3,7 @@ package pl.jakubkonkol.tasteitserver.service;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import pl.jakubkonkol.tasteitserver.dto.IngredientDto;
+import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,10 @@ public class IngredientService {
         if (ingredientId == null) {
             throw new IllegalArgumentException("Id cannot be null.");
         }
-        var optionalIngredient = ingredientRepository.findById(ingredientId);
-        Ingredient ingredient = optionalIngredient.get();
+        var ingredient = ingredientRepository.findById(ingredientId).orElse(null);
+        if(ingredient == null){
+            throw new ResourceNotFoundException("Ingredient not found with Id: " + ingredientId);
+        }
         return convertToDto(ingredient);
     }
 
@@ -64,8 +67,7 @@ public class IngredientService {
     }
     public List<IngredientDto> getAll() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
-        List<IngredientDto> ingredientDtos = ingredients.stream().map(this::convertToDto).toList();
-        return ingredientDtos;
+        return ingredients.stream().map(this::convertToDto).toList();
     }
 
     public List<IngredientDto> searchByName(String name) {

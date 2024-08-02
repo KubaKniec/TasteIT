@@ -47,7 +47,6 @@ public class IngredientController {
         return ResponseEntity.ok(ingredientService.searchByName(name));
     }
 
-    //TODO: Nie działa, pomimo wpisania dobrego id wyskakuje 500 no value present
     @GetMapping("/{ingredientId}")
     public ResponseEntity<IngredientDto> getIngredient(@PathVariable String ingredientId) {
         IngredientDto ingredientDto = ingredientService.getIngredient(ingredientId);

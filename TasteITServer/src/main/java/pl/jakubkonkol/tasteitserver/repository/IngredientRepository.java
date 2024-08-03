@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface IngredientRepository extends MongoRepository<Ingredient, String> {
     Optional<Ingredient> findByName(String name);
 
+    List<Ingredient> findIngredientByNameContainingIgnoreCase(String name);
+
 }

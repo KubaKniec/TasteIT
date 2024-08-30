@@ -2,7 +2,7 @@
   <div class="profile-tab" matRipple (click)="goto('login')">
     <img src="../../../assets/user_placeholder.png" width="50px" height="50px" class="profile-picture">
     <div class="texts" *ngIf="isAuthenticated && user">
-      <p class="profile-text"> {{user.username}}</p>
+      <p class="profile-text"> {{user.displayName}}</p>
       <p class="profile-subtitle"> {{user.email}}</p>
     </div>
     <div class="texts" *ngIf="!isAuthenticated">

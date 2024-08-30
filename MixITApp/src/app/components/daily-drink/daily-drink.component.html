@@ -2,12 +2,12 @@
 <div class="whole-content" *ngIf="dailyDrink">
   <div class="container">
     <div class="image-container">
-      <img src="{{dailyDrink.image}}" alt="Drink Image" >
+      <img src="{{dailyDrink.postMedia?.pictures?.[0]}}" alt="Post Image" >
     </div>
   </div>
   <div class="drink-info">
     <p class="title"> Daily Cocktail</p>
-    <p class="drink-name"> {{dailyDrink.name}}</p>
+    <p class="drink-name"> {{dailyDrink.postMedia?.title}}</p>
   </div>
 </div>
 

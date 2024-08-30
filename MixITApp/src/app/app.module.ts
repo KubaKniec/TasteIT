@@ -11,11 +11,9 @@ import {MatIconModule} from "@angular/material/icon";
 import {HotToastService, provideHotToastConfig} from "@ngneat/hot-toast";
 import { HomeComponent } from './pages/home/home.component';
 import { DrinkBuilderComponent } from './pages/drink-builder/drink-builder.component';
-import { YourBarComponent } from './pages/your-bar/your-bar.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { SearchComponent } from './pages/search/search.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
-import {PublicDrinkService} from "./service/public.drink.service";
 import { DrinkViewComponent } from './pages/drink-view/drink-view.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatRippleModule} from "@angular/material/core";
@@ -27,7 +25,6 @@ import { DailyDrinkComponent } from './components/daily-drink/daily-drink.compon
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { DrinksGridComponent } from './components/drinks-grid/drinks-grid.component';
 import {MatBadgeModule} from "@angular/material/badge";
-import {PublicIngredientsService} from "./service/public.ingredients.service";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatInputModule} from "@angular/material/input";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
@@ -45,15 +42,12 @@ import {AuthService} from "./service/auth.service";
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import {CookieService} from "ngx-cookie-service";
-import {UserService} from "./service/user.service";
-import { FavouritesComponent } from './pages/favourites/favourites.component';
-import { AddToBarModalComponent } from './components/add-to-bar-modal/add-to-bar-modal.component';
-import {AddToBarModalFactoryService} from "./service/factories/add-to-bar-modal-factory.service";
 import { BarViewComponent } from './components/bar-view/bar-view.component';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { FeedItemComponent } from './components/feed-item/feed-item.component';
 import {NgxPullToRefreshModule} from "ngx-pull-to-refresh";
 import {NavigationService} from "./service/navigation.service";
+import {PostService} from "./service/post.service";
 
 @NgModule({
   declarations: [
@@ -61,7 +55,6 @@ import {NavigationService} from "./service/navigation.service";
     NavComponent,
     HomeComponent,
     DrinkBuilderComponent,
-    YourBarComponent,
     ProfileComponent,
     SearchComponent,
     DrinkViewComponent,
@@ -74,8 +67,6 @@ import {NavigationService} from "./service/navigation.service";
     IngredientViewComponent,
     LoginComponent,
     RegisterComponent,
-    FavouritesComponent,
-    AddToBarModalComponent,
     BarViewComponent,
     WelcomeComponent,
     FeedItemComponent,
@@ -110,18 +101,15 @@ import {NavigationService} from "./service/navigation.service";
     NgxPullToRefreshModule
   ],
   providers: [
-    PublicDrinkService,
     HotToastService,
     InstructionsFactoryService,
     BodyScrollService,
-    PublicIngredientsService,
     IngredientViewFactoryService,
     AuthService,
     provideHotToastConfig(),
     CookieService,
-    UserService,
-    AddToBarModalFactoryService,
-    NavigationService
+    NavigationService,
+    PostService
   ],
   bootstrap: [AppComponent]
 })

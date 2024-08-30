@@ -19,7 +19,7 @@ public class DBuilder {
     private final IngredientService ingredientService;
     private final PostService postService;
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
-    @PostConstruct
+//    @PostConstruct
     public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
         postService.deleteAll();

@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {Drink} from "../../model/Drink";
+import {Post} from "../../model/Post";
 import {BodyScrollService} from "../../service/body-scroll.service";
 @Component({
   selector: 'app-instructions-view',
@@ -21,7 +21,7 @@ import {BodyScrollService} from "../../service/body-scroll.service";
   ]
 })
 export class InstructionsViewComponent implements OnInit, OnDestroy{
-  @Input() drink!: Drink;
+  @Input() drink!: Post;
   @Output() close = new EventEmitter<void>();
   currentStep: number = 0;
   state = 'enter'
@@ -31,13 +31,13 @@ export class InstructionsViewComponent implements OnInit, OnDestroy{
     private bodyScrollService: BodyScrollService
   ) { }
   getTotalSteps(){
-    return this.drink.instructions!.length;
+    return this.drink.recipe?.steps.size || 0;
   }
   isIngredientStep(){
     return this.currentStep === 0;
   }
   getCurrentInstruction(){
-    return this.drink.instructions![this.currentStep - 1]
+    return this.drink.recipe?.steps.get(this.currentStep);
   }
   nextStep(){
     if(this.currentStep < this.getTotalSteps()){

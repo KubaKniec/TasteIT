@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Haptics, ImpactStyle} from "@capacitor/haptics";
+import {Post} from "../../model/Post";
 
 @Component({
   selector: 'app-feed-item',
@@ -7,11 +8,11 @@ import {Haptics, ImpactStyle} from "@capacitor/haptics";
   styleUrls: ['./feed-item.component.css']
 })
 export class FeedItemComponent {
-  @Input() feedItem: any = {};
+  @Input() feedItem: Post = {};
   @Output() gotoDrink: EventEmitter<any> = new EventEmitter<any>();
 
   emitGotoDrink(): void {
-    this.gotoDrink.emit(this.feedItem.idDrink);
+    this.gotoDrink.emit(this.feedItem.postId);
   }
 
   async emitLike(event: Event) {

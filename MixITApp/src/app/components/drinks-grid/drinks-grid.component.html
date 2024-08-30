@@ -2,12 +2,12 @@
   <p> There was an error (somewhere)</p>
 </div>
 <div class="grid-view" *ngIf="iterableDrinks">
-  <div class="single-drink" *ngFor="let drink of iterableDrinks" matRipple (click)="goto(drink.idDrink)">
+  <div class="single-drink" *ngFor="let drink of iterableDrinks" matRipple (click)="goto(drink.postId || '')">
     <div class="image-container">
-      <img src="{{drink.image}}" alt="{{drink.name}}">
+      <img src="{{drink.postMedia?.pictures?.[0]}}" alt="{{drink.postMedia?.title}}">
     </div>
     <div class="controls">
-      <p class="name-text"> {{drink.name}} </p>
+      <p class="name-text"> {{drink.postMedia?.title}} </p>
     </div>
   </div>
 </div>

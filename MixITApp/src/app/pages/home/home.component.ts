@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {Drink} from "../../model/Drink";
-import {PublicDrinkService} from "../../service/public.drink.service";
+import {Post} from "../../model/Post";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
+import {PostService} from "../../service/post.service";
 
 @Component({
   selector: 'app-home',
@@ -10,14 +10,16 @@ import {Subject} from "rxjs";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit{
-  allDrinks: Drink[] = [];
-  dailyDrink!: Drink;
-  popularDrinks: Drink[] = [];
-  nonAlkDrinks: Drink[] = [];
+  allDrinks: Post[] = [];
+  dailyDrink!: Post;
+  popularDrinks: Post[] = [];
+  nonAlkDrinks: Post[] = [];
   selectedChip: string = 'popular'
   greeting: string = ''
   targetElement!: Element;
-  constructor(private publicDrinkService: PublicDrinkService, private router: Router) {
+  posts: Post[] = [];
+  constructor(private router: Router,
+              private postService: PostService) {
   }
   selectChip(chip: string): void {
     this.selectedChip = chip;
@@ -29,14 +31,13 @@ export class HomeComponent implements OnInit{
 
     this.targetElement = document.querySelector('html') as Element;
     this.greeting = this.getGreetingDependingOnTime();
-    this.publicDrinkService.getAllDrinks().then((drinks) => {
-      this.allDrinks = drinks;
+    this.postService.getFeed().then((posts) => {
+      this.posts = posts;
     }).catch((error) => {
-      console.log(error);
+      return
+    }).finally(() => {
+
     })
-    this.dailyDrink = await this.publicDrinkService.getDailyDrink();
-    this.popularDrinks = await this.publicDrinkService.getPopularDrinks();
-    this.nonAlkDrinks = await this.publicDrinkService.getFilteredDrinks( '',false, '');
   }
   refreshEvent(event: Subject<any>, message: string): void {
     setTimeout(() => {
@@ -44,7 +45,7 @@ export class HomeComponent implements OnInit{
       event.next(event);
     }, 500);
   }
-  gotoDrink(id: number){
+  gotoDrink(id: string){
     this.router.navigate([`/drink/${id}`]).then();
   }
   getGreetingDependingOnTime(): string {
@@ -58,7 +59,7 @@ export class HomeComponent implements OnInit{
     }
   }
 
-    getIterableDrinkBasedOnSelectedChip(): Drink[] {
+    getIterableDrinkBasedOnSelectedChip(): Post[] {
     if(this.selectedChip == 'noalc'){
       return this.nonAlkDrinks;
     }

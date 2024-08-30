@@ -12,7 +12,7 @@
   </div>
 
   <app-feed-item
-    *ngFor="let drink of getIterableDrinkBasedOnSelectedChip()"
+    *ngFor="let drink of posts"
     [feedItem]="drink"
     (gotoDrink)="gotoDrink($event)"
   />

@@ -1,7 +1,7 @@
-import {Drink} from "./Drink";
+import {Post} from "./Post";
 
 export interface Bar {
   idBar: number;
   name: string;
-  drinks: Drink[];
+  drinks: Post[];
 }

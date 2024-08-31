@@ -1,14 +1,23 @@
 import {Injectable} from "@angular/core";
 import authAPI from "../api/authAPI";
-import {CookieService} from "ngx-cookie-service";
+import {BehaviorSubject, Observable} from "rxjs";
+import taste_api from "../api/taste_api";
+
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private cookieService: CookieService) {
+  private sessionTokenSubject: BehaviorSubject<string | null>;
+  public sessionToken: Observable<string | null>;
+  constructor() {
+    this.sessionTokenSubject = new BehaviorSubject<string | null>(localStorage.getItem('sessionToken'));
+    this.sessionToken = this.sessionTokenSubject.asObservable();
+  }
 
+  public get sessionTokenValue(): string | null{
+    return this.sessionTokenSubject.value;
   }
   async register(email: string, username: string, password: string) {
     console.log(email, username, password);
@@ -17,26 +26,37 @@ export class AuthService {
       username,
       password
     }).then(res => {
-      return res.status;
+      return Promise.resolve(res.status);
     }).catch(err => {
-      return err.response.status;
+      return Promise.reject(err.response.status);
     })
   }
   async loginWithEmailAndPassword(email: string, password: string) {
-    const response = await authAPI.post('/login', {
+    return await authAPI.post('/login', {
       email,
       password
+    }).then(res => {
+      localStorage.setItem('sessionToken', res.data.sessionToken);
+      this.sessionTokenSubject.next(res.data.sessionToken);
+      return Promise.resolve(res.status);
+    }).catch(err => {
+      return Promise.reject(err.response.status);
     })
-    if(response.status === 200){
-      return response.data;
-    }
-    throw new Error("Error logging in");
+
+  }
+  clearSession(){
+    localStorage.removeItem('sessionToken');
+    this.sessionTokenSubject.next(null);
   }
   async logout(){
-    await authAPI.post('/logout').then(res => {
-      return res.status;
+    return await taste_api.get('/auth/logout').then(res => {
+      this.clearSession();
+
     }).catch(err => {
-      return err.response.status;
+      return Promise.reject(err.response.status);
     })
+  }
+  isAuthenticated(): boolean {
+    return this.sessionTokenSubject.value !== null;
   }
 }

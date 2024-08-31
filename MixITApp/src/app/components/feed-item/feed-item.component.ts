@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Haptics, ImpactStyle} from "@capacitor/haptics";
+import {Post} from "../../model/Post";
 
 @Component({
   selector: 'app-feed-item',
@@ -7,11 +8,11 @@ import {Haptics, ImpactStyle} from "@capacitor/haptics";
   styleUrls: ['./feed-item.component.css']
 })
 export class FeedItemComponent {
-  @Input() feedItem: any = {};
+  @Input() feedItem: Post = {};
   @Output() gotoDrink: EventEmitter<any> = new EventEmitter<any>();
 
   emitGotoDrink(): void {
-    this.gotoDrink.emit(this.feedItem.idDrink);
+    this.gotoDrink.emit(this.feedItem.postId);
   }
 
   async emitLike(event: Event) {
@@ -25,4 +26,20 @@ export class FeedItemComponent {
     console.log('Comment clicked');
 
   }
+  getDate(): string{
+    let date = new Date(this.feedItem.createdDate!);
+    let now = new Date();
+    let diffInMilliseconds = now.getTime() - date.getTime();
+    let diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+    let diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+    if (diffInHours < 24) {
+      return `${diffInHours} hours ago`;
+    } else if (diffInDays >= 1 && diffInDays <= 7) {
+      return `${diffInDays} days ago`;
+    } else {
+      return date.toLocaleDateString('en-GB');
+    }
+  }
+
 }

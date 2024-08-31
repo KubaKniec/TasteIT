@@ -4,7 +4,7 @@
       <img src="assets/user_placeholder.png">
       <p> username</p>
     </div>
-    <img src="{{feedItem.image}}">
+    <img src="{{feedItem.postMedia?.pictures?.[0]}}">
     <div class="actions">
       <div class="like" (click)="emitLike($event)">
         <mat-icon>favorite_border</mat-icon>
@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <p class="item-name"> {{feedItem.name}} </p>
-  <p class="item-desc"> Very nice womp womp </p>
-  <p class="item-date"> 7 hours ago </p>
+  <p class="item-name"> {{feedItem.postMedia?.title}} </p>
+  <p class="item-desc"> {{feedItem.postMedia?.description}}</p>
+  <p class="item-date"> {{getDate()}} </p>
 </div>

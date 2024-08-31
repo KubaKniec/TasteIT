@@ -3,7 +3,6 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../service/auth.service";
 import {HotToastService} from "@ngneat/hot-toast";
 import {Router} from "@angular/router";
-import {UserService} from "../../service/user.service";
 
 @Component({
   selector: 'app-login',
@@ -11,14 +10,10 @@ import {UserService} from "../../service/user.service";
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit{
-  constructor(private authService: AuthService, private hotToast: HotToastService, private router: Router, private userService: UserService) {
+  constructor(private authService: AuthService, private hotToast: HotToastService, private router: Router) {
   }
   ngOnInit(): void {
-    this.userService.getUser().then(user => {
-      this.router.navigate(['/profile']);
-    }).catch(err => {
 
-    })
   }
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -26,19 +21,28 @@ export class LoginComponent implements OnInit{
   })
 
   login() {
-    // if(this.loginForm.invalid) {
-    //   this.hotToast.error('Incorrect login or password!');
-    //   return;
-    // }
-    // const email = this.loginForm.get('email')!.value;
-    // const password = this.loginForm.get('password')!.value;
-    // this.authService.loginWithEmailAndPassword(email!, password!).then(()=>{
-    //   this.hotToast.success('Login successfully!');
-    //   this.router.navigate(['/profile']);
-    // }).catch(err => {
-    //   this.hotToast.error('Incorrect login or password!');
-    // });
+    if (this.loginForm.invalid) {
+      if (this.loginForm.get('email')?.hasError('required')) {
+        this.hotToast.error('Email is required!');
+      } else if (this.loginForm.get('email')?.hasError('email')) {
+        this.hotToast.error('Invalid email format!');
+      }
+      if (this.loginForm.get('password')?.hasError('required')) {
+        this.hotToast.error('Password is required!');
+      }
+      return;
+    }
 
-    this.router.navigate(['/home'])
-  }
+    const email = this.loginForm.get('email')!.value;
+    const password = this.loginForm.get('password')!.value;
+    this.authService.loginWithEmailAndPassword(email!, password!)
+      .then(() => {
+        this.hotToast.success('Login successfully!');
+        this.router.navigate(['/home']);
+      })
+      .catch((error) => {
+        console.error('Login failed:', error); // Log the error for debugging
+        this.hotToast.error('Login failed! Please check your credentials.');
+      });
+    }
 }

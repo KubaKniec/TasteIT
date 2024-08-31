@@ -3,7 +3,6 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../service/auth.service";
 import {HotToastService} from "@ngneat/hot-toast";
 import {Router} from "@angular/router";
-import {UserService} from "../../service/user.service";
 
 @Component({
   selector: 'app-register',
@@ -14,15 +13,10 @@ export class RegisterComponent implements OnInit{
   constructor(
     private authServive: AuthService,
     private toastService: HotToastService,
-    private router: Router,
-    private userService: UserService) {}
+    private router: Router) {}
 
   ngOnInit(): void {
-    this.userService.getUser().then(user => {
-      this.router.navigate(['/profile']);
-    }).catch(err => {
 
-    })
     }
 
   registerForm = new FormGroup({

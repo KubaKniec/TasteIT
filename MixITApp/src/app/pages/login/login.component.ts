@@ -21,12 +21,28 @@ export class LoginComponent implements OnInit{
   })
 
   login() {
+    if (this.loginForm.invalid) {
+      if (this.loginForm.get('email')?.hasError('required')) {
+        this.hotToast.error('Email is required!');
+      } else if (this.loginForm.get('email')?.hasError('email')) {
+        this.hotToast.error('Invalid email format!');
+      }
+      if (this.loginForm.get('password')?.hasError('required')) {
+        this.hotToast.error('Password is required!');
+      }
+      return;
+    }
+
     const email = this.loginForm.get('email')!.value;
     const password = this.loginForm.get('password')!.value;
-    this.authService.loginWithEmailAndPassword(email!, password!).then(() => {
-      this.hotToast.success('Login successfully!');
-      // this.router.navigate(['/profile']);
-    })
-    this.router.navigate(['/home'])
-  }
+    this.authService.loginWithEmailAndPassword(email!, password!)
+      .then(() => {
+        this.hotToast.success('Login successfully!');
+        this.router.navigate(['/home']);
+      })
+      .catch((error) => {
+        console.error('Login failed:', error); // Log the error for debugging
+        this.hotToast.error('Login failed! Please check your credentials.');
+      });
+    }
 }

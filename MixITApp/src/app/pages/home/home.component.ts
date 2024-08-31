@@ -18,26 +18,17 @@ export class HomeComponent implements OnInit{
   greeting: string = ''
   targetElement!: Element;
   posts: Post[] = [];
+  page: number = 0;
+  size: number = 20;
+  loading: boolean = false;
   constructor(private router: Router,
               private postService: PostService) {
-  }
-  selectChip(chip: string): void {
-    this.selectedChip = chip;
-    if(this.selectedChip == undefined){
-      this.selectedChip = 'popular';
-    }
   }
   async ngOnInit(): Promise<void> {
 
     this.targetElement = document.querySelector('html') as Element;
     this.greeting = this.getGreetingDependingOnTime();
-    this.postService.getFeed().then((posts) => {
-      this.posts = posts;
-    }).catch((error) => {
-      return
-    }).finally(() => {
-
-    })
+    await this.loadPost();
   }
   refreshEvent(event: Subject<any>, message: string): void {
     setTimeout(() => {
@@ -58,17 +49,18 @@ export class HomeComponent implements OnInit{
       return "Good Evening!";
     }
   }
+  async loadPost(){
+    if (this.loading) return
+    this.loading = true;
+    try{
+      const newPosts = await this.postService.getFeed(this.page, this.size);
+      this.posts = [...this.posts, ...newPosts];
+      this.page++;
+    }catch (e){
+      console.error(e)
+    }finally {
+      this.loading = false;
+    }
+  }
 
-    getIterableDrinkBasedOnSelectedChip(): Post[] {
-    if(this.selectedChip == 'noalc'){
-      return this.nonAlkDrinks;
-    }
-    if(this.selectedChip == 'popular'){
-      return this.popularDrinks;
-    }
-    if(this.selectedChip =='All'){
-      return this.allDrinks;
-    }
-    return this.allDrinks;
-   }
 }

@@ -10,11 +10,18 @@
   <div class="separator">
     <p> {{greeting}} </p>
   </div>
-
+<div
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="50"
+  (scrolled)="loadPost()"
+>
   <app-feed-item
-    *ngFor="let drink of posts"
-    [feedItem]="drink"
+    *ngFor="let post of posts"
+    [feedItem]="post"
     (gotoDrink)="gotoDrink($event)"
   />
 </div>
+</div>
+
 </ngx-pull-to-refresh>

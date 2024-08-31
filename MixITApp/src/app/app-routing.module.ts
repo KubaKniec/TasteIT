@@ -9,18 +9,20 @@ import {CategoryViewComponent} from "./pages/category-view/category-view.compone
 import {LoginComponent} from "./pages/login/login.component";
 import {RegisterComponent} from "./pages/register/register.component";
 import {WelcomeComponent} from "./pages/welcome/welcome.component";
+import {AuthGuard} from "./guards/AuthGuard";
+import {LoginGuard} from "./guards/LoginGuard";
 
 const routes: Routes = [
   {path: '', redirectTo:'/welcome', pathMatch: 'full'},
-  {path: 'welcome', component: WelcomeComponent, data: {showNav: false}},
-  {path: 'home', component: HomeComponent},
-  {path: 'drinkBuilder', component: DrinkBuilderComponent},
-  {path: 'profile', component: ProfileComponent},
-  {path: 'search', component: SearchComponent},
-  {path: "drink/:id", component: DrinkViewComponent, data: {showNav: false}},
-  {path: "category/:category", component: CategoryViewComponent},
-  {path: 'login', component: LoginComponent, data: {showNav: false}},
-  {path: 'register', component: RegisterComponent, data: {showNav: false}},
+  {path: 'welcome', component: WelcomeComponent, data: {showNav: false}, canActivate: [LoginGuard]},
+  {path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
+  {path: 'drinkBuilder', component: DrinkBuilderComponent, canActivate: [AuthGuard]},
+  {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
+  {path: 'search', component: SearchComponent, canActivate: [AuthGuard]},
+  {path: "drink/:id", component: DrinkViewComponent, data: {showNav: false}, canActivate: [AuthGuard]},
+  {path: "category/:category", component: CategoryViewComponent, canActivate: [AuthGuard]},
+  {path: 'login', component: LoginComponent, data: {showNav: false}, canActivate: [LoginGuard]},
+  {path: 'register', component: RegisterComponent, data: {showNav: false}, canActivate: [LoginGuard]},
 ];
 
 @NgModule({

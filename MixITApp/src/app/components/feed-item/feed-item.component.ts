@@ -26,4 +26,20 @@ export class FeedItemComponent {
     console.log('Comment clicked');
 
   }
+  getDate(): string{
+    let date = new Date(this.feedItem.createdDate!);
+    let now = new Date();
+    let diffInMilliseconds = now.getTime() - date.getTime();
+    let diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+    let diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+    if (diffInHours < 24) {
+      return `${diffInHours} hours ago`;
+    } else if (diffInDays >= 1 && diffInDays <= 7) {
+      return `${diffInDays} days ago`;
+    } else {
+      return date.toLocaleDateString('en-GB');
+    }
+  }
+
 }

@@ -26,10 +26,7 @@ export class ProfileComponent implements OnInit{
     this.authService.logout()
       .then(res => {
         this.toast.success("Logged out");
-        this.router.navigate(['/profile']).then();
-        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-          this.router.navigate(['/profile']);
-        });
+        this.router.navigate(['/login']).then();
       })
   }
   goto(url: string) {

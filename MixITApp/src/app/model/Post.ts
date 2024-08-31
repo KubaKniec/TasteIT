@@ -9,7 +9,7 @@ export interface Post {
   postMedia?: PostMedia;
   recipe?: Recipe;
   tags?: Tag[];
-  date?: Date;
+  createdDate?: Date;
   likes?: Like[];
   comments?: Comment[];
 

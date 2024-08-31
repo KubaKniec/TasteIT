@@ -48,6 +48,7 @@ import { FeedItemComponent } from './components/feed-item/feed-item.component';
 import {NgxPullToRefreshModule} from "ngx-pull-to-refresh";
 import {NavigationService} from "./service/navigation.service";
 import {PostService} from "./service/post.service";
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
 
 @NgModule({
   declarations: [
@@ -98,7 +99,8 @@ import {PostService} from "./service/post.service";
     MatTabsModule,
     MatListModule,
     ReactiveFormsModule,
-    NgxPullToRefreshModule
+    NgxPullToRefreshModule,
+    InfiniteScrollModule
   ],
   providers: [
     HotToastService,
@@ -109,7 +111,7 @@ import {PostService} from "./service/post.service";
     provideHotToastConfig(),
     CookieService,
     NavigationService,
-    PostService
+    PostService,
   ],
   bootstrap: [AppComponent]
 })

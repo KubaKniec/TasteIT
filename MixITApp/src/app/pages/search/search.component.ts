@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {PublicDrinkService} from "../../service/public.drink.service";
 import {HotToastService} from "@ngneat/hot-toast";
-import {Drink} from "../../model/Drink";
+import {Post} from "../../model/Post";
 import {Router} from "@angular/router";
 
 @Component({
@@ -10,43 +9,43 @@ import {Router} from "@angular/router";
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit{
-  foundDrinks: Drink[] = []
+  foundDrinks: Post[] = []
   query: string = ''
   isLoading: boolean = false;
   drinkCategories: string[] = [];
   glassTypes: string[] = [];
   visibleCategories: number = 6;
-  constructor(private publicDrinkService: PublicDrinkService,
+  constructor(
               private toast: HotToastService,
               private router: Router
               ) {}
   ngOnInit(): void {
-    this.publicDrinkService.getAllCategories().then((drinkCategories) => {
-      this.drinkCategories = drinkCategories;
-    }).catch((error) => {
-      this.toast.error(error.message);
-    })
-    this.publicDrinkService.getAllGlassTypes().then((glassTypes) => {
-      this.glassTypes = glassTypes;
-    }).catch((error) => {
-      this.toast.error(error.message);
-    })
+    // this.publicDrinkService.getAllCategories().then((drinkCategories) => {
+    //   this.drinkCategories = drinkCategories;
+    // }).catch((error) => {
+    //   this.toast.error(error.message);
+    // })
+    // this.publicDrinkService.getAllGlassTypes().then((glassTypes) => {
+    //   this.glassTypes = glassTypes;
+    // }).catch((error) => {
+    //   this.toast.error(error.message);
+    // })
   }
   searchDrink(query: string){
-    this.isLoading = true;
-    if(query === ''){
-      this.isLoading = false;
-      this.foundDrinks = [];
-      return;
-    }
-    this.publicDrinkService.searchForDrinks(query).then((drinks) => {
-      this.foundDrinks = drinks;
-    }).catch((error) => {
-      this.toast.error(error.message);
-    }).finally(() => {
-      this.isLoading = false
-      }
-    )
+    // this.isLoading = true;
+    // if(query === ''){
+    //   this.isLoading = false;
+    //   this.foundDrinks = [];
+    //   return;
+    // }
+    // this.publicDrinkService.searchForDrinks(query).then((drinks) => {
+    //   this.foundDrinks = drinks;
+    // }).catch((error) => {
+    //   this.toast.error(error.message);
+    // }).finally(() => {
+    //   this.isLoading = false
+    //   }
+    // )
   }
   handleCategoryClick(category: string) {
     this.router.navigate(['/category', category]).then();

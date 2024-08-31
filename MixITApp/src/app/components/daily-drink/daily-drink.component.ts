@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Drink} from "../../model/Drink";
+import {Post} from "../../model/Post";
 
 @Component({
   selector: 'app-daily-drink',
@@ -7,6 +7,6 @@ import {Drink} from "../../model/Drink";
   styleUrls: ['./daily-drink.component.css']
 })
 export class DailyDrinkComponent {
-  @Input() dailyDrink!: Drink;
+  @Input() dailyDrink!: Post;
 
 }

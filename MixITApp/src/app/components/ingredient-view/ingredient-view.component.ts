@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IngredientObj} from "../../model/IngredientObj";
 import {animate, state, style, transition, trigger} from "@angular/animations";
+import {Ingredient} from "../../model/Ingredient";
 
 @Component({
   selector: 'app-ingredient-view',
@@ -23,7 +24,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 })
 export class IngredientViewComponent implements OnInit{
   @Output() close = new EventEmitter<void>();
-  @Input() ingredient!: IngredientObj
+  @Input() ingredient!: Ingredient
   state = 'enter'
 
   onClose() {

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
+import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.service.PostService;
 
 import java.util.List;
@@ -37,5 +38,11 @@ public class PostController {
     public ResponseEntity<List<PostDto>> searchPostsByTitle(@RequestParam String query) {
         List<PostDto> postDtos = postService.searchPostsByTitle(query);
         return ResponseEntity.ok(postDtos);
+    }
+
+    @GetMapping("/{postId}/recipe")
+    public ResponseEntity<Recipe> getPostRecipe(@PathVariable String postId) {
+        Recipe recipe = postService.getPostRecipe(postId);
+        return ResponseEntity.ok(recipe);
     }
 }

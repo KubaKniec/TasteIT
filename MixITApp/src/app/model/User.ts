@@ -1,17 +1,23 @@
-import {Role} from "./Role";
-import {Bar} from "./Bar";
-import {Ingredient} from "./Ingredient";
-import {Drink} from "./Drink";
+import {Like} from "./Like";
+import {FoodList} from "./FoodList";
+import {Badge} from "./Badge";
+import {Tag} from "./Tag";
+import {Authentication} from "./Authentication";
 
 export interface User {
-  idUser?: number;
-  username?: string;
+  user_id?: number;
+  displayName?: string;
   email?: string;
-  password?: string;
-  role?: Role;
-  bars?: Bar[];
-  ingredients?: Ingredient[];
-  favouriteDrinks?: Drink[];
-  token?: string;
-
+  bio?: string;
+  profilePicture?: string;
+  createdAt?: Date;
+  birthDate?: Date;
+  likes?: Like[];
+  foodLists?: FoodList[];
+  following?: String[];
+  followers?: String[];
+  badges?: Badge[];
+  preferences?: Tag[];
+  authentication?: Authentication;
 }
+

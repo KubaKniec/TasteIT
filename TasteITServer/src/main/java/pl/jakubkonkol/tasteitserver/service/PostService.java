@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.Post;
+import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,12 +48,7 @@ public class PostService {
     }
 
     public PostDto getPost(String postId) {
-        var optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty()) {
-            throw new NoSuchElementException("Post with id " + postId + " not found");
-        }
-        Post post = optionalPost.get();
-
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
         return convertToDto(post);
     }
 
@@ -95,6 +91,11 @@ public class PostService {
         return posts.stream()
                 .map(this::convertToDto)
                 .toList();
+    }
+
+    public Recipe getPostRecipe(String postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+        return post.getRecipe();
     }
 
     private PostDto convertToDto(Post post) {

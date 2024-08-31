@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Drink} from "../../model/Drink";
+import {Post} from "../../model/Post";
 import {Router} from "@angular/router";
 
 @Component({
@@ -8,11 +8,11 @@ import {Router} from "@angular/router";
   styleUrls: ['./drinks-grid.component.css']
 })
 export class DrinksGridComponent {
-  @Input() iterableDrinks: Drink[] = [];
+  @Input() iterableDrinks: Post[] = [];
   constructor(private router: Router) {
   }
 
-  goto(idDrink: number) {
+  goto(idDrink: string) {
     this.router.navigate([`/drink/${idDrink}`]).then();
   }
 }

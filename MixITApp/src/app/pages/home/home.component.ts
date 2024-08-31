@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {Drink} from "../../model/Drink";
-import {PublicDrinkService} from "../../service/public.drink.service";
+import {Post} from "../../model/Post";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
+import {PostService} from "../../service/post.service";
 
 @Component({
   selector: 'app-home',
@@ -10,33 +10,25 @@ import {Subject} from "rxjs";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit{
-  allDrinks: Drink[] = [];
-  dailyDrink!: Drink;
-  popularDrinks: Drink[] = [];
-  nonAlkDrinks: Drink[] = [];
+  allDrinks: Post[] = [];
+  dailyDrink!: Post;
+  popularDrinks: Post[] = [];
+  nonAlkDrinks: Post[] = [];
   selectedChip: string = 'popular'
   greeting: string = ''
   targetElement!: Element;
-  constructor(private publicDrinkService: PublicDrinkService, private router: Router) {
-  }
-  selectChip(chip: string): void {
-    this.selectedChip = chip;
-    if(this.selectedChip == undefined){
-      this.selectedChip = 'popular';
-    }
+  posts: Post[] = [];
+  page: number = 0;
+  size: number = 20;
+  loading: boolean = false;
+  constructor(private router: Router,
+              private postService: PostService) {
   }
   async ngOnInit(): Promise<void> {
 
     this.targetElement = document.querySelector('html') as Element;
     this.greeting = this.getGreetingDependingOnTime();
-    this.publicDrinkService.getAllDrinks().then((drinks) => {
-      this.allDrinks = drinks;
-    }).catch((error) => {
-      console.log(error);
-    })
-    this.dailyDrink = await this.publicDrinkService.getDailyDrink();
-    this.popularDrinks = await this.publicDrinkService.getPopularDrinks();
-    this.nonAlkDrinks = await this.publicDrinkService.getFilteredDrinks( '',false, '');
+    await this.loadPost();
   }
   refreshEvent(event: Subject<any>, message: string): void {
     setTimeout(() => {
@@ -44,7 +36,7 @@ export class HomeComponent implements OnInit{
       event.next(event);
     }, 500);
   }
-  gotoDrink(id: number){
+  gotoDrink(id: string){
     this.router.navigate([`/drink/${id}`]).then();
   }
   getGreetingDependingOnTime(): string {
@@ -57,17 +49,18 @@ export class HomeComponent implements OnInit{
       return "Good Evening!";
     }
   }
+  async loadPost(){
+    if (this.loading) return
+    this.loading = true;
+    try{
+      const newPosts = await this.postService.getFeed(this.page, this.size);
+      this.posts = [...this.posts, ...newPosts];
+      this.page++;
+    }catch (e){
+      console.error(e)
+    }finally {
+      this.loading = false;
+    }
+  }
 
-    getIterableDrinkBasedOnSelectedChip(): Drink[] {
-    if(this.selectedChip == 'noalc'){
-      return this.nonAlkDrinks;
-    }
-    if(this.selectedChip == 'popular'){
-      return this.popularDrinks;
-    }
-    if(this.selectedChip =='All'){
-      return this.allDrinks;
-    }
-    return this.allDrinks;
-   }
 }

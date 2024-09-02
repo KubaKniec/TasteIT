@@ -2,6 +2,7 @@ import { ComponentRef, Injectable, ViewContainerRef} from "@angular/core";
 import {InstructionsViewComponent} from "../../components/instructions-view/instructions-view.component";
 import {Post} from "../../model/Post";
 import {IComponentFactory} from "../../helpers/IComponentFactory";
+import {Recipe} from "../../model/Recipe";
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +15,10 @@ export class InstructionsFactoryService implements IComponentFactory<Instruction
   public setRootViewContainerRef(viewContainerRef: ViewContainerRef) {
     this.rootViewContainer = viewContainerRef;
   }
-  public addDynamicComponent(drink: Post) {
+  public addDynamicComponent(post: Post, recipe: Recipe) {
     const componentRef = this.rootViewContainer.createComponent(InstructionsViewComponent);
-    componentRef.instance.drink = drink;
+    componentRef.instance.post = post;
+    componentRef.instance.recipe = recipe;
     return componentRef;
   }
   public removeDynamicComponent(componentRef: ComponentRef<InstructionsViewComponent>) {

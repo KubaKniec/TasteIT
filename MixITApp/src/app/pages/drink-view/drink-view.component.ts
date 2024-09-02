@@ -40,12 +40,10 @@ export class DrinkViewComponent implements OnInit{
       this.activePost = await this.postService.getPostById(this.drinkId)
       this.recipe = await this.getRecipe();
     } catch (e) {
-      this.toast.error("Post not found or server error");
-      //TODO: Redirect to not found page
+      this.toast.error("Check your internet connection and try again");
       await this.router.navigate(['/home']);
     }
     this.isLoaded = true;
-    console.log(this.activePost)
   }
    getIngredients(): Ingredient[] {
     return this.recipe.ingredientsMeasurements.map((ingredientWrapper) => {

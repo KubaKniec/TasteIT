@@ -30,9 +30,14 @@ export class HomeComponent implements OnInit{
     this.greeting = this.getGreetingDependingOnTime();
     await this.loadPost();
   }
+  async refreshPosts(): Promise<void> {
+    this.page = 0;
+    this.posts = [];
+    await this.loadPost();
+  }
   refreshEvent(event: Subject<any>, message: string): void {
     setTimeout(() => {
-      // handle refreshing feed here
+      this.refreshPosts().then();
       event.next(event);
     }, 500);
   }

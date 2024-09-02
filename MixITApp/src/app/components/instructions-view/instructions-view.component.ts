@@ -78,6 +78,5 @@ export class InstructionsViewComponent implements OnInit, OnDestroy{
     this.recipe.steps = new Map<number, string>(
       Object.entries(this.recipe.steps).map(([key, value]) => [parseInt(key), value as string])
     );
-    console.log(this.recipe.steps)
   }
 }

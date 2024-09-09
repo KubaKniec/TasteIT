@@ -1,10 +1,12 @@
-<div class="modal" [@dialog]="state" *ngIf="drink">
+<div class="modal" [@dialog]="state" *ngIf="post && recipe">
     <!--  SETUP STEP-->
     <div class="setup-step" *ngIf="isIngredientStep()">
       <p class="title-text">Prerequisites</p>
       <img src="assets/barman.png" width="250px" height="250px">
-      <p class="text">Before you can make a <b class="accent"> {{drink.postMedia?.title}} </b>, you need to make sure you have the following ingredients:</p>
-<!--      <p class="ingredient-text" *ngFor="let ingredient of drink.recipe?.ingredients"> <b class="am"> {{ingredient.amount}} </b> {{ingredient.name}}</p>-->
+      <p class="text">Before you can make a <b class="accent"> {{post.postMedia?.title}} </b>, you need to make sure you have the following ingredients:</p>
+      <div class="ingredient-wrapper">
+        <p class="ingredient-text" *ngFor="let ingredient of getIngredients()"> <b class="am"> {{ingredient.amount}} </b> {{ingredient.name}}</p>
+      </div>
     </div>
     <!--  -->
     <!--  STEPS -->
@@ -17,7 +19,7 @@
   <div class="complete-screen" *ngIf="isDone">
     <p class="title-text"> Enjoy! </p>
     <img src="assets/drink_ready.png" width="250px" height="250px">
-    <p class="text"> Your <b class="accent"> {{drink.postMedia?.title}} </b> is ready!  </p>
+    <p class="text"> Your <b class="accent"> {{post.postMedia?.title}} </b> is ready!  </p>
   </div>
     <!--  CONTROLS -->
     <div class="controls">

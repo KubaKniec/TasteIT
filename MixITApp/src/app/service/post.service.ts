@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Post} from "../model/Post";
 import taste_api from "../api/taste_api";
+import {Recipe} from "../model/Recipe";
 @Injectable({
   providedIn: 'root'
 })
@@ -24,6 +25,13 @@ export class PostService {
     }
     post = res.data
     return Promise.resolve(post);
+  }
+  async getPostRecipe(id: string): Promise<Recipe>{
+    const res = await taste_api.get(`/post/${id}/recipe`)
+    if (res.status != 200){
+      return Promise.reject(res.status);
+    }
+    return Promise.resolve(res.data as Recipe);
   }
   async searchPostByTitle(query: string): Promise<Post[]>{
     let posts: Post[] = [];

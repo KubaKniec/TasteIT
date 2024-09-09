@@ -1,8 +1,9 @@
 version: '3.8'
 
 services:
-  mongodb:
+  tasteit-db:
     image: mongo:latest
+    container_name: tasteit-db
     ports:
       - "27017:27017"
     environment:

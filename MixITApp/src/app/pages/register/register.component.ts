@@ -37,10 +37,11 @@ export class RegisterComponent implements OnInit{
   }
   register(){
     if(this.registerForm.invalid) {
-      this.toastService.error('Invalid form!');
+      this.toastService.error('Please fill in all fields!');
       return;
     }
     if(!this.validateConfirmPassword()){
+      this.toastService.error('Passwords do not match!');
       return;
     }
     const email = this.registerForm.get('email')!.value;

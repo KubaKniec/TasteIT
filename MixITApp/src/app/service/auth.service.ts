@@ -20,10 +20,9 @@ export class AuthService {
     return this.sessionTokenSubject.value;
   }
   async register(email: string, username: string, password: string) {
-    console.log(email, username, password);
+
     await authAPI.post('/register', {
       email,
-      username,
       password
     }).then(res => {
       return Promise.resolve(res.status);
@@ -53,6 +52,8 @@ export class AuthService {
       this.clearSession();
 
     }).catch(err => {
+      console.log("Session cleared client side");
+      this.clearSession();
       return Promise.reject(err.response.status);
     })
   }

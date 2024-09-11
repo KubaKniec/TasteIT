@@ -49,6 +49,10 @@ import {NgxPullToRefreshModule} from "ngx-pull-to-refresh";
 import {NavigationService} from "./service/navigation.service";
 import {PostService} from "./service/post.service";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
+import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
+import {SplashScreenFactoryService} from "./service/factories/splash-screen-factory.service";
+import { SetupProfileComponent } from './pages/setup-profile/setup-profile.component';
+import {MatStepperModule} from "@angular/material/stepper";
 
 @NgModule({
   declarations: [
@@ -71,6 +75,8 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
     BarViewComponent,
     WelcomeComponent,
     FeedItemComponent,
+    SplashScreenComponent,
+    SetupProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -100,7 +106,8 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
     MatListModule,
     ReactiveFormsModule,
     NgxPullToRefreshModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    MatStepperModule
   ],
   providers: [
     HotToastService,
@@ -112,6 +119,7 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
     CookieService,
     NavigationService,
     PostService,
+    SplashScreenFactoryService
   ],
   bootstrap: [AppComponent]
 })

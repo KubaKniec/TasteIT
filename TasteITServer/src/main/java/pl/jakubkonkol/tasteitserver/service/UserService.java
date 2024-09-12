@@ -4,13 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+import pl.jakubkonkol.tasteitserver.dto.IngredientDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
+import pl.jakubkonkol.tasteitserver.dto.UserProfileDto;
+import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
+import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,13 +24,21 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final MongoTemplate mongoTemplate;
 
-    public User getUserById(String userId) {
+    public UserReturnDto getUserById(String userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchElementException("Post with id " + userId + " not found"));
-        return user;
+        return convertToDto(user);
     }
 
-    public User updateUserProfile(
+    public UserReturnDto getUserByToken(String sessionToken) {
+        Optional<User> user = userRepository.findBySessionToken(sessionToken);
+        if (user.isPresent()) {
+            return convertToDto(user.get());
+        }
+        throw new NoSuchElementException("User with token " + sessionToken + " not found");
+    }
+
+    public UserReturnDto updateUserProfile(
             String userId,
             String newDisplayName,
             String newBio,
@@ -41,17 +54,24 @@ public class UserService {
         user.setProfilePicture(newProfilePicture);
         user.setBirthDate(newBirthDate);
 
-        return userRepository.save(user);
+        userRepository.save(user);
+        return convertToDto(user);
     }
 
-    public User changeUserFirstLogin(String userId) {
+    public UserReturnDto changeUserFirstLogin(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(
                         "User with email " + userId + " not found"));
 
         user.setFirstLogin(false);
 
-        return userRepository.save(user);
+        userRepository.save(user);
+        return convertToDto(user);
+
+    }
+
+    private UserReturnDto convertToDto(User user) {
+        return modelMapper.map(user, UserReturnDto.class);
     }
 
 }

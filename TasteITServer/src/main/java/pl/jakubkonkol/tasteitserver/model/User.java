@@ -35,8 +35,6 @@ public class User implements UserDetails {
      * Tutaj trzeba dodac brakujace pola
      */
 
-
-
     @Override
     public String getPassword() {
         return authentication.getPassword();

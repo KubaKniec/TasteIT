@@ -1,5 +1,10 @@
 export interface Ingredient{
-  idIngredient: number;
+  ingredientId: number;
   name: string;
-  amount: string;
+  description?: string;
+  type?: string;
+  isAlcohol?: boolean;
+  strength?: string;
+  imageURL?: string;
+  amount?: string;
 }

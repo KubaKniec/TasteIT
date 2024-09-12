@@ -11,6 +11,7 @@ import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Post;
+import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -103,6 +104,11 @@ public class PostService {
         return posts.stream()
                 .map(this::convertToDto)
                 .toList();
+    }
+
+    public Recipe getPostRecipe(String postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+        return post.getRecipe();
     }
 
     private PostDto convertToDto(Post post) {

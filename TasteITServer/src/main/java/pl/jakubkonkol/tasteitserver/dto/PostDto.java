@@ -13,6 +13,5 @@ public class PostDto {
     private String userId;
     private PostType postType;
     private PostMedia postMedia;
-    private Recipe recipe;
     private Date createdDate;
 }

@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import authAPI from "../api/authAPI";
 import {BehaviorSubject, Observable} from "rxjs";
 import taste_api from "../api/taste_api";
+import {UserService} from "./user.service";
 
 
 
@@ -11,7 +12,7 @@ import taste_api from "../api/taste_api";
 export class AuthService {
   private sessionTokenSubject: BehaviorSubject<string | null>;
   public sessionToken: Observable<string | null>;
-  constructor() {
+  constructor(private userService: UserService) {
     this.sessionTokenSubject = new BehaviorSubject<string | null>(localStorage.getItem('sessionToken'));
     this.sessionToken = this.sessionTokenSubject.asObservable();
   }
@@ -20,7 +21,6 @@ export class AuthService {
     return this.sessionTokenSubject.value;
   }
   async register(email: string, username: string, password: string) {
-
     await authAPI.post('/register', {
       email,
       password
@@ -34,7 +34,7 @@ export class AuthService {
     return await authAPI.post('/login', {
       email,
       password
-    }).then(res => {
+    }).then(async res => {
       localStorage.setItem('sessionToken', res.data.sessionToken);
       this.sessionTokenSubject.next(res.data.sessionToken);
       return Promise.resolve(res.status);

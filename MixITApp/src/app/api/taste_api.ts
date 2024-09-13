@@ -1,6 +1,7 @@
 import axios from "axios";
+import {environment} from "../../environments/environment";
 const taste_api =  axios.create({
-  baseURL: "http://localhost:8080/api/v1/",
+  baseURL: environment.API_URL+"api/v1/",
   headers:{
     Accept : "application/json",
   },

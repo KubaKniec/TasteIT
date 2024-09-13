@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
+import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
@@ -48,7 +49,13 @@ public class PostService {
     }
 
     public PostDto getPost(String postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+        var optionalPost = postRepository.findById(postId);
+        if (optionalPost.isEmpty()) {
+            throw new NoSuchElementException("Post with id " + postId + " not found");
+        }
+
+        Post post = optionalPost.get();
+
         return convertToDto(post);
     }
 
@@ -68,6 +75,9 @@ public class PostService {
         // Execute the aggregation query
         AggregationResults<Post> results = mongoTemplate.aggregate(aggregation, "post", Post.class);
         List<Post> posts = results.getMappedResults();
+        if(posts.isEmpty()){
+            throw new NoSuchElementException("No random posts found in repository");
+        }
 
         List<PostDto> postDtos = posts.stream()
                 .map(this::convertToDto)
@@ -88,6 +98,9 @@ public class PostService {
     //if title consists few words use '%20' between them in get request
     public List<PostDto> searchPostsByTitle(String query) {
         List<Post> posts = postRepository.findByPostMediaTitleContainingIgnoreCase(query);
+        if(posts.isEmpty()){
+            //raczej nic nie trzeba
+        }
         return posts.stream()
                 .map(this::convertToDto)
                 .toList();

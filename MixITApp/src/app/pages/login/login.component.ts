@@ -37,8 +37,12 @@ export class LoginComponent implements OnInit{
     const password = this.loginForm.get('password')!.value;
     this.authService.loginWithEmailAndPassword(email!, password!)
       .then(() => {
-        this.hotToast.success('Login successfully!');
-        this.router.navigate(['/home']);
+        this.hotToast.success('Login successfully!', {
+          duration: 1000
+        });
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 200)
       })
       .catch((error) => {
         console.error('Login failed:', error); // Log the error for debugging

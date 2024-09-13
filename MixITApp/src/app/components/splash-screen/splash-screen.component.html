@@ -1,0 +1,25 @@
+<div class="modal" [@dialog]="state">
+  <div class="content">
+    <h1 class="title"> {{title}}</h1>
+
+    <div class="content-list">
+
+      <div class="content-item" *ngFor="let item of content">
+        <img src="{{item.icon}}" class="content-item-img">
+        <div>
+          <p class="content-item-title">{{item.subtitle}}</p>
+          <p class="content-item-text">{{item.text}}</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="controls">
+      <button class="button-primary" (click)="onActionButton()">{{actionButtonLabel}}</button>
+      <button class="button-tertiary" (click)="onClose()">{{closeButtonLabel}}</button>
+
+    </div>
+  </div>
+
+</div>

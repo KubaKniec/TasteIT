@@ -53,6 +53,7 @@ import { SplashScreenComponent } from './components/splash-screen/splash-screen.
 import {SplashScreenFactoryService} from "./service/factories/splash-screen-factory.service";
 import { SetupProfileComponent } from './pages/setup-profile/setup-profile.component';
 import {MatStepperModule} from "@angular/material/stepper";
+import {UserService} from "./service/user.service";
 
 @NgModule({
   declarations: [
@@ -119,7 +120,8 @@ import {MatStepperModule} from "@angular/material/stepper";
     CookieService,
     NavigationService,
     PostService,
-    SplashScreenFactoryService
+    SplashScreenFactoryService,
+    UserService
   ],
   bootstrap: [AppComponent]
 })

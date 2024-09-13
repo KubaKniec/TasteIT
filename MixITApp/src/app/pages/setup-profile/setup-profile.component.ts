@@ -1,18 +1,23 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Tag} from "../../model/Tag";
 import {HotToastService} from "@ngneat/hot-toast";
+import {UserProfile} from "../../model/UserProfile";
+import {UserService} from "../../service/user.service";
+import {User} from "../../model/User";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-setup-profile',
   templateUrl: './setup-profile.component.html',
   styleUrls: ['./setup-profile.component.css']
 })
-export class SetupProfileComponent {
+export class SetupProfileComponent implements OnInit {
   form: FormGroup;
   currentStep: number = 1;
   totalSteps: number = 5;
   preferences: Tag[] = [];
+  user!: User;
   tags: Tag[] = [
     {tag_id: '1', tag: 'Drinks'},
     {tag_id: '2', tag: 'Meat'},
@@ -25,7 +30,12 @@ export class SetupProfileComponent {
     {tag_id: '9', tag: 'Mexican'},
   ]
 
-  constructor(private fb: FormBuilder, private hotToast: HotToastService) {
+  constructor(
+    private fb: FormBuilder,
+    private hotToast: HotToastService,
+    private userService: UserService,
+    private router: Router
+    ) {
     this.form = this.fb.group({
       username: ['', Validators.required],
       birthdate: ['', Validators.required],
@@ -78,10 +88,26 @@ export class SetupProfileComponent {
   }
 
   setUpAccount() {
-    const userProfile = {
-      ...this.form.value,
-      preferences: this.preferences
+    let userProfile: UserProfile = {
+      bio: this.form.get('bio')?.value,
+      displayName: this.form.get('username')?.value,
+      profilePicture: 'placeholder.jpg',
+      birthdate: this.form.get('birthdate')?.value,
     }
+    this.userService.updateUserProfile(this.user.userId!, userProfile).then(
+      res => {
+        this.userService.changeUserFirstLogin(this.user.userId!).then(
+          res => {
+            this.hotToast.success('Account setup complete');
+            this.router.navigate(['/home']).then();
+          }
+        )
+      }
+    )
     console.log(userProfile)
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.user = await this.userService.getUserByToken();
   }
 }

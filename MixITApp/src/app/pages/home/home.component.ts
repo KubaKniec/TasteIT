@@ -5,6 +5,9 @@ import {Subject} from "rxjs";
 import {PostService} from "../../service/post.service";
 import {SplashScreenFactoryService} from "../../service/factories/splash-screen-factory.service";
 import {BodyScrollService} from "../../service/body-scroll.service";
+import {AuthService} from "../../service/auth.service";
+import {UserService} from "../../service/user.service";
+import {User} from "../../model/User";
 
 @Component({
   selector: 'app-home',
@@ -18,16 +21,22 @@ export class HomeComponent implements OnInit{
   page: number = 0;
   size: number = 20;
   loading: boolean = false;
+  user!: User;
   constructor(private router: Router,
               private postService: PostService,
               private splashScreenFactoryService: SplashScreenFactoryService,
               private viewContainerRef: ViewContainerRef,
-              private bodyScrollService: BodyScrollService
+              private bodyScrollService: BodyScrollService,
+              private authService: AuthService,
+              private userService: UserService
               ) {
     this.splashScreenFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
   async ngOnInit(): Promise<void> {
-    this.initializeCompleteAccountSplashScreen();
+     this.user = await this.userService.getUserByToken();
+    if(this.user.firstLogin){
+      this.initializeCompleteAccountSplashScreen();
+    }
     this.targetElement = document.querySelector('html') as Element;
     this.greeting = this.getGreetingDependingOnTime();
     await this.loadPost();

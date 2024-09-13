@@ -1,7 +1,7 @@
 import axios from "axios";
-
+import {environment} from "../../environments/environment";
 const taste_api =  axios.create({
-  baseURL: "http://localhost:8080/api/v1/",
+  baseURL: environment.API_URL+"api/v1/",
   headers:{
     Accept : "application/json",
   },
@@ -16,6 +16,18 @@ taste_api.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+)
+taste_api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    if(error.response.status === 401){
+     localStorage.removeItem('sessionToken');
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   }
 )

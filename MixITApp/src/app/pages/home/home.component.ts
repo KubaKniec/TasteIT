@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {Post} from "../../model/Post";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {PostService} from "../../service/post.service";
+import {SplashScreenFactoryService} from "../../service/factories/splash-screen-factory.service";
+import {BodyScrollService} from "../../service/body-scroll.service";
 
 @Component({
   selector: 'app-home',
@@ -10,11 +12,6 @@ import {PostService} from "../../service/post.service";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit{
-  allDrinks: Post[] = [];
-  dailyDrink!: Post;
-  popularDrinks: Post[] = [];
-  nonAlkDrinks: Post[] = [];
-  selectedChip: string = 'popular'
   greeting: string = ''
   targetElement!: Element;
   posts: Post[] = [];
@@ -22,17 +19,27 @@ export class HomeComponent implements OnInit{
   size: number = 20;
   loading: boolean = false;
   constructor(private router: Router,
-              private postService: PostService) {
+              private postService: PostService,
+              private splashScreenFactoryService: SplashScreenFactoryService,
+              private viewContainerRef: ViewContainerRef,
+              private bodyScrollService: BodyScrollService
+              ) {
+    this.splashScreenFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
   async ngOnInit(): Promise<void> {
-
+    this.initializeCompleteAccountSplashScreen();
     this.targetElement = document.querySelector('html') as Element;
     this.greeting = this.getGreetingDependingOnTime();
     await this.loadPost();
   }
+  async refreshPosts(): Promise<void> {
+    this.page = 0;
+    this.posts = [];
+    await this.loadPost();
+  }
   refreshEvent(event: Subject<any>, message: string): void {
     setTimeout(() => {
-      // handle refreshing feed here
+      this.refreshPosts().then();
       event.next(event);
     }, 500);
   }
@@ -61,6 +68,28 @@ export class HomeComponent implements OnInit{
     }finally {
       this.loading = false;
     }
+  }
+  initializeCompleteAccountSplashScreen(): void {
+    const splashScreenData = {
+        title: 'Complete your profile',
+        content: [
+            {icon: 'assets/wand.svg', subtitle: 'Personalize your experience', text: 'Tailor content to your tastes and discover recipes you\'ll love.'},
+            {icon: 'assets/users.svg', subtitle: 'Connect with like-minded foodies', text: 'Share your passion and build a community around your favorite dishes.'},
+            {icon: 'assets/unlock.svg', subtitle: 'Unlock exclusive features', text: 'Get access to personalized recommendations and community-driven culinary insights.'}
+        ],
+        actionButtonLabel: 'Continue',
+        closeButtonLabel: 'Maybe later'
+    }
+    this.bodyScrollService.disableScroll();
+    const componentRef = this.splashScreenFactoryService.addDynamicComponent(splashScreenData.title, splashScreenData.content, splashScreenData.actionButtonLabel, splashScreenData.closeButtonLabel);
+    componentRef.instance.actionButton.subscribe(() => {
+      this.router.navigate(['/setup-profile']).then();
+    })
+    componentRef.instance.close.subscribe(() => {
+      this.splashScreenFactoryService.removeDynamicComponent(componentRef);
+      this.bodyScrollService.enableScroll();
+    });
+
   }
 
 }

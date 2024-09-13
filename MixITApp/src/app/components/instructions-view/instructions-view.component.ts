@@ -2,6 +2,8 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Post} from "../../model/Post";
 import {BodyScrollService} from "../../service/body-scroll.service";
+import {Recipe} from "../../model/Recipe";
+import {Ingredient} from "../../model/Ingredient";
 @Component({
   selector: 'app-instructions-view',
   templateUrl: './instructions-view.component.html',
@@ -21,7 +23,8 @@ import {BodyScrollService} from "../../service/body-scroll.service";
   ]
 })
 export class InstructionsViewComponent implements OnInit, OnDestroy{
-  @Input() drink!: Post;
+  @Input() post!: Post;
+  @Input() recipe!: Recipe;
   @Output() close = new EventEmitter<void>();
   currentStep: number = 0;
   state = 'enter'
@@ -30,14 +33,21 @@ export class InstructionsViewComponent implements OnInit, OnDestroy{
   constructor(
     private bodyScrollService: BodyScrollService
   ) { }
-  getTotalSteps(){
-    return this.drink.recipe?.steps.size || 0;
+
+  getIngredients(): Ingredient[]{
+    return this.recipe.ingredientsMeasurements.map((ingredientWrapper) => {
+      return ingredientWrapper.ingredient;
+    }) || [];
+
   }
-  isIngredientStep(){
+  getTotalSteps(): number{
+    return this.recipe.steps.size || 0;
+  }
+  isIngredientStep(): boolean{
     return this.currentStep === 0;
   }
-  getCurrentInstruction(){
-    return this.drink.recipe?.steps.get(this.currentStep);
+  getCurrentInstruction(): string{
+    return this.recipe.steps.get(this.currentStep) || '';
   }
   nextStep(){
     if(this.currentStep < this.getTotalSteps()){
@@ -65,5 +75,8 @@ export class InstructionsViewComponent implements OnInit, OnDestroy{
 
   ngOnInit(): void {
     this.bodyScrollService.disableScroll();
+    this.recipe.steps = new Map<number, string>(
+      Object.entries(this.recipe.steps).map(([key, value]) => [parseInt(key), value as string])
+    );
   }
 }

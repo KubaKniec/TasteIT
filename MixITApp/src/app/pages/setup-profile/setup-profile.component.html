@@ -1,0 +1,71 @@
+<div class="fs-container">
+  <div class="progress-container">
+    <div class="progress-bar" [style.width.%]="getProgress()"></div>
+  </div>
+<!--NAME-->
+  <div class="step-container" *ngIf="currentStep==1">
+    <div class="steps-info">
+      <p class="step-header"> How should we call you? </p>
+        <p class="step-description"> This is the name that will be displayed on your profile. </p>
+    </div>
+
+    <div class="input-field" [formGroup]="form">
+      <mat-icon>person</mat-icon>
+      <input type="text" name="Username" placeholder="Username" formControlName="username">
+    </div>
+  </div>
+<!--BIRTHDATE-->
+  <div class="step-container" *ngIf="currentStep==2">
+    <div class="steps-info">
+      <p class="step-header"> When's your birthday </p>
+      <p class="step-description"> This helps us personalize your experience and ensure you're the right age to join. </p>
+    </div>
+
+    <div class="input-field" [formGroup]="form">
+      <mat-icon>cake</mat-icon>
+      <input type="date" name="birthdate" placeholder="" formControlName="birthdate">
+    </div>
+  </div>
+<!--BIO-->
+  <div class="step-container" *ngIf="currentStep==3">
+    <div class="steps-info">
+      <p class="step-header"> Tell us about yourself </p>
+      <p class="step-description"> Don't worry, you can skip this if nothing comes to mind right now. </p>
+    </div>
+
+    <mat-form-field [formGroup]="form">
+      <textarea matInput placeholder="Ex. I like pizza and latinas" formControlName="bio"></textarea>
+    </mat-form-field>
+  </div>
+<!--TAGS-->
+  <div class="step-container" *ngIf="currentStep==4">
+    <div class="steps-info">
+      <p class="step-header"> What topics are you interested in? </p>
+      <p class="step-description"> Choose at least three to help us better tailor experience for you </p>
+    </div>
+    <div class="tags-container">
+      <div class="tag"
+           *ngFor="let tag of tags"
+           [ngClass]="{selected: isSelected(tag)}"
+           (click)="toggleTagSelection(tag)"
+      >
+        {{tag.tag}}
+      </div>
+    </div>
+  </div>
+<!--  Completion screen-->
+  <div class="step-container" *ngIf="currentStep==5">
+    <div class="steps-info">
+      <p class="step-header"> Success! </p>
+      <p class="step-description">You're profile is complete! Now you have access to all features of TasteIT </p>
+    </div>
+
+  </div>
+
+
+  <div class="controls">
+    <button class="button-primary" *ngIf="currentStep>1 && currentStep<5" (click)="goToPreviousStep()"> Go back</button>
+    <button class="button-primary" (click)="goNext()" *ngIf="currentStep != 5"> Continue </button>
+    <button class="button-primary" (click)="setUpAccount()" *ngIf="currentStep == 5"> Finish </button>
+  </div>
+</div>

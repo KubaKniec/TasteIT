@@ -88,11 +88,12 @@ export class SetupProfileComponent implements OnInit {
   }
 
   setUpAccount() {
+    let birthdate = new Date(this.form.get('birthdate')?.value);
     let userProfile: UserProfile = {
       bio: this.form.get('bio')?.value,
       displayName: this.form.get('username')?.value,
       profilePicture: 'placeholder.jpg',
-      birthdate: this.form.get('birthdate')?.value,
+      birthdate: birthdate,
     }
     this.userService.updateUserProfile(this.user.userId!, userProfile).then(
       res => {

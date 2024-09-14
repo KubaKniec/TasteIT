@@ -20,7 +20,7 @@ export class AuthService {
   public get sessionTokenValue(): string | null{
     return this.sessionTokenSubject.value;
   }
-  async register(email: string, username: string, password: string) {
+  async register(email: string, password: string) {
     await authAPI.post('/register', {
       email,
       password

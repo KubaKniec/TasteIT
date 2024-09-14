@@ -21,7 +21,6 @@ export class RegisterComponent implements OnInit{
 
   registerForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    username: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required),
     confirmPassword: new FormControl('', Validators.required)
   })
@@ -45,9 +44,8 @@ export class RegisterComponent implements OnInit{
       return;
     }
     const email = this.registerForm.get('email')!.value;
-    const username = this.registerForm.get('username')!.value;
     const password = this.registerForm.get('password')!.value;
-    this.authServive.register(email!, username!, password!).then(()=>{
+    this.authServive.register(email!, password!).then(()=>{
       this.toastService.success('Register successfully!');
       this.router.navigate(['/login']).then();
     })

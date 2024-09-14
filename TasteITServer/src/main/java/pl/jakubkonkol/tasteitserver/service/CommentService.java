@@ -10,6 +10,7 @@ import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Comment;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
+import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.util.List;
@@ -19,12 +20,12 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
-    private final PostService postService;
+    private final PostRepository postRepository;
     private final ModelMapper modelMapper;
 
     public CommentDto addComment(String postId, CommentDto commentDto, String token) {
         UserReturnDto userByToken = userService.getUserByToken(token);
-        PostDto post = postService.getPost(postId);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         Comment comment = Comment.builder()
                 .postId(post.getPostId())
@@ -33,6 +34,8 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+        post.getComments().add(savedComment);
+        postRepository.save(post);
 
         return convertToDto(savedComment);
     }
@@ -46,6 +49,9 @@ public class CommentService {
             throw new IllegalStateException("User can only delete his own comments");
         }
 
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        post.getComments().remove(comment);
+        postRepository.save(post);
         commentRepository.delete(comment);
     }
 

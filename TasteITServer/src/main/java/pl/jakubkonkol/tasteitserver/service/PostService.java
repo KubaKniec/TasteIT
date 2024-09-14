@@ -27,7 +27,8 @@ public class PostService {
     private final ModelMapper modelMapper;
     private final MongoTemplate mongoTemplate;
 
-    public void save(Post post) {
+    public void save(PostDto postDto) {
+        Post post = convertToEntity(postDto);
         postRepository.save(Objects.requireNonNull(post, "Post cannot be null."));
     }
 
@@ -107,5 +108,9 @@ public class PostService {
         postDto.setCommentsCount((long) post.getComments().size());
 
         return postDto;
+    }
+
+    private Post convertToEntity(PostDto postDto) {
+        return modelMapper.map(postDto, Post.class);
     }
 }

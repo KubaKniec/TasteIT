@@ -31,12 +31,10 @@ public class UserService {
     }
 
     public UserReturnDto getUserByToken(String sessionToken) {
-        Optional<User> user = userRepository.findBySessionToken(sessionToken);
-        if (user.isPresent()) {
-            return convertToDto(user.get());
-        }
-        throw new NoSuchElementException("User with token " + sessionToken + " not found");
-    }
+        User user = userRepository.findBySessionToken(sessionToken)
+                .orElseThrow(() -> new NoSuchElementException("User with token " + sessionToken + " not found"));
+        return convertToDto(user);
+    }//is returning token in exception message a good idea?
 
     public UserReturnDto updateUserProfile(
             String userId,

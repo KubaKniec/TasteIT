@@ -2,7 +2,6 @@ package pl.jakubkonkol.tasteitserver.dto;
 
 import lombok.Data;
 import pl.jakubkonkol.tasteitserver.model.PostMedia;
-import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 
 import java.util.Date;
@@ -14,4 +13,6 @@ public class PostDto {
     private PostType postType;
     private PostMedia postMedia;
     private Date createdDate;
+    private Long likesCount;
+    private Long commentsCount;
 }

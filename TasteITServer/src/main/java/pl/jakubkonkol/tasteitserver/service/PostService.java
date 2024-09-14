@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -26,18 +27,12 @@ public class PostService {
     private final ModelMapper modelMapper;
     private final MongoTemplate mongoTemplate;
 
-    public void save (Post post) {
-        if (post == null) {
-            throw new IllegalArgumentException("Post cannot be null.");
-        }
-        postRepository.save(post);
+    public void save(Post post) {
+        postRepository.save(Objects.requireNonNull(post, "Post cannot be null."));
     }
 
-    public void saveAll (List<Post> posts) {
-        if (posts == null) {
-            throw new IllegalArgumentException("List of posts cannot be null.");
-        }
-        postRepository.saveAll(posts);
+    public void saveAll(List<Post> posts) {
+        postRepository.saveAll(Objects.requireNonNull(posts, "List of posts cannot be null."));
     }
 
     public void deleteAll() {
@@ -49,13 +44,8 @@ public class PostService {
     }
 
     public PostDto getPost(String postId) {
-        var optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty()) {
-            throw new NoSuchElementException("Post with id " + postId + " not found");
-        }
-
-        Post post = optionalPost.get();
-
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
         return convertToDto(post);
     }
 
@@ -98,7 +88,7 @@ public class PostService {
     //if title consists few words use '%20' between them in get request
     public List<PostDto> searchPostsByTitle(String query) {
         List<Post> posts = postRepository.findByPostMediaTitleContainingIgnoreCase(query);
-        if(posts.isEmpty()){
+        if (posts.isEmpty()){
             //raczej nic nie trzeba
         }
         return posts.stream()
@@ -112,6 +102,10 @@ public class PostService {
     }
 
     private PostDto convertToDto(Post post) {
-        return modelMapper.map(post, PostDto.class);
+        PostDto postDto = modelMapper.map(post, PostDto.class);
+        postDto.setLikesCount((long) post.getLikes().size());
+        postDto.setCommentsCount((long) post.getComments().size());
+
+        return postDto;
     }
 }

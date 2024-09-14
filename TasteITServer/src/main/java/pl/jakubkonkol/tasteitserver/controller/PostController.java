@@ -2,12 +2,17 @@ package pl.jakubkonkol.tasteitserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.jakubkonkol.tasteitserver.dto.CommentDto;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
+import pl.jakubkonkol.tasteitserver.model.GenericResponse;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
+import pl.jakubkonkol.tasteitserver.service.CommentService;
+import pl.jakubkonkol.tasteitserver.service.LikeService;
 import pl.jakubkonkol.tasteitserver.service.PostService;
 
 import java.util.List;
@@ -17,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final LikeService likeService;
+    private final CommentService commentService;
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable String postId) {
@@ -44,5 +51,51 @@ public class PostController {
     public ResponseEntity<Recipe> getPostRecipe(@PathVariable String postId) {
         Recipe recipe = postService.getPostRecipe(postId);
         return ResponseEntity.ok(recipe);
+    }
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<?> likePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
+        likeService.likePost(postId, sessionToken);
+
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("Post Liked")
+                .build());
+    }
+
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<?> unlikePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
+        likeService.unlikePost(postId, sessionToken);
+
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("Post Unliked")
+                .build());
+    }
+
+    @PostMapping("/{postId}/comment")
+    public ResponseEntity<CommentDto> addComment(@PathVariable String postId, @RequestBody CommentDto commentDto, @RequestHeader("Authorization") final String sessionToken) {
+        CommentDto dto = commentService.addComment(postId, commentDto, sessionToken);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping("/{postId}/comment/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable String postId, @PathVariable String commentId, @RequestHeader("Authorization") final String sessionToken) {
+        commentService.deleteComment(postId, commentId, sessionToken);
+
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("Comment Deleted")
+                .build());
+    }
+
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<CommentDto>> getComments(@PathVariable String postId) {
+        List<CommentDto> commentDtos = commentService.getComments(postId);
+        return ResponseEntity.ok(commentDtos);
     }
 }

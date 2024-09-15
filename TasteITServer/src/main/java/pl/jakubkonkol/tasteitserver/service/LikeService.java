@@ -9,8 +9,6 @@ import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -22,7 +20,7 @@ public class LikeService {
         UserReturnDto userByToken = userService.getUserByToken(token);
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
-        Optional<Like> existingLike = likeRepository.findByPostIdAndUserId(postId, userByToken.getUserId());
+        var existingLike = likeRepository.findByPostIdAndUserId(postId, userByToken.getUserId());
         if (existingLike.isPresent()) {
             throw new IllegalStateException("User has already liked this post.");
         }

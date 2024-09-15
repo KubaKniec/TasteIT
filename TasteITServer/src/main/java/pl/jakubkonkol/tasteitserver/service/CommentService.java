@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.dto.CommentDto;
-import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Comment;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
-import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.util.List;
 
@@ -26,6 +24,10 @@ public class CommentService {
     public CommentDto addComment(String postId, CommentDto commentDto, String token) {
         UserReturnDto userByToken = userService.getUserByToken(token);
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (commentDto.getContent() == null || commentDto.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("Comment content cannot be empty.");
+        }
 
         Comment comment = Comment.builder()
                 .postId(post.getPostId())

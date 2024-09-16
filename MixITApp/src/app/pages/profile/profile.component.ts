@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {AuthService} from "../../service/auth.service";
 import {User} from "../../model/User";
 import {HotToastService} from "@ngneat/hot-toast";
+import {UserService} from "../../service/user.service";
 
 @Component({
   selector: 'app-profile',
@@ -11,16 +12,18 @@ import {HotToastService} from "@ngneat/hot-toast";
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit{
-
   protected readonly GlobalConfiguration = GlobalConfiguration;
   constructor(
     private router: Router,
     private authService: AuthService,
-    private toast: HotToastService) { }
+    private toast: HotToastService,
+    private userService: UserService
+  ) { }
   isAuthenticated: boolean = false;
   user: User = {};
-  ngOnInit(): void {
-
+  async ngOnInit(): Promise<void> {
+    this.user = await this.userService.getUserByToken();
+    this.isAuthenticated = this.authService.isAuthenticated();
   }
   logout() {
     this.authService.logout()

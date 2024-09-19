@@ -54,6 +54,8 @@ import {SplashScreenFactoryService} from "./service/factories/splash-screen-fact
 import { SetupProfileComponent } from './pages/setup-profile/setup-profile.component';
 import {MatStepperModule} from "@angular/material/stepper";
 import {UserService} from "./service/user.service";
+import { CommentsSectionComponent } from './components/comments-section/comments-section.component';
+import {CommentsSectionFactoryService} from "./service/factories/comments-section-factory.service";
 
 @NgModule({
   declarations: [
@@ -78,6 +80,7 @@ import {UserService} from "./service/user.service";
     FeedItemComponent,
     SplashScreenComponent,
     SetupProfileComponent,
+    CommentsSectionComponent,
   ],
   imports: [
     BrowserModule,
@@ -121,7 +124,8 @@ import {UserService} from "./service/user.service";
     NavigationService,
     PostService,
     SplashScreenFactoryService,
-    UserService
+    UserService,
+    CommentsSectionFactoryService
   ],
   bootstrap: [AppComponent]
 })

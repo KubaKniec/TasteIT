@@ -6,6 +6,7 @@ import {UserProfile} from "../../model/UserProfile";
 import {UserService} from "../../service/user.service";
 import {User} from "../../model/User";
 import {Router} from "@angular/router";
+import {UsernameValidator} from "../../validators/UsernameValidator";
 
 @Component({
   selector: 'app-setup-profile',
@@ -88,10 +89,11 @@ export class SetupProfileComponent implements OnInit {
   }
 
   setUpAccount() {
+    let displayName = this.form.get('username')?.value;
     let birthdate = new Date(this.form.get('birthdate')?.value);
     let userProfile: UserProfile = {
       bio: this.form.get('bio')?.value,
-      displayName: this.form.get('username')?.value,
+      displayName: displayName,
       profilePicture: 'placeholder.jpg',
       birthdate: birthdate,
     }

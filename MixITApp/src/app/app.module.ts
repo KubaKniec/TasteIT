@@ -56,6 +56,7 @@ import {MatStepperModule} from "@angular/material/stepper";
 import {UserService} from "./service/user.service";
 import { CommentsSectionComponent } from './components/comments-section/comments-section.component';
 import {CommentsSectionFactoryService} from "./service/factories/comments-section-factory.service";
+import {ScrollPositionService} from "./service/scroll-position.service";
 
 @NgModule({
   declarations: [
@@ -125,7 +126,9 @@ import {CommentsSectionFactoryService} from "./service/factories/comments-sectio
     PostService,
     SplashScreenFactoryService,
     UserService,
-    CommentsSectionFactoryService
+    CommentsSectionFactoryService,
+    ScrollPositionService
+
   ],
   bootstrap: [AppComponent]
 })

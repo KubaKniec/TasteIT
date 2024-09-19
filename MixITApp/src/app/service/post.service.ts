@@ -1,90 +1,94 @@
-import {Injectable} from "@angular/core";
-import {Post} from "../model/Post";
+import { Injectable } from "@angular/core";
+import { Post } from "../model/Post";
 import taste_api from "../api/taste_api";
-import {Recipe} from "../model/Recipe";
-import {Comment} from "../model/Comment";
+import { Recipe } from "../model/Recipe";
+import { Comment } from "../model/Comment";
+import { BehaviorSubject } from "rxjs";
+import {AxiosResponse} from "axios";
+
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
-  constructor() {
+  private feedSubject = new BehaviorSubject<Post[]>([]);
+  feed$ = this.feedSubject.asObservable();
+
+  constructor() {}
+
+  setFeed(feed: Post[]): void {
+    this.feedSubject.next(feed);
   }
-  async getFeed(page: number, size: number): Promise<Post[]>{
-    let posts: Post[] = [];
-    const res = await taste_api.get(`/post/feed?page=${page}&size=${size}`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
-    }
-    posts = res.data.content
-    return Promise.resolve(posts);
+
+  getFeedState(): Post[] {
+    return this.feedSubject.getValue();
   }
-  async getPostById(id: string): Promise<Post>{
-    let post: Post;
-    const res = await taste_api.get(`/post/${id}`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
-    }
-    post = res.data
-    return Promise.resolve(post);
+
+  clearFeedCache(): void {
+    this.feedSubject.next([]);
   }
-  async getPostRecipe(id: string): Promise<Recipe>{
-    const res = await taste_api.get(`/post/${id}/recipe`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
+
+  private async handleApiResponse<T>(response: AxiosResponse<any, any>, extractContent: boolean = false): Promise<T> {
+    try{
+      if(response.status != 200){
+        console.error('API Error:', response.data);
+        return Promise.reject(`Error: ${response.status}`)
+      }
+      if (extractContent && response.data.content) {
+        return response.data.content as T;
+      }
+      return Promise.resolve(response.data as T);
+    }catch (error){
+      console.error('API Error:', error);
+      return Promise.reject('Error');
     }
-    return Promise.resolve(res.data as Recipe);
   }
-  async searchPostByTitle(query: string): Promise<Post[]>{
-    let posts: Post[] = [];
-    const res = await taste_api.get(`/post/search?query=${query}`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
-    }
-    posts = res.data
+
+  async getFeed(page: number, size: number): Promise<Post[]> {
+    const response = await taste_api.get(`/post/feed?page=${page}&size=${size}`);
+    const posts = await this.handleApiResponse<Post[]>(response, true);
+    this.setFeed([...this.getFeedState(), ...posts]);
     return posts;
   }
-  async getPostComments(id: string): Promise<Comment[]>{
-    let comments: Comment[] = [];
-    const res = await taste_api.get(`/post/${id}/comments`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
-    }
-    comments = res.data
-    return comments;
-  }
-  async createPostComment(id: string, content: string): Promise<any> {
-    try {
-      const res = await taste_api.post(`/post/${id}/comment`, { content: content });
-      if (res.status !== 200) {
-        return Promise.reject(`Error: ${res.status}`);
-      }
-      return res.data;
-    } catch (error) {
-      console.error('API call failed', error);
-      return Promise.reject('API call failed');
-    }
+  async getPostById(id: string): Promise<Post> {
+    const res = await taste_api.get(`/post/${id}`);
+    return this.handleApiResponse<Post>(res);
   }
 
-  async deletePostComment(postId: string, commentId: string): Promise<number>{
-    const res = await taste_api.delete(`/post/${postId}/comment/${commentId}`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
-    }
-    return res.status;
+  async getPostRecipe(id: string): Promise<Recipe> {
+    const res = await taste_api.get(`/post/${id}/recipe`);
+    return this.handleApiResponse<Recipe>(res);
   }
-  async likePost(id: string): Promise<number>{
-    const res = await taste_api.post(`/post/${id}/like`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
-    }
-    return res.status;
+
+  async searchPostByTitle(query: string): Promise<Post[]> {
+    const res = await taste_api.get(`/post/search?query=${query}`);
+    return this.handleApiResponse<Post[]>(res);
   }
-  async unlikePost(id: string): Promise<number>{
-    const res = await taste_api.delete(`/post/${id}/like`)
-    if (res.status != 200){
-      return Promise.reject(res.status);
-    }
+
+  async getPostComments(id: string): Promise<Comment[]> {
+    const res = await taste_api.get(`/post/${id}/comments`);
+    return this.handleApiResponse<Comment[]>(res);
+  }
+
+  async createPostComment(id: string, content: string): Promise<Comment> {
+    const res = await taste_api.post(`/post/${id}/comment`, { content });
+    return this.handleApiResponse<Comment>(res);
+  }
+
+  async deletePostComment(postId: string, commentId: string): Promise<number> {
+    const res = await taste_api.delete(`/post/${postId}/comment/${commentId}`);
+    await this.handleApiResponse<number>(res);
     return res.status;
   }
 
+  async likePost(id: string): Promise<number> {
+    const res = await taste_api.post(`/post/${id}/like`);
+    await this.handleApiResponse<number>(res);
+    return res.status;
+  }
+
+  async unlikePost(id: string): Promise<number> {
+    const res = await taste_api.delete(`/post/${id}/like`);
+    await this.handleApiResponse<number>(res);
+    return res.status;
+  }
 }

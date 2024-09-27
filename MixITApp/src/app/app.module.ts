@@ -57,6 +57,8 @@ import {UserService} from "./service/user.service";
 import { CommentsSectionComponent } from './components/comments-section/comments-section.component';
 import {CommentsSectionFactoryService} from "./service/factories/comments-section-factory.service";
 import {ScrollPositionService} from "./service/scroll-position.service";
+import { FoodlistsComponent } from './pages/foodlists/foodlists.component';
+import { AddToFoodListComponent } from './components/add-to-food-list/add-to-food-list.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +84,8 @@ import {ScrollPositionService} from "./service/scroll-position.service";
     SplashScreenComponent,
     SetupProfileComponent,
     CommentsSectionComponent,
+    FoodlistsComponent,
+    AddToFoodListComponent,
   ],
   imports: [
     BrowserModule,

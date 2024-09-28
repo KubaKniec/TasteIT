@@ -9,6 +9,7 @@ import {NavigationService} from "../../service/navigation.service";
 import {PostService} from "../../service/post.service";
 import {Ingredient} from "../../model/Ingredient";
 import {Recipe} from "../../model/Recipe";
+import {CommentsSectionFactoryService} from "../../service/factories/comments-section-factory.service";
 
 @Component({
   selector: 'app-drink-view',
@@ -28,10 +29,12 @@ export class DrinkViewComponent implements OnInit{
              private ingredientViewFactoryService: IngredientViewFactoryService,
              public navigationService: NavigationService,
              private router: Router,
-             private postService: PostService
+             private postService: PostService,
+             private commentsSectionFactoryService: CommentsSectionFactoryService,
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
+    this.commentsSectionFactoryService.setRootViewContainerRef(this.viewContainerRef);
  }
 
   async ngOnInit(): Promise<void> {
@@ -49,6 +52,11 @@ export class DrinkViewComponent implements OnInit{
     return this.recipe.ingredientsMeasurements.map((ingredientWrapper) => {
       return ingredientWrapper.ingredient;
     }) || [];
+  }
+  refreshPost(){
+    this.postService.getPostById(this.activePost.postId!).then((post) => {
+      this.activePost = post;
+    })
   }
   async getRecipe() {
     return await this.postService.getPostRecipe(this.activePost.postId!);
@@ -72,6 +80,17 @@ export class DrinkViewComponent implements OnInit{
     componentRef.instance.close.subscribe(() => {
       this.ingredientViewFactoryService.removeDynamicComponent(componentRef)
     })
-
+  }
+  preventScroll(event: TouchEvent) {
+    event.preventDefault();
+  }
+  initializeCommentSection(postId: string) {
+   const componentRef = this.commentsSectionFactoryService.addDynamicComponent(postId);
+   componentRef.instance.close.subscribe(() => {
+      this.commentsSectionFactoryService.removeDynamicComponent(componentRef)
+   })
+    componentRef.instance.refreshPost.subscribe(() => {
+      this.refreshPost();
+    })
   }
 }

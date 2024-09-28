@@ -1,0 +1,29 @@
+<div class="transparent-modal" [@dialog]="'enter'">
+  <div class="content">
+<!--    CLOSING MODAL BUTTON-->
+    <div class="controls">
+      <button class="comment-button" (click)="onClose()"><mat-icon>arrow_back</mat-icon> </button>
+      <p class="controls-text"> Comments </p>
+      <button class="bean invisible-button"><mat-icon>arrow_back</mat-icon> </button>
+    </div>
+<!--    COMMENT SECTION-->
+    <div class="comments">
+      <div class="single-comment" *ngFor="let comment of comments">
+        <div class="avatar">
+          <img src="assets/user_placeholder.png" alt="user" class="user-image" width="50px" height="50px">
+        </div>
+        <div class="comment-content">
+          <p class="user-name">{{getUserName(comment.userId)}}</p>
+          <p class="comment-text">{{comment.content}}</p>
+          <p class="comment-date">2 days ago</p>
+        </div>
+      </div>
+    </div>
+<!--    COMMENT FORM-->
+    <div class="comment-form">
+      <img src="assets/user_placeholder.png" alt="user" class="user-image">
+      <input type="text" class="comment-input" placeholder="Write a comment..." [(ngModel)]="commentContent"/>
+      <button class="comment-button" (click)="addComment()" ><mat-icon>send</mat-icon></button>
+    </div>
+  </div>
+</div>

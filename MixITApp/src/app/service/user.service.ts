@@ -10,7 +10,7 @@ export class UserService {
 
   async getUserById(id: string): Promise<User> {
     let user: User;
-    const res = await taste_api.get(`user/getUserById${id}`)
+    const res = await taste_api.get(`user/getUserById/${id}`)
     if (res.status != 200) {
       return Promise.reject(res.status);
     }

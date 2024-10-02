@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.el.parser.Token;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.jakubkonkol.tasteitserver.dto.PageDto;
-import pl.jakubkonkol.tasteitserver.dto.PostDto;
-import pl.jakubkonkol.tasteitserver.dto.UserProfileDto;
-import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
+import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
@@ -54,6 +51,14 @@ public class UserController {
     public ResponseEntity<UserReturnDto> changeUserFirstLogin(@PathVariable String userId) {
 
         var user = userService.changeUserFirstLogin(userId);
+
+        return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/changeUserTags/{userId}")
+    public ResponseEntity<UserReturnDto> updateUserTags(@PathVariable String userId, @RequestBody UserTagsDto userTagsDto) {
+
+        var user = userService.updateUserTags(userId, userTagsDto);
 
         return ResponseEntity.ok(user);
     }

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
-import {Post} from "../../model/Post";
+import {Post} from "../../model/post/Post";
 
 @Component({
   selector: 'app-category-view',

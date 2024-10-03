@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HotToastService} from "@ngneat/hot-toast";
-import {Post} from "../../model/Post";
+import {Post} from "../../model/post/Post";
 import {Router} from "@angular/router";
 
 @Component({

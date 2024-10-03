@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Haptics, ImpactStyle} from "@capacitor/haptics";
-import {Post} from "../../model/Post";
+import {Post} from "../../model/post/Post";
 
 @Component({
   selector: 'app-feed-item',

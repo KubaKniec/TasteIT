@@ -32,10 +32,11 @@ export class ProfileComponent implements OnInit{
         this.router.navigate(['/login']).then();
       })
   }
-  goto(url: string) {
-    if(url === 'login' && this.isAuthenticated){
-      return;
-    }
+  goto(url: string){
     this.router.navigateByUrl(url).then();
+  }
+  gotoProfile() {
+    const currentUserId = this.user.userId;
+    this.router.navigateByUrl('user-profile/' + currentUserId).then();
   }
 }

@@ -1,5 +1,5 @@
 import {Component, HostListener, OnInit, ViewContainerRef} from '@angular/core';
-import {Post} from "../../model/Post";
+import {Post} from "../../model/post/Post";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {PostService} from "../../service/post.service";
@@ -7,7 +7,7 @@ import {SplashScreenFactoryService} from "../../service/factories/splash-screen-
 import {BodyScrollService} from "../../service/body-scroll.service";
 import {AuthService} from "../../service/auth.service";
 import {UserService} from "../../service/user.service";
-import {User} from "../../model/User";
+import {User} from "../../model/user/User";
 import {ScrollPositionService} from "../../service/scroll-position.service";
 
 @Component({

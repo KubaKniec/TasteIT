@@ -59,6 +59,7 @@ import {CommentsSectionFactoryService} from "./service/factories/comments-sectio
 import {ScrollPositionService} from "./service/scroll-position.service";
 import { FoodlistsComponent } from './pages/foodlists/foodlists.component';
 import { AddToFoodListComponent } from './components/add-to-food-list/add-to-food-list.component';
+import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +87,7 @@ import { AddToFoodListComponent } from './components/add-to-food-list/add-to-foo
     CommentsSectionComponent,
     FoodlistsComponent,
     AddToFoodListComponent,
+    UserProfileComponent,
   ],
   imports: [
     BrowserModule,

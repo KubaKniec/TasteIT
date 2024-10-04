@@ -1,4 +1,4 @@
-import {Ingredient} from "./Ingredient";
+import {Ingredient} from "../Ingredient";
 import {Measurement} from "./Measurement";
 
 export interface IngredientWrapper{

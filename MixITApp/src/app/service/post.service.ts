@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Post } from "../model/Post";
+import { Post } from "../model/post/Post";
 import taste_api from "../api/taste_api";
-import { Recipe } from "../model/Recipe";
-import { Comment } from "../model/Comment";
+import { Recipe } from "../model/post/Recipe";
+import { Comment } from "../model/post/Comment";
 import { BehaviorSubject } from "rxjs";
 import {AxiosResponse} from "axios";
 

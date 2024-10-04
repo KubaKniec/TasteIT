@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {GlobalConfiguration} from "../../config/GlobalConfiguration";
 import {Router} from "@angular/router";
 import {AuthService} from "../../service/auth.service";
-import {User} from "../../model/User";
+import {User} from "../../model/user/User";
 import {HotToastService} from "@ngneat/hot-toast";
 import {UserService} from "../../service/user.service";
 
@@ -32,10 +32,11 @@ export class ProfileComponent implements OnInit{
         this.router.navigate(['/login']).then();
       })
   }
-  goto(url: string) {
-    if(url === 'login' && this.isAuthenticated){
-      return;
-    }
+  goto(url: string){
     this.router.navigateByUrl(url).then();
+  }
+  gotoProfile() {
+    const currentUserId = this.user.userId;
+    this.router.navigateByUrl('user-profile/' + currentUserId).then();
   }
 }

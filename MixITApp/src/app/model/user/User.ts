@@ -1,5 +1,5 @@
-import {Like} from "./Like";
-import {FoodList} from "./FoodList";
+import {Like} from "../post/Like";
+import {FoodList} from "../FoodList";
 import {Badge} from "./Badge";
 import {Tag} from "./Tag";
 import {Authentication} from "./Authentication";

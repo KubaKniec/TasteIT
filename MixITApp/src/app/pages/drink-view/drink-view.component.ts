@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
-import {Post} from "../../model/Post";
+import {Post} from "../../model/post/Post";
 import {ActivatedRoute, Router} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
 import {InstructionsFactoryService} from "../../service/factories/instructions-factory.service";
@@ -8,7 +8,7 @@ import {IngredientViewFactoryService} from "../../service/factories/ingredient-v
 import {NavigationService} from "../../service/navigation.service";
 import {PostService} from "../../service/post.service";
 import {Ingredient} from "../../model/Ingredient";
-import {Recipe} from "../../model/Recipe";
+import {Recipe} from "../../model/post/Recipe";
 import {CommentsSectionFactoryService} from "../../service/factories/comments-section-factory.service";
 
 @Component({

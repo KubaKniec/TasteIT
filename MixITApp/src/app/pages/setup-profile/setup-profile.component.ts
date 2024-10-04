@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Tag} from "../../model/Tag";
+import {Tag} from "../../model/user/Tag";
 import {HotToastService} from "@ngneat/hot-toast";
-import {UserProfile} from "../../model/UserProfile";
+import {UserProfile} from "../../model/user/UserProfile";
 import {UserService} from "../../service/user.service";
-import {User} from "../../model/User";
+import {User} from "../../model/user/User";
 import {Router} from "@angular/router";
 import {UsernameValidator} from "../../validators/UsernameValidator";
+import {UserTags} from "../../model/user/UserTags";
 
 @Component({
   selector: 'app-setup-profile',
@@ -20,15 +21,15 @@ export class SetupProfileComponent implements OnInit {
   preferences: Tag[] = [];
   user!: User;
   tags: Tag[] = [
-    {tag_id: '1', tag: 'Drinks'},
-    {tag_id: '2', tag: 'Meat'},
-    {tag_id: '3', tag: 'Vegetarian'},
-    {tag_id: '4', tag: 'Burgers'},
-    {tag_id: '5', tag: 'Pizza'},
-    {tag_id: '6', tag: 'Pasta'},
-    {tag_id: '7', tag: 'Italian'},
-    {tag_id: '8', tag: 'Asian'},
-    {tag_id: '9', tag: 'Mexican'},
+    {tagName: 'Drinks'},
+    {tagName: 'Meat'},
+    {tagName: 'Vegetarian'},
+    {tagName: 'Burgers'},
+    {tagName: 'Pizza'},
+    {tagName: 'Pasta'},
+    {tagName: 'Italian'},
+    {tagName: 'Asian'},
+    {tagName: 'Mexican'},
   ]
 
   constructor(
@@ -88,26 +89,48 @@ export class SetupProfileComponent implements OnInit {
     }
   }
 
-  setUpAccount() {
+  async setUpAccount() {
     let displayName = this.form.get('username')?.value;
-    let birthdate = new Date(this.form.get('birthdate')?.value);
+    let birthdateInput = this.form.get('birthdate')?.value;
+    let birthdate = new Date(birthdateInput);
+    let day = birthdate.getDate().toString().padStart(2, '0');
+    let month = (birthdate.getMonth() + 1).toString().padStart(2, '0');
+    let year = birthdate.getFullYear().toString();
+    let formattedDate = `${day}-${month}-${year}`;
+
     let userProfile: UserProfile = {
       bio: this.form.get('bio')?.value,
       displayName: displayName,
       profilePicture: 'placeholder.jpg',
-      birthdate: birthdate,
+      birthdate: formattedDate,
     }
-    this.userService.updateUserProfile(this.user.userId!, userProfile).then(
+    const userTags: UserTags = {
+      mainTags: this.preferences,
+      customTags: []
+    }
+    await this.updateUserAccount(userTags, userProfile);
+  }
+
+  async updateUserAccount(userTags: UserTags, userProfile: UserProfile){
+    this.userService.updateUserTags(this.user.userId!, userTags).then(
       res => {
-        this.userService.changeUserFirstLogin(this.user.userId!).then(
-          res => {
-            this.hotToast.success('Account setup complete');
-            this.router.navigate(['/home']).then();
-          }
-        )
+        return this.userService.updateUserProfile(this.user.userId!, userProfile);
       }
-    )
-    console.log(userProfile)
+    ).then(
+      res => {
+        return this.userService.changeUserFirstLogin(this.user.userId!);
+      }
+    ).then(
+      res => {
+        this.hotToast.success('Account setup complete');
+        return this.router.navigate(['/home']);
+      }
+    ).catch(
+      err => {
+        console.log(err);
+        this.hotToast.error('An error occurred while setting up your account');
+      }
+    );
   }
 
   async ngOnInit(): Promise<void> {

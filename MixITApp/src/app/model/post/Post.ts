@@ -1,6 +1,6 @@
 import {PostMedia} from "./PostMedia";
 import {Recipe} from "./Recipe";
-import {Tag} from "./Tag";
+import {Tag} from "../user/Tag";
 import {Like} from "./Like";
 import {EPostType} from "./EPostType";
 

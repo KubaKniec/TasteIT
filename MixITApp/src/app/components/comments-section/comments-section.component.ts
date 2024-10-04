@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewContainerRef} from '@angular/core';
 import {PostService} from "../../service/post.service";
 import {UserService} from "../../service/user.service";
-import {Comment} from "../../model/Comment";
+import {Comment} from "../../model/post/Comment";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {CommentValidator} from "../../validators/CommentValidator";
 import {HotToastService} from "@ngneat/hot-toast";

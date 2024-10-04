@@ -8,11 +8,11 @@
     <div class="actions">
       <div class="like" (click)="emitLike($event)">
         <mat-icon>favorite_border</mat-icon>
-        <p> 6.9k </p>
+        <p> {{feedItem.likesCount}}</p>
       </div>
       <div class="comment" (click)="emitComment($event)">
         <mat-icon>chat_bubble_outline</mat-icon>
-        <p> 420 </p>
+        <p> {{feedItem.commentsCount}} </p>
       </div>
     </div>
   </div>

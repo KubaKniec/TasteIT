@@ -1,16 +1,17 @@
 import {PostMedia} from "./PostMedia";
 import {Recipe} from "./Recipe";
-import {Tag} from "./Tag";
+import {Tag} from "../user/Tag";
 import {Like} from "./Like";
+import {EPostType} from "./EPostType";
 
 export interface Post {
   postId?: string;
-  user_id?: string;
+  userId?: string;
+  postType?: EPostType;
   postMedia?: PostMedia;
-  recipe?: Recipe;
   tags?: Tag[];
   createdDate?: Date;
-  likes?: Like[];
-  comments?: Comment[];
+  likesCount?: number;
+  commentsCount?: number;
 
 }

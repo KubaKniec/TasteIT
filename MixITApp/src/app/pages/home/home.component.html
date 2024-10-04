@@ -4,7 +4,7 @@
   [distanceForRefresh]=60
   [isEnable]="true"
   [targetElement]="targetElement"
-  (refresh)="refreshEvent($event, 'refresh')"
+  (refresh)="handleRefreshEvent($event, 'refresh')"
   style="display:block;height:100%;">
 <div class="content">
   <div class="separator">
@@ -19,7 +19,7 @@
   <app-feed-item
     *ngFor="let post of posts"
     [feedItem]="post"
-    (gotoDrink)="gotoDrink($event)"
+    (gotoDrink)="gotoPost($event)"
   />
 </div>
 </div>

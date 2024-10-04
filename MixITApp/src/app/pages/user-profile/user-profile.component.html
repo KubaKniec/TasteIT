@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="user-info">
+    <div class="user-avatar">
+      <img src="assets/user_placeholder.png">
+    </div>
+    <p class="user-name"> {{user.displayName || 'Unknown'}} </p>
+    <div class="social-details">
+      <div class="social-details-item">
+        <p class="social-details-item-counter">0</p>
+        <p class="social-details-item-label">Posts</p>
+      </div>
+      <div class="social-details-item">
+        <p class="social-details-item-counter">{{user.followers || 0}}</p>
+        <p class="social-details-item-label">Followers</p>
+      </div>
+      <div class="social-details-item">
+        <p class="social-details-item-counter">{{user.following || 0}}</p>
+        <p class="social-details-item-label">Following</p>
+      </div>
+    </div>
+      <p class="user-bio">{{user.bio || 'No bio available'}}</p>
+  </div>
+  <div class="user-actions">
+    <div class="actions" *ngIf="isVisitor()">
+      <button class="button-secondary" matRipple> Follow </button>
+      <button class="button-secondary" matRipple> Message </button>
+      <button class="button-secondary" matRipple> Report </button>
+    </div>
+    <div class="actions" *ngIf="!isVisitor()">
+      <button class="button-secondary" matRipple> Edit Profile </button>
+      <button class="button-secondary" matRipple> Share Profile </button>
+      <button class="button-secondary" matRipple> Badges </button>
+    </div>
+  </div>
+  <div class="user-posts">
+
+  </div>
+</div>

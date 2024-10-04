@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Filter} from "../../model/Filter";
-import {Post} from "../../model/Post";
+import {Post} from "../../model/post/Post";
 
 @Component({
   selector: 'app-drink-builder',

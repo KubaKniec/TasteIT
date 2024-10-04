@@ -1,5 +1,5 @@
-import {Component, OnInit, ViewContainerRef} from '@angular/core';
-import {Post} from "../../model/Post";
+import {Component, HostListener, OnInit, ViewContainerRef} from '@angular/core';
+import {Post} from "../../model/post/Post";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {PostService} from "../../service/post.service";
@@ -7,7 +7,8 @@ import {SplashScreenFactoryService} from "../../service/factories/splash-screen-
 import {BodyScrollService} from "../../service/body-scroll.service";
 import {AuthService} from "../../service/auth.service";
 import {UserService} from "../../service/user.service";
-import {User} from "../../model/User";
+import {User} from "../../model/user/User";
+import {ScrollPositionService} from "../../service/scroll-position.service";
 
 @Component({
   selector: 'app-home',
@@ -28,33 +29,53 @@ export class HomeComponent implements OnInit{
               private viewContainerRef: ViewContainerRef,
               private bodyScrollService: BodyScrollService,
               private authService: AuthService,
-              private userService: UserService
+              private userService: UserService,
+              private scrollPositionService: ScrollPositionService
               ) {
     this.splashScreenFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
   async ngOnInit(): Promise<void> {
-     this.user = await this.userService.getUserByToken();
+    this.targetElement = document.querySelector('html') as Element;
+    this.greeting = this.getGreetingDependingOnTime();
+    this.user = await this.userService.getUserByToken();
+
     if(this.user.firstLogin){
       this.initializeCompleteAccountSplashScreen();
     }
-    this.targetElement = document.querySelector('html') as Element;
-    this.greeting = this.getGreetingDependingOnTime();
-    await this.loadPost();
+
+    const cachedPosts = this.postService.getFeedState();
+    if(cachedPosts.length > 0){
+      this.posts = cachedPosts;
+      setTimeout(() => window.scrollTo(0, this.scrollPositionService.getScrollPosition()), 0);
+    }else{
+      await this.refreshPosts();
+    }
   }
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    this.scrollPositionService.setScrollPosition(window.scrollY);
+  }
+
   async refreshPosts(): Promise<void> {
+    this.postService.clearFeedCache();
     this.page = 0;
     this.posts = [];
     await this.loadPost();
+    this.scrollPositionService.setScrollPosition(0);
+    window.scrollTo(0, 0);
   }
-  refreshEvent(event: Subject<any>, message: string): void {
+  handleRefreshEvent(event: Subject<any>, message: string): void {
     setTimeout(() => {
       this.refreshPosts().then();
       event.next(event);
     }, 500);
   }
-  gotoDrink(id: string){
+
+  gotoPost(id: string){
+    this.scrollPositionService.setScrollPosition(window.scrollY);
     this.router.navigate([`/drink/${id}`]).then();
   }
+
   getGreetingDependingOnTime(): string {
     const currentHour = new Date().getHours();
     if (currentHour >= 5 && currentHour < 12) {
@@ -90,7 +111,13 @@ export class HomeComponent implements OnInit{
         closeButtonLabel: 'Maybe later'
     }
     this.bodyScrollService.disableScroll();
-    const componentRef = this.splashScreenFactoryService.addDynamicComponent(splashScreenData.title, splashScreenData.content, splashScreenData.actionButtonLabel, splashScreenData.closeButtonLabel);
+
+    const componentRef = this.splashScreenFactoryService.addDynamicComponent(
+      splashScreenData.title,
+      splashScreenData.content,
+      splashScreenData.actionButtonLabel,
+      splashScreenData.closeButtonLabel);
+
     componentRef.instance.actionButton.subscribe(() => {
       this.router.navigate(['/setup-profile']).then();
     })

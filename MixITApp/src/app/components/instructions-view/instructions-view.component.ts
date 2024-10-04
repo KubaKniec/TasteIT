@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {Post} from "../../model/Post";
+import {Post} from "../../model/post/Post";
 import {BodyScrollService} from "../../service/body-scroll.service";
-import {Recipe} from "../../model/Recipe";
+import {Recipe} from "../../model/post/Recipe";
 import {Ingredient} from "../../model/Ingredient";
 @Component({
   selector: 'app-instructions-view',

@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="profile-tab" matRipple (click)="goto('login')">
+  <div class="profile-tab" matRipple (click)="gotoProfile()">
     <img src="../../../assets/user_placeholder.png" width="50px" height="50px" class="profile-picture">
     <div class="texts" *ngIf="isAuthenticated && user">
       <p class="profile-text"> {{user.displayName}}</p>
@@ -16,22 +16,22 @@
 
     <div class="action" matRipple>
       <div>
-          <mat-icon>history</mat-icon>
-          <p> Cocktails History </p>
+          <mat-icon>favorite</mat-icon>
+          <p> Likes </p>
       </div>
       <mat-icon>arrow_forward_ios</mat-icon>
     </div>
     <div class="action" matRipple (click)="goto('favourites')">
       <div>
-        <mat-icon>favorite</mat-icon>
-        <p> Favorite </p>
+        <mat-icon>dashboard</mat-icon>
+        <p> Feed Settings </p>
       </div>
       <mat-icon>arrow_forward_ios</mat-icon>
     </div>
     <div class="action" matRipple>
       <div>
-        <mat-icon>group</mat-icon>
-        <p> Friends </p>
+        <mat-icon>admin_panel_settings</mat-icon>
+        <p> Account Settings</p>
       </div>
       <mat-icon>arrow_forward_ios</mat-icon>
     </div>

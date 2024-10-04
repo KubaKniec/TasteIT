@@ -89,41 +89,45 @@ export class SetupProfileComponent implements OnInit {
     }
   }
 
-  setUpAccount() {
+  async setUpAccount() {
     let displayName = this.form.get('username')?.value;
-    let birthdate = new Date(this.form.get('birthdate')?.value);
+    let birthdateInput = this.form.get('birthdate')?.value;
+    let birthdate = new Date(birthdateInput);
+    let day = birthdate.getDate().toString().padStart(2, '0');
+    let month = (birthdate.getMonth() + 1).toString().padStart(2, '0');
+    let year = birthdate.getFullYear().toString();
+    let formattedDate = `${day}-${month}-${year}`;
+
     let userProfile: UserProfile = {
       bio: this.form.get('bio')?.value,
       displayName: displayName,
       profilePicture: 'placeholder.jpg',
-      birthdate: birthdate,
+      birthdate: formattedDate,
     }
     const userTags: UserTags = {
       mainTags: this.preferences,
       customTags: []
     }
+    await this.updateUserAccount(userTags, userProfile);
+  }
+
+  async updateUserAccount(userTags: UserTags, userProfile: UserProfile){
     this.userService.updateUserTags(this.user.userId!, userTags).then(
       res => {
-        // do nothing
+        return this.userService.updateUserProfile(this.user.userId!, userProfile);
       }
-    ).catch(
-      err => {
-        console.log(err)
-        this.hotToast.error('An error occurred while setting up your account');
-      }
-    );
-    this.userService.updateUserProfile(this.user.userId!, userProfile).then(
+    ).then(
       res => {
-        this.userService.changeUserFirstLogin(this.user.userId!).then(
-          res => {
-            this.hotToast.success('Account setup complete');
-            this.router.navigate(['/home']).then();
-          }
-        )
+        return this.userService.changeUserFirstLogin(this.user.userId!);
+      }
+    ).then(
+      res => {
+        this.hotToast.success('Account setup complete');
+        return this.router.navigate(['/home']);
       }
     ).catch(
       err => {
-        console.log(err)
+        console.log(err);
         this.hotToast.error('An error occurred while setting up your account');
       }
     );

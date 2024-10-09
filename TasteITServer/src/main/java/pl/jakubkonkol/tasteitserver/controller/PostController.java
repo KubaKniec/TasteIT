@@ -100,9 +100,9 @@ public class PostController {
     }
 
     @GetMapping("/getPostsLikedByUser/{userId}")
-    public ResponseEntity<List<PostDto>> getPostsLikedByUser(@PathVariable String userId) {
+    public ResponseEntity<List<PostDto>> getPostsLikedByUser(@PathVariable String userId, @RequestHeader("Authorization") final String sessionToken) {
 
-        var posts = postService.getPostsLikedByUser(userId);
+        var posts = postService.getPostsLikedByUser(userId, sessionToken);
 
         return ResponseEntity.ok(posts);
     }

@@ -107,13 +107,20 @@ public class PostService {
         return post.getRecipe();
     }
 
+    public List<PostDto> getPostsLikedByUser(String userId, String sessionToken) {
+        var posts = postRepository.findByLikesUserId(userId);
+        return posts.stream()
+                .map(post->convertToDto(post, sessionToken))
+                .toList();
+    }
+
     private PostDto convertToDto(Post post, String sessionToken) {
         PostDto postDto = modelMapper.map(post, PostDto.class);
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
-        var currentUser = this.getCurrentUserBySessionToken(sessionToken);
-        var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId());
+        var currentUser = this.getCurrentUserBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
+        var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
         if(like.isEmpty()){
             postDto.setLikedByCurrentUser(false);

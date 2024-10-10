@@ -5,7 +5,7 @@
       <img src="assets/barman.png" width="250px" height="250px">
       <p class="text">Before you can make a <b class="accent"> {{post.postMedia?.title}} </b>, you need to make sure you have the following ingredients:</p>
       <div class="ingredient-wrapper">
-        <p class="ingredient-text" *ngFor="let ingredient of getIngredients()"> <b class="am"> {{ingredient.amount}} </b> {{ingredient.name}}</p>
+        <p class="ingredient-text" *ngFor="let ingredient of getIngredients()"> <b class="am"> {{ingredient.measurement?.value}} </b> {{ingredient.name}}</p>
       </div>
     </div>
     <!--  -->

@@ -1,5 +1,7 @@
 package pl.jakubkonkol.tasteitserver.dto;
 import lombok.Data;
+import pl.jakubkonkol.tasteitserver.model.Measurement;
+
 @Data
 public class IngredientDto {
     private String ingredientId;
@@ -9,4 +11,5 @@ public class IngredientDto {
     private boolean isAlcohol;
     private String strength;
     private String imageURL;
+    private Measurement measurement;
 }

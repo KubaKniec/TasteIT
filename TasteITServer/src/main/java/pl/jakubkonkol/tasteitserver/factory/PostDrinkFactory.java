@@ -17,7 +17,7 @@ public class PostDrinkFactory extends PostFactory {
         newPost.setPostMedia(postMedia);
 
         Recipe recipe = createRecipe(postObj, "strInstructions");
-        recipe.setIngredientsMeasurements(createIngredients(postObj));
+        recipe.setIngredientsWithMeasurements(createIngredients(postObj));
         newPost.setRecipe(recipe);
 
         // TODO: Set proper user and tags, likes, comments, etc.

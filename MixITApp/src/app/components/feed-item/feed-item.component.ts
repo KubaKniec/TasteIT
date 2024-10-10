@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Haptics, ImpactStyle} from "@capacitor/haptics";
 import {Post} from "../../model/post/Post";
+import {PostService} from "../../service/post.service";
 
 @Component({
   selector: 'app-feed-item',
@@ -10,15 +11,26 @@ import {Post} from "../../model/post/Post";
 export class FeedItemComponent {
   @Input() feedItem: Post = {};
   @Output() gotoDrink: EventEmitter<any> = new EventEmitter<any>();
-
+  @Output() likeEvent: EventEmitter<any> = new EventEmitter<any>();
+  constructor(private postService: PostService) {
+  }
   emitGotoDrink(): void {
     this.gotoDrink.emit(this.feedItem.postId);
+  }
+  async updatePost(): Promise<void> {
+    this.feedItem = await this.postService.getPostById(this.feedItem.postId!);
   }
 
   async emitLike(event: Event) {
     event.stopPropagation();
     await Haptics.impact({style: ImpactStyle.Medium})
-    console.log('Like clicked');
+
+    this.feedItem.likedByCurrentUser ?
+        await this.postService.unlikePost(this.feedItem.postId!) :
+        await this.postService.likePost(this.feedItem.postId!)
+
+    await this.updatePost();
+    this.likeEvent.emit();
   }
 
   emitComment(event: Event) {

@@ -1,0 +1,13 @@
+.container{
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.title-text{
+  margin-bottom: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--theme-color-200)
+}

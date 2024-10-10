@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.jakubkonkol.tasteitserver.dto.IngredientDto;
 import pl.jakubkonkol.tasteitserver.model.*;
 import pl.jakubkonkol.tasteitserver.service.IngredientService;
 
@@ -42,28 +43,30 @@ public abstract class PostFactory {
         return recipe;
     }
 
-    protected List<IngredientWrapper> createIngredients(JSONObject postObj) {
-        List<IngredientWrapper> ingredients = new ArrayList<>();
+    protected List<IngredientDto> createIngredients(JSONObject postObj) {
+        List<IngredientDto> ingredients = new ArrayList<>();
         for (int i = 1; i <= 15; i++) {
-            var ingWrapper = new IngredientWrapper();
+            var ingDto = new IngredientDto();
             String ingredientName = postObj.optString("strIngredient" + i, "").toLowerCase();
             String ingredientAmount = postObj.optString("strMeasure" + i, "").trim();
 
             if (ingredientName.isBlank() || ingredientAmount.isBlank()) break;
 
-            var measure = new Measurement();
-            measure.setValue(ingredientAmount);
-            measure.setUnit("unit");
-            ingWrapper.setMeasurement(measure);
-            if (this.ingredientService.findByName(ingredientName).isPresent()) {
-                var ingredient = this.ingredientService.findByName(ingredientName).get();
-                ingWrapper.setIngredient(ingredient);
+            var optionalIngredient = this.ingredientService.findByName(ingredientName);
+            if (optionalIngredient.isPresent()) {
+                var ingredient = optionalIngredient.get();
+                ingDto = ingredientService.convertToDto(ingredient);
             } else {
                 var ingredient = new Ingredient();
                 ingredient.setName(ingredientName);
-                ingWrapper.setIngredient(ingredient);
+                ingDto = ingredientService.convertToDto(ingredient);
             }
-            ingredients.add(ingWrapper);
+
+            var measure = new Measurement();
+            measure.setValue(ingredientAmount);
+            measure.setUnit("unit");
+            ingDto.setMeasurement(measure);
+            ingredients.add(ingDto);
         }
         return ingredients;
     }

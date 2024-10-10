@@ -24,9 +24,11 @@ public class DBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
     @PostConstruct
-    public void buildDataBase() throws IOException {
+    public void createDefaultAdminAccount() throws IOException{
         adminUserFactory.CreateAdmin();
-        LOGGER.log(Level.INFO, "Database cleared, building new one");
+    }
+//    @PostConstruct
+    public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
         postService.deleteAll();
         LOGGER.log(Level.INFO, "Database cleared, building new one");

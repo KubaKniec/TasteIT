@@ -2,12 +2,18 @@ package pl.jakubkonkol.tasteitserver.factory;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import pl.jakubkonkol.tasteitserver.apitools.IngredientFetcher;
+import pl.jakubkonkol.tasteitserver.dto.UserCreationRequestDto;
 import pl.jakubkonkol.tasteitserver.model.Authentication;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.AuthenticationService;
+import pl.jakubkonkol.tasteitserver.service.UserService;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,22 +21,42 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class AdminUserFactory {
     private final UserRepository userRepository;
-    private static final Logger LOGGER = Logger.getLogger(IngredientFetcher.class.getName());
+    private final AuthenticationService authenticationService;
+    private final UserService userService;
+    private static final Logger LOGGER = Logger.getLogger(AdminUserFactory.class.getName());
     private final List<String> roles = List.of("ADMIN", "USER");
-    public Boolean CreateAdmin() {
-        if (userRepository.findByEmail("admin@admin.com").isEmpty()){
-            User admin = new User();
-            admin.setDisplayName("ADMIN");
+    public void CreateAdmin() {
+        if (userRepository.findByEmail("tasteit@admin.com").isEmpty()){
+
+            //register admin account
+            UserCreationRequestDto adminCreationDto = new UserCreationRequestDto();
+            adminCreationDto.setEmail("tasteit@admin.com");
+            adminCreationDto.setPassword(System.getenv("MONGO_PASSWORD"));
+            authenticationService.register(adminCreationDto);
+
+            // Force admin account to have userId 0 (Voodoo magic)
+            var admin = userRepository.findByEmail("tasteit@admin.com").orElseThrow(() -> new NoSuchElementException(
+                    "Unexpected error occurred while creating admin account"));
+            var idToRemove = admin.getUserId();
+            userRepository.deleteById(idToRemove);
             admin.setUserId("0");
-            admin.setEmail("admin@tasteit.pl");
-            admin.setRoles(roles);
-            admin.setAuthentication(Authentication.builder().password("$2a$10$FYMAQC60DKhfjuAoQmYYheaARKwV4mVZDPNdJupmQD8qyKqmQUNau") //password == Admin123$
-                    .salt("$2a$10$FYMAQC60DKhfjuAoQmYYhe").build());
             userRepository.save(admin);
+
+            //set admin profile
+            userService.updateUserProfile(
+                    "0",
+                    "TasteIT",
+                    "Admin of TasteIT",
+                    "placeholder.jpg",
+                    LocalDate.now());
+            userService.changeUserFirstLogin("0");
+            userRepository.findById("0").ifPresent(user -> {
+                user.setRoles(roles);
+                userRepository.save(user);
+            });
             LOGGER.log(Level.INFO, "Admin account created");
-            return true;
+        }else{
+            LOGGER.log(Level.INFO, "Admin account already exist");
         }
-        LOGGER.log(Level.INFO, "Admin account already exist");
-        return false;
     }
 }

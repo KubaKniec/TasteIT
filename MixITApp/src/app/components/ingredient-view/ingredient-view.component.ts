@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IngredientObj} from "../../model/post/IngredientObj";
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {Ingredient} from "../../model/Ingredient";
+import {Ingredient} from "../../model/post/Ingredient";
 
 @Component({
   selector: 'app-ingredient-view',

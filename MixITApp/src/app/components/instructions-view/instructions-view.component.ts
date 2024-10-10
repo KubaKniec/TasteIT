@@ -3,7 +3,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Post} from "../../model/post/Post";
 import {BodyScrollService} from "../../service/body-scroll.service";
 import {Recipe} from "../../model/post/Recipe";
-import {Ingredient} from "../../model/Ingredient";
+import {Ingredient} from "../../model/post/Ingredient";
 @Component({
   selector: 'app-instructions-view',
   templateUrl: './instructions-view.component.html',
@@ -35,8 +35,8 @@ export class InstructionsViewComponent implements OnInit, OnDestroy{
   ) { }
 
   getIngredients(): Ingredient[]{
-    return this.recipe.ingredientsMeasurements.map((ingredientWrapper) => {
-      return ingredientWrapper.ingredient;
+    return this.recipe.ingredientsWithMeasurements.map((ingredient) => {
+      return ingredient;
     }) || [];
 
   }

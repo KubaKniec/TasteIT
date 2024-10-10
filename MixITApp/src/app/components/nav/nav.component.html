@@ -18,7 +18,7 @@
     <mat-icon>search</mat-icon>
     <span>Search</span>
   </div>
-  <div [classList]="activeRoute('/profile')" (click)="goto('profile')">
+  <div [classList]="activeRoute('/user-profile')" (click)="goto('user-profile/'+this.userId)">
     <mat-icon>person_outline</mat-icon>
     <span>Profile</span>
   </div>

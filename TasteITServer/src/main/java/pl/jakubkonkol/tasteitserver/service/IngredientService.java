@@ -79,7 +79,7 @@ public class IngredientService {
 
     }
 
-    private IngredientDto convertToDto(Ingredient ingredient) {
+    public IngredientDto convertToDto(Ingredient ingredient) {
         return modelMapper.map(ingredient, IngredientDto.class);
     }
 }

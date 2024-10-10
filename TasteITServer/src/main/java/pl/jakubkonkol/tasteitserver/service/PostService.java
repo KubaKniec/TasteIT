@@ -116,6 +116,12 @@ public class PostService {
                 .toList();
     }
 
+    public PostDto createPost(PostDto postDto, String sessionToken) {
+        Post post = convertToEntity(postDto);
+        postRepository.save(post);
+        return convertToDto(post, sessionToken);
+    }
+
     private PostDto convertToDto(Post post, String sessionToken) {
         PostDto postDto = modelMapper.map(post, PostDto.class);
         postDto.setLikesCount((long) post.getLikes().size());

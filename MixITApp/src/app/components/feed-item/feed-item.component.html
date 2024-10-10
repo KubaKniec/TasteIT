@@ -7,7 +7,8 @@
     <img src="{{feedItem.postMedia?.pictures?.[0]}}">
     <div class="actions">
       <div class="like" (click)="emitLike($event)">
-        <mat-icon>favorite_border</mat-icon>
+        <mat-icon *ngIf="!feedItem.likedByCurrentUser">favorite_border</mat-icon>
+        <mat-icon *ngIf="feedItem.likedByCurrentUser"  [ngStyle]="{'color':'white'}" class="red">favorite</mat-icon>
         <p> {{feedItem.likesCount}}</p>
       </div>
       <div class="comment" (click)="emitComment($event)">

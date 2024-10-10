@@ -14,13 +14,21 @@
   <div class="actions">
     <p class="section-title"> Profile </p>
 
-    <div class="action" matRipple>
+    <div class="action" matRipple (click)="goto('userLikes')">
       <div>
           <mat-icon>favorite</mat-icon>
           <p> Likes </p>
       </div>
       <mat-icon>arrow_forward_ios</mat-icon>
     </div>
+    <div class="action" matRipple>
+      <div>
+        <mat-icon>menu_book</mat-icon>
+        <p> FoodLists </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+
     <div class="action" matRipple (click)="goto('favourites')">
       <div>
         <mat-icon>dashboard</mat-icon>
@@ -42,6 +50,13 @@
 
     <div class="action" matRipple>
       <div>
+        <mat-icon>settings</mat-icon>
+        <p> Settings </p>
+      </div>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </div>
+    <div class="action" matRipple>
+      <div>
         <mat-icon>info</mat-icon>
         <p> Info </p>
       </div>
@@ -51,13 +66,6 @@
       <div>
         <mat-icon>contact_support</mat-icon>
         <p> Contact us </p>
-      </div>
-      <mat-icon>arrow_forward_ios</mat-icon>
-    </div>
-    <div class="action" matRipple>
-      <div>
-        <mat-icon>settings</mat-icon>
-        <p> Settings </p>
       </div>
       <mat-icon>arrow_forward_ios</mat-icon>
     </div>

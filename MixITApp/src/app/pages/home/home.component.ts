@@ -45,8 +45,8 @@ export class HomeComponent implements OnInit{
 
     const cachedPosts = this.postService.getFeedState();
     if(cachedPosts.length > 0){
-      this.posts = cachedPosts;
       setTimeout(() => window.scrollTo(0, this.scrollPositionService.getScrollPosition()), 0);
+      this.posts = cachedPosts;
     }else{
       await this.refreshPosts();
     }
@@ -127,5 +127,8 @@ export class HomeComponent implements OnInit{
     });
 
   }
-
+  async onLikeEvent(postId: string){
+    const postIndex = this.posts.findIndex(post => post.postId === postId);
+    this.posts[postIndex] = await this.postService.getPostById(postId);
+  }
 }

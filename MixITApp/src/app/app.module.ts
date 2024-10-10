@@ -60,6 +60,7 @@ import {ScrollPositionService} from "./service/scroll-position.service";
 import { FoodlistsComponent } from './pages/foodlists/foodlists.component';
 import { AddToFoodListComponent } from './components/add-to-food-list/add-to-food-list.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
+import { UserLikesComponent } from './pages/user-likes/user-likes.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { UserProfileComponent } from './pages/user-profile/user-profile.componen
     FoodlistsComponent,
     AddToFoodListComponent,
     UserProfileComponent,
+    UserLikesComponent,
   ],
   imports: [
     BrowserModule,

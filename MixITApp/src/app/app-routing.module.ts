@@ -14,6 +14,7 @@ import {LoginGuard} from "./guards/LoginGuard";
 import {SetupProfileComponent} from "./pages/setup-profile/setup-profile.component";
 import {FoodlistsComponent} from "./pages/foodlists/foodlists.component";
 import {UserProfileComponent} from "./pages/user-profile/user-profile.component";
+import {UserLikesComponent} from "./pages/user-likes/user-likes.component";
 
 const routes: Routes = [
   {path: '', redirectTo:'/welcome', pathMatch: 'full'},
@@ -28,7 +29,8 @@ const routes: Routes = [
   {path: 'register', component: RegisterComponent, data: {showNav: false}, canActivate: [LoginGuard]},
   {path: 'setup-profile', component: SetupProfileComponent, data: {showNav: false}, canActivate: [AuthGuard]},
   {path: 'foodlists', component: FoodlistsComponent, data: {showNav: true}, canActivate: [AuthGuard]},
-  {path: 'user-profile/:id', component: UserProfileComponent, data: {showNav: true}, canActivate: [AuthGuard]}
+  {path: 'user-profile/:id', component: UserProfileComponent, data: {showNav: true}, canActivate: [AuthGuard]},
+  {path: 'userLikes', component: UserLikesComponent, data: {showNav: true}, canActivate: [AuthGuard]}
 
 ];
 

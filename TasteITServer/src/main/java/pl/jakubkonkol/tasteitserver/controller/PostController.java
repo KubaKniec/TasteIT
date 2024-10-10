@@ -1,5 +1,6 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,11 +100,17 @@ public class PostController {
         return ResponseEntity.ok(commentDtos);
     }
 
-    @GetMapping("/getPostsLikedByUser/{userId}")
+    @GetMapping("/likedby/{userId}")
     public ResponseEntity<List<PostDto>> getPostsLikedByUser(@PathVariable String userId, @RequestHeader("Authorization") final String sessionToken) {
 
         var posts = postService.getPostsLikedByUser(userId, sessionToken);
 
         return ResponseEntity.ok(posts);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createPost(@RequestBody @Valid PostDto postDto, @RequestHeader("Authorization") final String sessionToken) {
+        PostDto post = postService.createPost(postDto, sessionToken);
+        return ResponseEntity.ok(post);
     }
 }

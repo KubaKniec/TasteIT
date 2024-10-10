@@ -12,9 +12,12 @@ import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
+import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,6 +26,8 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class PostService {
+    private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
     private final MongoTemplate mongoTemplate;
@@ -44,14 +49,14 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public PostDto getPost(String postId) {
+    public PostDto getPost(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
-        return convertToDto(post);
+        return convertToDto(post, sessionToken);
     }
 
     //temp implementation
-    public PageDto<PostDto> getRandomPosts(Integer page, Integer size) {
+    public PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken) {
         // Create a Pageable object for pagination information
         Pageable pageable = PageRequest.of(page, size);
 
@@ -71,7 +76,7 @@ public class PostService {
         }
 
         List<PostDto> postDtos = posts.stream()
-                .map(this::convertToDto)
+                .map(post -> convertToDto(post, sessionToken))
                 .toList();
 
         PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, total);
@@ -87,13 +92,13 @@ public class PostService {
     }
 
     //if title consists few words use '%20' between them in get request
-    public List<PostDto> searchPostsByTitle(String query) {
+    public List<PostDto> searchPostsByTitle(String query, String sessionToken) {
         List<Post> posts = postRepository.findByPostMediaTitleContainingIgnoreCase(query);
         if (posts.isEmpty()){
             //raczej nic nie trzeba
         }
         return posts.stream()
-                .map(this::convertToDto)
+                .map(post -> convertToDto(post, sessionToken))
                 .toList();
     }
 
@@ -102,12 +107,45 @@ public class PostService {
         return post.getRecipe();
     }
 
-    private PostDto convertToDto(Post post) {
+    public List<PostDto> getPostsLikedByUser(String userId, String sessionToken) {
+        var likes = likeRepository.findByUserId(userId);
+        var posts = postRepository.findByLikesIn(likes);
+
+        return posts.stream()
+                .map(post->convertToDto(post, sessionToken))
+                .toList();
+    }
+
+    public PostDto createPost(PostDto postDto, String sessionToken) {
+        Post post = convertToEntity(postDto);
+        postRepository.save(post);
+        return convertToDto(post, sessionToken);
+    }
+
+    private PostDto convertToDto(Post post, String sessionToken) {
         PostDto postDto = modelMapper.map(post, PostDto.class);
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
+        var currentUser = this.getCurrentUserBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
+        var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
+
+        if(like.isEmpty()){
+            postDto.setLikedByCurrentUser(false);
+        }
+        else {
+            postDto.setLikedByCurrentUser(true);
+
+        }
+
         return postDto;
+    }
+
+    private User getCurrentUserBySessionToken(String sessionToken){
+        var currentUser = userRepository.findBySessionToken(sessionToken)
+                .orElseThrow(() -> new NoSuchElementException("User with token " + sessionToken + " not found"));
+        return currentUser;
+
     }
 
     private Post convertToEntity(PostDto postDto) {

@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final PostService postService;
 
     @GetMapping("/getUserById/{userId}")
     public ResponseEntity<UserReturnDto> getUserById(@PathVariable String userId) {

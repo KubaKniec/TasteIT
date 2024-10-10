@@ -13,5 +13,6 @@ export interface Post {
   createdDate?: Date;
   likesCount?: number;
   commentsCount?: number;
+  likedByCurrentUser?: boolean;
 
 }

@@ -2,7 +2,7 @@ import {IComponentFactory} from "../../helpers/IComponentFactory";
 import {IngredientViewComponent} from "../../components/ingredient-view/ingredient-view.component";
 import {ComponentRef, ViewContainerRef} from "@angular/core";
 import {IngredientObj} from "../../model/post/IngredientObj";
-import {Ingredient} from "../../model/Ingredient";
+import {Ingredient} from "../../model/post/Ingredient";
 
 export class IngredientViewFactoryService implements IComponentFactory<IngredientViewComponent>{
 

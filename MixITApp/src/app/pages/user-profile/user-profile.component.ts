@@ -21,6 +21,8 @@ export class UserProfileComponent implements OnInit{
     this.userId = this.route.snapshot.params['id'] as string;
     this.userService.getUserById(this.userId).then(user => {
       this.user = user;
+    }).finally(() => {
+
     });
     this.userService.getUserByToken().then(user => {
       this.loggedUserId = user.userId!;
@@ -30,5 +32,11 @@ export class UserProfileComponent implements OnInit{
   isVisitor(): boolean {
     return this.loggedUserId !== this.userId;
   }
+  gotoSettings(): void{
+    this.router.navigate(['profile']);
+  }
 
+  goto(url: string) {
+    this.router.navigate([url]);
+  }
 }

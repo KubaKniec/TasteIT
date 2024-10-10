@@ -1,14 +1,13 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.jakubkonkol.tasteitserver.dto.CommentDto;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
-import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.GenericResponse;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.service.CommentService;
@@ -26,8 +25,8 @@ public class PostController {
     private final CommentService commentService;
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getPost(@PathVariable String postId) {
-        PostDto postDto = postService.getPost(postId);
+    public ResponseEntity<PostDto> getPost(@PathVariable String postId, @RequestHeader("Authorization") String sessionToken) {
+        PostDto postDto = postService.getPost(postId, sessionToken);
 /*        if (postDto == null) {
             throw new ResourceNotFoundException("Post not found with ID: " + postId);
         }*/
@@ -36,14 +35,16 @@ public class PostController {
 
     @GetMapping("/feed")
     public ResponseEntity<PageDto<PostDto>> getRandomPosts(@RequestParam(defaultValue = "0") Integer page,
-                                                        @RequestParam(defaultValue = "20") Integer size) {
-        PageDto<PostDto> pageDto = postService.getRandomPosts(page, size);
+                                                        @RequestParam(defaultValue = "20") Integer size,
+                                                           @RequestHeader("Authorization") String sessionToken) {
+        PageDto<PostDto> pageDto = postService.getRandomPosts(page, size, sessionToken);
         return ResponseEntity.ok(pageDto);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<PostDto>> searchPostsByTitle(@RequestParam String query) {
-        List<PostDto> postDtos = postService.searchPostsByTitle(query);
+    public ResponseEntity<List<PostDto>> searchPostsByTitle(@RequestParam String query,
+                                                            @RequestHeader("Authorization") String sessionToken) {
+        List<PostDto> postDtos = postService.searchPostsByTitle(query, sessionToken);
         return ResponseEntity.ok(postDtos);
     }
 
@@ -97,5 +98,19 @@ public class PostController {
     public ResponseEntity<List<CommentDto>> getComments(@PathVariable String postId) {
         List<CommentDto> commentDtos = commentService.getComments(postId);
         return ResponseEntity.ok(commentDtos);
+    }
+
+    @GetMapping("/likedby/{userId}")
+    public ResponseEntity<List<PostDto>> getPostsLikedByUser(@PathVariable String userId, @RequestHeader("Authorization") final String sessionToken) {
+
+        var posts = postService.getPostsLikedByUser(userId, sessionToken);
+
+        return ResponseEntity.ok(posts);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<PostDto> createPost(@RequestBody @Valid PostDto postDto, @RequestHeader("Authorization") final String sessionToken) {
+        PostDto post = postService.createPost(postDto, sessionToken);
+        return ResponseEntity.ok(post);
     }
 }

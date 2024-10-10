@@ -21,7 +21,7 @@ public class PostDrinkFactory extends PostFactory {
         newPost.setRecipe(recipe);
 
         // TODO: Set proper user and tags, likes, comments, etc.
-        newPost.setUserId("69696969");
+        newPost.setUserId("0"); //userId=0 -> id admina
         newPost.setTags(null);
         newPost.setLikes(null);
         newPost.setComments(null);

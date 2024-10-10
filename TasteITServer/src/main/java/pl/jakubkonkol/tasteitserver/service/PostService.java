@@ -108,7 +108,9 @@ public class PostService {
     }
 
     public List<PostDto> getPostsLikedByUser(String userId, String sessionToken) {
-        var posts = postRepository.findByLikesUserId(userId);
+        var likes = likeRepository.findByUserId(userId);
+        var posts = postRepository.findByLikesIn(likes);
+
         return posts.stream()
                 .map(post->convertToDto(post, sessionToken))
                 .toList();

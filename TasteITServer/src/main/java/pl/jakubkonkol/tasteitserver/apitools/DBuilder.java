@@ -3,6 +3,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Component;
+import pl.jakubkonkol.tasteitserver.factory.AdminUserFactory;
+import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.IngredientService;
 import pl.jakubkonkol.tasteitserver.service.PostService;
 
@@ -18,7 +20,13 @@ public class DBuilder {
     private final DrinkFetcher drinkFetcher;
     private final IngredientService ingredientService;
     private final PostService postService;
+    private final AdminUserFactory adminUserFactory;
+
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
+    @PostConstruct
+    public void createDefaultAdminAccount() throws IOException{
+        adminUserFactory.CreateAdmin();
+    }
 //    @PostConstruct
     public void buildDataBase() throws IOException {
         ingredientService.deleteAll();

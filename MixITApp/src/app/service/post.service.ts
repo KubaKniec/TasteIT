@@ -101,7 +101,7 @@ export class PostService {
       });
   }
   async getLikedPosts(userId: string): Promise<Post[]>{
-    const res = await taste_api.get(`/post/getPostsLikedByUser/`+userId);
+    const res = await taste_api.get(`/post/likedby/`+userId);
     return await this.handleApiResponse<Post[]>(res);
   }
 }

@@ -96,7 +96,7 @@ export class SetupProfileComponent implements OnInit {
     let day = birthdate.getDate().toString().padStart(2, '0');
     let month = (birthdate.getMonth() + 1).toString().padStart(2, '0');
     let year = birthdate.getFullYear().toString();
-    let formattedDate = `${day}-${month}-${year}`;
+    let formattedDate = `${year}-${month}-${day}`;
 
     let userProfile: UserProfile = {
       bio: this.form.get('bio')?.value,

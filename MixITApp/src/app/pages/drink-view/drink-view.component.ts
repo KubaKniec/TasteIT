@@ -7,7 +7,7 @@ import {BodyScrollService} from "../../service/body-scroll.service";
 import {IngredientViewFactoryService} from "../../service/factories/ingredient-view-factory.service";
 import {NavigationService} from "../../service/navigation.service";
 import {PostService} from "../../service/post.service";
-import {Ingredient} from "../../model/Ingredient";
+import {Ingredient} from "../../model/post/Ingredient";
 import {Recipe} from "../../model/post/Recipe";
 import {CommentsSectionFactoryService} from "../../service/factories/comments-section-factory.service";
 
@@ -49,8 +49,8 @@ export class DrinkViewComponent implements OnInit{
     this.isLoaded = true;
   }
    getIngredients(): Ingredient[] {
-    return this.recipe.ingredientsMeasurements.map((ingredientWrapper) => {
-      return ingredientWrapper.ingredient;
+    return this.recipe.ingredientsWithMeasurements.map((ingredient) => {
+      return ingredient;
     }) || [];
   }
   refreshPost(){

@@ -1,3 +1,5 @@
+import {Measurement} from "./Measurement";
+
 export interface Ingredient{
   ingredientId: number;
   name: string;
@@ -6,5 +8,5 @@ export interface Ingredient{
   isAlcohol?: boolean;
   strength?: string;
   imageURL?: string;
-  amount?: string;
+  measurement?: Measurement;
 }

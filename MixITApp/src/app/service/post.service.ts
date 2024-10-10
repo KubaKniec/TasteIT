@@ -1,9 +1,9 @@
-import { Injectable } from "@angular/core";
-import { Post } from "../model/post/Post";
+import {Injectable} from "@angular/core";
+import {Post} from "../model/post/Post";
 import taste_api from "../api/taste_api";
-import { Recipe } from "../model/post/Recipe";
-import { Comment } from "../model/post/Comment";
-import { BehaviorSubject } from "rxjs";
+import {Recipe} from "../model/post/Recipe";
+import {Comment} from "../model/post/Comment";
+import {BehaviorSubject} from "rxjs";
 import {AxiosResponse} from "axios";
 
 @Injectable({
@@ -76,19 +76,32 @@ export class PostService {
 
   async deletePostComment(postId: string, commentId: string): Promise<number> {
     const res = await taste_api.delete(`/post/${postId}/comment/${commentId}`);
-    await this.handleApiResponse<number>(res);
-    return res.status;
+    return await this.handleApiResponse<number>(res);
   }
 
-  async likePost(id: string): Promise<number> {
-    const res = await taste_api.post(`/post/${id}/like`);
-    await this.handleApiResponse<number>(res);
-    return res.status;
+  async likePost(id: string): Promise<any> {
+    return await taste_api.post(`/post/${id}/like`)
+      .catch(function (error) {
+        if(error.response){
+          console.log(error.response.data);
+        }else{
+          console.log('Error: '+error.message);
+        }
+      });
   }
 
-  async unlikePost(id: string): Promise<number> {
-    const res = await taste_api.delete(`/post/${id}/like`);
-    await this.handleApiResponse<number>(res);
-    return res.status;
+  async unlikePost(id: string): Promise<any> {
+    return await taste_api.delete(`/post/${id}/like`)
+      .catch(function (error) {
+        if(error.response){
+          console.log(error.response.data);
+        }else{
+          console.log('Error: '+error.message);
+        }
+      });
+  }
+  async getLikedPosts(userId: number): Promise<Post[]>{
+    const res = await taste_api.get(`/post/getPostsLikedByUser/`+userId);
+    return await this.handleApiResponse<Post[]>(res);
   }
 }

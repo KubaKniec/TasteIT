@@ -104,4 +104,8 @@ export class PostService {
     const res = await taste_api.get(`/post/likedby/`+userId);
     return await this.handleApiResponse<Post[]>(res);
   }
+  async createPost(post: Post): Promise<Post> {
+    const res = await taste_api.post(`/post`, post);
+    return this.handleApiResponse<Post>(res);
+  }
 }

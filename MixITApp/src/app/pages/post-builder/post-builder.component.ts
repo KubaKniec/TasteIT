@@ -17,12 +17,12 @@ export class PostBuilderComponent implements OnInit{
   }
 
   async ngOnInit(): Promise<void> {
-    await this.cameraService.addNewToGallery().catch(err => {
+    await this.cameraService.takePhoto().catch(err => {
       this.router.navigate(['/home']);
     });
   }
 
   async addPhoto() {
-    await this.cameraService.addNewToGallery();
+
   }
 }

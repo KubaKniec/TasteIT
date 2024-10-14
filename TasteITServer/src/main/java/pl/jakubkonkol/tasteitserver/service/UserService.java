@@ -30,7 +30,7 @@ public class UserService {
         return convertToDto(user);
     }
 
-    public UserReturnDto getUserByToken(String sessionToken) {
+    public UserReturnDto getCurrentUserBySessionToken(String sessionToken) {
         User user = userRepository.findBySessionToken(sessionToken)
                 .orElseThrow(() -> new NoSuchElementException("User with token " + sessionToken + " not found"));
         return convertToDto(user);

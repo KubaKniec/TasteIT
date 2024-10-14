@@ -26,7 +26,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class PostService {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
@@ -127,7 +127,7 @@ public class PostService {
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
-        var currentUser = this.getCurrentUserBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
         var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
         if(like.isEmpty()){
@@ -135,17 +135,8 @@ public class PostService {
         }
         else {
             postDto.setLikedByCurrentUser(true);
-
         }
-
         return postDto;
-    }
-
-    private User getCurrentUserBySessionToken(String sessionToken){
-        var currentUser = userRepository.findBySessionToken(sessionToken)
-                .orElseThrow(() -> new NoSuchElementException("User with token " + sessionToken + " not found"));
-        return currentUser;
-
     }
 
     private Post convertToEntity(PostDto postDto) {

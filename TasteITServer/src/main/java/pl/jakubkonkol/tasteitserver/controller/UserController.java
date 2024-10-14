@@ -31,9 +31,9 @@ public class UserController {
     }
 
     @GetMapping("/getUserByToken")
-    public ResponseEntity<UserReturnDto> getUserByToken(@RequestHeader("Authorization") String sessionToken) {
+    public ResponseEntity<UserReturnDto> getCurrentUserBySessionToken(@RequestHeader("Authorization") String sessionToken) {
 
-        var user = userService.getUserByToken(sessionToken);
+        var user = userService.getCurrentUserBySessionToken(sessionToken);
 
         return ResponseEntity.ok(user);
     }

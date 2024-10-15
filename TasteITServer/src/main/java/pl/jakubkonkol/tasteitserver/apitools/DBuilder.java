@@ -35,9 +35,9 @@ public class DBuilder {
 //    @PostConstruct
     public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
-        postService.deleteAll();
         commentService.deleteAll();
         likeService.deleteAll();
+        postService.deleteAll();
         LOGGER.log(Level.INFO, "Database cleared, building new one");
         foodFetcher.populateDBWithFood();
         ingredientFetcher.populateDBWithIngredients();

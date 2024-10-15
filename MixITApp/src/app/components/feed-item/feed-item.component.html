@@ -2,7 +2,7 @@
   <div class="image-wrapper" (click)="emitGotoDrink()">
     <div class="profile-info">
       <img src="assets/user_placeholder.png">
-      <p> username</p>
+      <p> {{getAuthorName()}}</p>
     </div>
     <img src="{{feedItem.postMedia?.pictures?.[0]}}">
     <div class="actions">
@@ -20,5 +20,5 @@
 
   <p class="item-name"> {{feedItem.postMedia?.title}} </p>
   <p class="item-desc"> {{feedItem.postMedia?.description}}</p>
-  <p class="item-date"> {{getDate()}} </p>
+  <p class="item-date"> {{DateFormatter.getFormattedDate(feedItem.createdDate!)}} </p>
 </div>

@@ -27,7 +27,11 @@ export class PostService {
     this.feedSubject.next([]);
   }
 
-  private async handleApiResponse<T>(response: AxiosResponse<any, any>, extractContent: boolean = false): Promise<T> {
+  private async handleApiResponse<T>(response: void | AxiosResponse<any, any>, extractContent: boolean = false): Promise<T> {
+    if(!response){
+      console.error('API Error: No response');
+      return Promise.reject('Error');
+    }
     try{
       if(response.status != 200){
         console.error('API Error:', response.data);
@@ -65,17 +69,38 @@ export class PostService {
   }
 
   async getPostComments(id: string): Promise<Comment[]> {
-    const res = await taste_api.get(`/post/${id}/comments`);
+    const res = await taste_api.get(`/post/${id}/comments`)
+      .catch(function (error) {
+        if(error.response){
+          console.log(error.response.data);
+        }else{
+          console.log('Error: '+error.message);
+        }
+      });
     return this.handleApiResponse<Comment[]>(res);
   }
 
   async createPostComment(id: string, content: string): Promise<Comment> {
-    const res = await taste_api.post(`/post/${id}/comment`, { content });
+    const res = await taste_api.post(`/post/${id}/comment`, { content })
+      .catch(function (error) {
+        if(error.response){
+          console.log(error.response.data);
+        }else{
+          console.log('Error: '+error.message);
+        }
+      });
     return this.handleApiResponse<Comment>(res);
   }
 
   async deletePostComment(postId: string, commentId: string): Promise<number> {
-    const res = await taste_api.delete(`/post/${postId}/comment/${commentId}`);
+    const res = await taste_api.delete(`/post/${postId}/comment/${commentId}`)
+      .catch(function (error) {
+        if(error.response){
+          console.log(error.response.data);
+        }else{
+          console.log('Error: '+error.message);
+        }
+      });
     return await this.handleApiResponse<number>(res);
   }
 
@@ -101,7 +126,14 @@ export class PostService {
       });
   }
   async getLikedPosts(userId: string): Promise<Post[]>{
-    const res = await taste_api.get(`/post/likedby/`+userId);
+    const res = await taste_api.get(`/post/likedby/`+userId)
+      .catch(function (error) {
+        if(error.response){
+          console.log(error.response.data);
+        }else{
+          console.log('Error: '+error.message);
+        }
+      });
     return await this.handleApiResponse<Post[]>(res);
   }
 }

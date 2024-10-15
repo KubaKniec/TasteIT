@@ -19,7 +19,7 @@
 
     <div class="user-info">
       <img src="assets/user_placeholder.png" alt="user" class="user-image" width="50px" height="50px">
-      <p class="user-name"> Posted by <b>KanesaTheCook</b></p>
+      <p class="user-name"> Posted by <b>{{getAuthorName()}}</b></p>
     </div>
     <div class="ingredients">
       <mat-chip-set>
@@ -38,7 +38,8 @@
 <!--  BUTTONS-->
   <div class="buttons">
     <div class="left-action">
-      <button class="button-actions-small" matRipple><mat-icon>favorite</mat-icon></button>
+      <button  *ngIf="isPostLikedByCurrentUser" (click)="toggleLike()" class="button-actions-small active" matRipple><mat-icon>favorite</mat-icon></button>
+      <button  *ngIf="!isPostLikedByCurrentUser" (click)="toggleLike()" class="button-actions-small" matRipple><mat-icon>favorite</mat-icon></button>
       <button class="button-actions-small" matRipple (click)="initializeCommentSection(activePost.postId || '')"><mat-icon>chat</mat-icon></button>
       <button class="button-actions-small" matRipple><mat-icon>bookmark</mat-icon></button>
     </div>

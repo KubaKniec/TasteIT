@@ -5,6 +5,8 @@ import {Comment} from "../../model/post/Comment";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {CommentValidator} from "../../validators/CommentValidator";
 import {HotToastService} from "@ngneat/hot-toast";
+import {User} from "../../model/user/User";
+import {DateFormatter} from "../../helpers/DateFormatter";
 
 @Component({
   selector: 'app-comments-section',
@@ -32,6 +34,7 @@ export class CommentsSectionComponent implements OnInit{
   comments: Comment[] = [];
   commentContent: string = '';
   state = 'enter'
+  userNames: { [userId: string]: string } = {};
 
   constructor(
     private postService: PostService,
@@ -39,18 +42,35 @@ export class CommentsSectionComponent implements OnInit{
     private toastService: HotToastService
     ) {
   }
-  getUserName(userId: string): string {
-    return 'John Doe';
+  async getUserName(userId: string): Promise<string> {
+    return this.userNames[userId] || 'Loading...';
   }
   async ngOnInit(): Promise<void> {
-
+    this.comments = await this.postService.getPostComments(this.postId);
+    await this.loadUserNames();
+  }
+  async loadUserNames() {
+    for (const comment of this.comments) {
+      const commentAuthor = await this.userService.getUserById(comment.userId);
+      this.userNames[comment.userId] = commentAuthor.displayName || 'Unknown';
+    }
   }
   onClose() {
     this.state = 'void';
     this.close.emit()
   }
-  addComment(){
-
+  async addComment() {
+    if (!CommentValidator.isValid(this.commentContent)) {
+      this.toastService.error('Failed to add comment');
+      return;
+    }
+    await this.postService.createPostComment(this.postId, this.commentContent)
+      .catch(() => this.toastService.error('Failed to add comment'))
+      .finally(async () => {
+        this.commentContent = '';
+        await this.ngOnInit();
+        this.refreshPost.emit();
+      });
   }
-
+  protected readonly DateFormatter = DateFormatter;
 }

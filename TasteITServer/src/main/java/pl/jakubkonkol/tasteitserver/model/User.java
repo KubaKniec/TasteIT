@@ -28,6 +28,8 @@ public class User implements UserDetails {
     private List<String> roles = List.of("USER");
     private List<Tag> mainTags = new ArrayList<Tag>();
     private List<Tag> customTags = new ArrayList<Tag>();
+    private List<String> followers = new ArrayList<>();
+    private List<String> following = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

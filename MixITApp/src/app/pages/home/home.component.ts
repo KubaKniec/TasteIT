@@ -47,6 +47,7 @@ export class HomeComponent implements OnInit{
     if(cachedPosts.length > 0){
       setTimeout(() => window.scrollTo(0, this.scrollPositionService.getScrollPosition()), 0);
       this.posts = cachedPosts;
+      await this.updateCachedPosts()
     }else{
       await this.refreshPosts();
     }
@@ -54,6 +55,18 @@ export class HomeComponent implements OnInit{
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
     this.scrollPositionService.setScrollPosition(window.scrollY);
+  }
+  async updateCachedPosts(): Promise<void> {
+    for (let i = 0; i < this.posts.length; i++) {
+      try {
+        const updatedPost = await this.postService.getPostById(this.posts[i].postId!);
+        if (updatedPost.likesCount !== this.posts[i].likesCount || updatedPost.commentsCount !== this.posts[i].commentsCount) {
+          this.posts[i] = updatedPost;
+        }
+      } catch (error) {
+        console.error(`Error updating post ${this.posts[i].postId}: `, error);
+      }
+    }
   }
 
   async refreshPosts(): Promise<void> {
@@ -64,6 +77,7 @@ export class HomeComponent implements OnInit{
     this.scrollPositionService.setScrollPosition(0);
     window.scrollTo(0, 0);
   }
+
   handleRefreshEvent(event: Subject<any>, message: string): void {
     setTimeout(() => {
       this.refreshPosts().then();

@@ -19,7 +19,10 @@
             <p class="comment-date">{{DateFormatter.getFormattedDate(comment.date) || 'Loading...'}}</p>
           </div>
           <div class="comment-action">
-<!--            <button class="comment-button"><mat-icon>delete</mat-icon></button>-->
+            <button class="delete-comment-button"
+                    *ngIf="isCurrentUserAuthor(comment)"
+                    (click)="deleteComment(comment)"
+            ><mat-icon>delete</mat-icon></button>
           </div>
         </div>
 

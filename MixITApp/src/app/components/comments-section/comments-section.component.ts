@@ -35,6 +35,7 @@ export class CommentsSectionComponent implements OnInit{
   commentContent: string = '';
   state = 'enter'
   userNames: { [userId: string]: string } = {};
+  currentUserId: string = '';
 
   constructor(
     private postService: PostService,
@@ -42,12 +43,22 @@ export class CommentsSectionComponent implements OnInit{
     private toastService: HotToastService
     ) {
   }
-  async getUserName(userId: string): Promise<string> {
-    return this.userNames[userId] || 'Loading...';
-  }
   async ngOnInit(): Promise<void> {
     this.comments = await this.postService.getPostComments(this.postId);
     await this.loadUserNames();
+    let user: User = await this.userService.getUserByToken()
+    this.currentUserId = user.userId || '';
+  }
+  isCurrentUserAuthor(comment: Comment): boolean{
+    return comment.userId === this.currentUserId;
+  }
+  deleteComment(comment: Comment){
+    this.postService.deletePostComment(this.postId, comment.commentId)
+      .then(async () => {
+        await this.ngOnInit();
+        this.refreshPost.emit();
+      })
+      .catch(() => this.toastService.error('Failed to delete comment'));
   }
   async loadUserNames() {
     for (const comment of this.comments) {

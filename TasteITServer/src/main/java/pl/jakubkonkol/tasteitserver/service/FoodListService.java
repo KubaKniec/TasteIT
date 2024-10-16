@@ -20,10 +20,11 @@ public class FoodListService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    public FoodListDto createFoodList(String sessionToken) {
+    public FoodListDto createFoodList(String sessionToken, String name) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
         FoodList foodList = new FoodList();
         foodList.setUserId(currentUser.getUserId());
+        foodList.setName(name);
         foodListRepository.save(foodList);
         return convertToDto(foodList);
     }
@@ -39,11 +40,18 @@ public class FoodListService {
                 .toList();
         return foodListsDto;
     }
-    public void updatePostsInFoodlist(FoodListDto foodListDto) {
-        var foodlist = foodListRepository.findByFoodListId(foodListDto.foodListId);
-        foodlist.setPostsList(foodListDto.postsList);
+    public void updatePostsInFoodlist(String foodListId, List<Post> posts) {
+        var foodlist = foodListRepository.findByFoodListId(foodListId);
+        foodlist.setPostsList(posts);
         foodListRepository.save(foodlist);
     }
+
+    public void updateFoodlistName(String foodListId, String name) {
+        var foodlist = foodListRepository.findByFoodListId(foodListId);
+        foodlist.setName(name);
+        foodListRepository.save(foodlist);
+    }
+
     public void deleteFoodList(String foodListId) {
         var foodList = foodListRepository.findByFoodListId(foodListId);
         foodListRepository.delete(foodList);

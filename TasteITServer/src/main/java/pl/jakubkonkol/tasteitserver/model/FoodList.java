@@ -16,6 +16,7 @@ public class FoodList {
     @Id
     private String foodListId;
     private String userId;
+    private String name;
     @CreatedDate
     private Date createdDate;
     @DBRef

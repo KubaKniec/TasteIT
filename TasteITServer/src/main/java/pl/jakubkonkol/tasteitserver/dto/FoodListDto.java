@@ -10,11 +10,9 @@ import java.util.Date;
 import java.util.List;
 
 public class FoodListDto {
-    @Id
     public String foodListId;
     public String userId;
-    @CreatedDate
+    private String name;
     public Date createdDate;
-    @DBRef
     public List<Post> postsList = new ArrayList<>();;
 }

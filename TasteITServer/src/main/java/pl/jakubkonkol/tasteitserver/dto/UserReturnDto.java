@@ -20,4 +20,7 @@ public class UserReturnDto {
     private List<String> roles;
     private List<Tag> mainTags;
     private List<Tag> customTags;
+    private Long followersCount;
+    private Long followingCount;
+    private Boolean isFollowing;
 }

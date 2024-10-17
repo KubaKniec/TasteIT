@@ -142,7 +142,7 @@ import {CameraService} from "./service/camera.service";
     UserService,
     CommentsSectionFactoryService,
     ScrollPositionService,
-    LoggerService
+    LoggerService,
     CameraService
   ],
   bootstrap: [AppComponent]

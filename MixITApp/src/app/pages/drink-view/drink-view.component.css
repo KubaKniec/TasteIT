@@ -211,7 +211,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 .active{
-  background-color: var(--accent-color);
+  background-color: darkred;
 }
 .button-actions-small > mat-icon{
   color: var(--theme-color-950);
@@ -235,4 +235,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: 1rem;
+}
+.active > *{
+
 }

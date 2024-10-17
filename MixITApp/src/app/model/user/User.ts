@@ -16,10 +16,11 @@ export interface User {
   roles?: string[];
   likes?: Like[];
   foodLists?: FoodList[];
-  following?: String[];
-  followers?: String[];
+  followersCount?: number;
+  followingCount?: number;
   badges?: Badge[];
   preferences?: Tag[];
+  isFollowing?: boolean;
   authentication?: Authentication;
 }
 

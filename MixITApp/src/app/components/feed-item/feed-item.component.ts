@@ -5,6 +5,7 @@ import {PostService} from "../../service/post.service";
 import {DateFormatter} from "../../helpers/DateFormatter";
 import {User} from "../../model/user/User";
 import {UserService} from "../../service/user.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-feed-item',
@@ -17,7 +18,8 @@ export class FeedItemComponent implements OnInit{
   @Output() likeEvent: EventEmitter<any> = new EventEmitter<any>();
   postAuthor: User = {};
   constructor(private postService: PostService,
-              private userService: UserService
+              private userService: UserService,
+              private router: Router
               ) {
   }
   async ngOnInit(): Promise<void>{
@@ -43,6 +45,10 @@ export class FeedItemComponent implements OnInit{
 
     await this.updatePost();
     this.likeEvent.emit();
+  }
+  gotoUser(event: Event): void {
+    event.stopPropagation();
+    this.router.navigate([`/user-profile/${this.postAuthor.userId}`]).then();
   }
 
   emitComment(event: Event) {

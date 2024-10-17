@@ -62,6 +62,9 @@ import { AddToFoodListComponent } from './components/add-to-food-list/add-to-foo
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { UserLikesComponent } from './pages/user-likes/user-likes.component';
 import {LoggerService} from "./service/logger.service";
+import { PostBuilderComponent } from './pages/post-builder/post-builder.component';
+import {IonicModule} from "@ionic/angular";
+import {CameraService} from "./service/camera.service";
 
 @NgModule({
   declarations: [
@@ -91,6 +94,7 @@ import {LoggerService} from "./service/logger.service";
     AddToFoodListComponent,
     UserProfileComponent,
     UserLikesComponent,
+    PostBuilderComponent,
   ],
   imports: [
     BrowserModule,
@@ -121,7 +125,8 @@ import {LoggerService} from "./service/logger.service";
     ReactiveFormsModule,
     NgxPullToRefreshModule,
     InfiniteScrollModule,
-    MatStepperModule
+    MatStepperModule,
+    IonicModule
   ],
   providers: [
     HotToastService,
@@ -138,7 +143,7 @@ import {LoggerService} from "./service/logger.service";
     CommentsSectionFactoryService,
     ScrollPositionService,
     LoggerService
-
+    CameraService
   ],
   bootstrap: [AppComponent]
 })

@@ -129,4 +129,8 @@ export class PostService {
       return Promise.reject(error.response?.data || error);
     }
   }
+  async createPost(post: Post): Promise<Post> {
+    const res = await taste_api.post(`/post`, post);
+    return this.handleApiResponse<Post>(res);
+  }
 }

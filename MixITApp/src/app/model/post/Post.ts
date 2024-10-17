@@ -12,6 +12,7 @@ export interface Post {
   tags?: Tag[];
   createdDate?: Date;
   likesCount?: number;
+  Recipe?: Recipe;
   commentsCount?: number;
   likedByCurrentUser?: boolean;
 

@@ -21,20 +21,21 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final MongoTemplate mongoTemplate;
-    private final PostRepository postRepository;
 
-    public UserReturnDto getUserById(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NoSuchElementException("Post with id " + userId + " not found"));
-        return convertToDto(user);
+    public UserReturnDto getUserDtoById(String userId, String sessionToken) {
+        User user = getUserById(userId);
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+
+        UserReturnDto userReturnDto = convertToDto(user);
+        userReturnDto.setIsFollowing(currentUser.getFollowing().contains(userId));
+
+        return userReturnDto;
     }
 
-    public UserReturnDto getUserByToken(String sessionToken) {
-        User user = userRepository.findBySessionToken(sessionToken)
-                .orElseThrow(() -> new NoSuchElementException("User with token " + sessionToken + " not found"));
+    public UserReturnDto getCurrentUserDtoBySessionToken(String sessionToken) {
+        User user = getCurrentUserBySessionToken(sessionToken);
         return convertToDto(user);
-    }//is returning token in exception message a good idea?
+    }// mozna pomyslesc o cache'owaniu w celu optymalizacji
 
     public UserReturnDto updateUserProfile(
             String userId,
@@ -43,10 +44,7 @@ public class UserService {
             String newProfilePicture,
             LocalDate newBirthDate
     ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(
-                        "User with email " + userId + " not found"));
-
+        User user = getUserById(userId);
         user.setDisplayName(newDisplayName);
         user.setBio(newBio);
         user.setProfilePicture(newProfilePicture);
@@ -57,22 +55,15 @@ public class UserService {
     }
 
     public UserReturnDto changeUserFirstLogin(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(
-                        "User with email " + userId + " not found"));
-
+        User user = getUserById(userId);
         user.setFirstLogin(false);
 
         userRepository.save(user);
         return convertToDto(user);
-
     }
 
     public UserReturnDto updateUserTags(String userId, UserTagsDto userTagsDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(
-                        "User with email " + userId + " not found"));
-
+        User user = getUserById(userId);
         user.setMainTags(userTagsDto.getMainTags());
         user.setCustomTags(userTagsDto.getCustomTags());
 
@@ -80,9 +71,46 @@ public class UserService {
         return convertToDto(user);
     }
 
-    private UserReturnDto convertToDto(User user) {
-        return modelMapper.map(user, UserReturnDto.class);
+    public void followUser(String targetUserId, String sessionToken) {
+        User targetUser = getUserById(targetUserId);
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+
+        if (!currentUser.getFollowing().contains(targetUserId)) {
+            currentUser.getFollowing().add(targetUserId);
+            targetUser.getFollowers().add(currentUser.getUserId());
+            userRepository.save(currentUser);
+            userRepository.save(targetUser);
+        }
     }
 
+    public void unfollowUser(String targetUserId, String sessionToken) {
+        User targetUser = getUserById(targetUserId);
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+
+        if (currentUser.getFollowing().contains(targetUserId)) {
+            currentUser.getFollowing().remove(targetUserId);
+            targetUser.getFollowers().remove(currentUser.getUserId());
+            userRepository.save(currentUser);
+            userRepository.save(targetUser);
+        }
+    }
+
+    private User getUserById(String userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new NoSuchElementException("User with id " + userId + " not found"));
+    }
+
+    private User getCurrentUserBySessionToken(String sessionToken) {
+        return userRepository.findBySessionToken(sessionToken)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    private UserReturnDto convertToDto(User user) {
+        UserReturnDto userReturnDto = modelMapper.map(user, UserReturnDto.class);
+        userReturnDto.setFollowersCount((long) user.getFollowers().size());
+        userReturnDto.setFollowingCount((long) user.getFollowing().size());
+
+        return userReturnDto;
+    }
 }
 

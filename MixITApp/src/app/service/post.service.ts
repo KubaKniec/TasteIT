@@ -1,10 +1,11 @@
-import {Injectable} from "@angular/core";
-import {Post} from "../model/post/Post";
+import { Injectable } from "@angular/core";
 import taste_api from "../api/taste_api";
-import {Recipe} from "../model/post/Recipe";
-import {Comment} from "../model/post/Comment";
-import {BehaviorSubject} from "rxjs";
-import {AxiosResponse} from "axios";
+import { BehaviorSubject } from "rxjs";
+import { Post } from "../model/post/Post";
+import { Recipe } from "../model/post/Recipe";
+import { Comment } from "../model/post/Comment";
+import { LoggerService } from "./logger.service";
+import {GenericResponse} from "../model/GenericResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class PostService {
   private feedSubject = new BehaviorSubject<Post[]>([]);
   feed$ = this.feedSubject.asObservable();
 
-  constructor() {}
+  constructor(private logger: LoggerService) {}
 
   setFeed(feed: Post[]): void {
     this.feedSubject.next(feed);
@@ -27,81 +28,105 @@ export class PostService {
     this.feedSubject.next([]);
   }
 
-  private async handleApiResponse<T>(response: AxiosResponse<any, any>, extractContent: boolean = false): Promise<T> {
-    try{
-      if(response.status != 200){
-        console.error('API Error:', response.data);
-        return Promise.reject(`Error: ${response.status}`)
-      }
-      if (extractContent && response.data.content) {
-        return response.data.content as T;
-      }
-      return Promise.resolve(response.data as T);
-    }catch (error){
-      console.error('API Error:', error);
-      return Promise.reject('Error');
+  async getFeed(page: number, size: number): Promise<Post[]> {
+    try {
+      const res = await taste_api.get(`/post/feed?page=${page}&size=${size}`);
+      const posts = res.data.content as Post[];
+      this.setFeed([...this.getFeedState(), ...posts]);
+      return posts;
+    } catch (error: any) {
+      this.logger.logError('Error fetching feed', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
     }
   }
 
-  async getFeed(page: number, size: number): Promise<Post[]> {
-    const response = await taste_api.get(`/post/feed?page=${page}&size=${size}`);
-    const posts = await this.handleApiResponse<Post[]>(response, true);
-    this.setFeed([...this.getFeedState(), ...posts]);
-    return posts;
-  }
   async getPostById(id: string): Promise<Post> {
-    const res = await taste_api.get(`/post/${id}`);
-    return this.handleApiResponse<Post>(res);
+    try {
+      const res = await taste_api.get(`/post/${id}`);
+      return res.data as Post;
+    } catch (error: any) {
+      this.logger.logError(`Error fetching post by ID: ${id}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 
   async getPostRecipe(id: string): Promise<Recipe> {
-    const res = await taste_api.get(`/post/${id}/recipe`);
-    return this.handleApiResponse<Recipe>(res);
+    try {
+      const res = await taste_api.get(`/post/${id}/recipe`);
+      return res.data as Recipe;
+    } catch (error: any) {
+      this.logger.logError(`Error fetching recipe for post ID: ${id}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 
   async searchPostByTitle(query: string): Promise<Post[]> {
-    const res = await taste_api.get(`/post/search?query=${query}`);
-    return this.handleApiResponse<Post[]>(res);
+    try {
+      const res = await taste_api.get(`/post/search?query=${query}`);
+      return res.data as Post[];
+    } catch (error: any) {
+      this.logger.logError(`Error searching posts by title: ${query}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 
   async getPostComments(id: string): Promise<Comment[]> {
-    const res = await taste_api.get(`/post/${id}/comments`);
-    return this.handleApiResponse<Comment[]>(res);
+    try {
+      const res = await taste_api.get(`/post/${id}/comments`);
+      return res.data as Comment[];
+    } catch (error: any) {
+      this.logger.logError(`Error fetching comments for post ID: ${id}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 
   async createPostComment(id: string, content: string): Promise<Comment> {
-    const res = await taste_api.post(`/post/${id}/comment`, { content });
-    return this.handleApiResponse<Comment>(res);
+    try {
+      const res = await taste_api.post(`/post/${id}/comment`, { content });
+      return res.data as Comment;
+    } catch (error: any) {
+      this.logger.logError(`Error creating comment for post ID: ${id}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 
-  async deletePostComment(postId: string, commentId: string): Promise<number> {
-    const res = await taste_api.delete(`/post/${postId}/comment/${commentId}`);
-    return await this.handleApiResponse<number>(res);
+  async deletePostComment(postId: string, commentId: string): Promise<GenericResponse> {
+    try {
+      const res = await taste_api.delete(`/post/${postId}/comment/${commentId}`);
+      return res.data;
+    } catch (error: any) {
+      this.logger.logError(`Error deleting comment ID: ${commentId} for post ID: ${postId}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 
-  async likePost(id: string): Promise<any> {
-    return await taste_api.post(`/post/${id}/like`)
-      .catch(function (error) {
-        if(error.response){
-          console.log(error.response.data);
-        }else{
-          console.log('Error: '+error.message);
-        }
-      });
+  async likePost(id: string): Promise<GenericResponse> {
+    try {
+      const res = await taste_api.post(`/post/${id}/like`);
+      return res.data;
+    } catch (error: any) {
+      this.logger.logError(`Error liking post ID: ${id}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 
-  async unlikePost(id: string): Promise<any> {
-    return await taste_api.delete(`/post/${id}/like`)
-      .catch(function (error) {
-        if(error.response){
-          console.log(error.response.data);
-        }else{
-          console.log('Error: '+error.message);
-        }
-      });
+  async unlikePost(id: string): Promise<GenericResponse> {
+    try {
+      const res = await taste_api.delete(`/post/${id}/like`);
+      return res.data;
+    } catch (error: any) {
+      this.logger.logError(`Error unliking post ID: ${id}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
-  async getLikedPosts(userId: string): Promise<Post[]>{
-    const res = await taste_api.get(`/post/likedby/`+userId);
-    return await this.handleApiResponse<Post[]>(res);
+
+  async getLikedPosts(userId: string): Promise<Post[]> {
+    try {
+      const res = await taste_api.get(`/post/likedby/${userId}`);
+      return res.data as Post[];
+    } catch (error: any) {
+      this.logger.logError(`Error fetching liked posts for user ID: ${userId}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
   }
 }

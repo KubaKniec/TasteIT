@@ -17,7 +17,7 @@ public class LikeService {
     private final UserService userService;
 
     public void likePost(String postId, String token) {
-        UserReturnDto userByToken = userService.getUserByToken(token);
+        UserReturnDto userByToken = userService.getCurrentUserDtoBySessionToken(token);
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         var existingLike = likeRepository.findByPostIdAndUserId(postId, userByToken.getUserId());
@@ -36,7 +36,7 @@ public class LikeService {
     }
 
     public void unlikePost(String postId, String token) {
-        UserReturnDto userByToken = userService.getUserByToken(token);
+        UserReturnDto userByToken = userService.getCurrentUserDtoBySessionToken(token);
         Like like = likeRepository.findByPostIdAndUserId(postId, userByToken.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Like not found"));
 

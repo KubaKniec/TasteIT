@@ -35,7 +35,13 @@ export class UserProfileComponent implements OnInit{
   gotoSettings(): void{
     this.router.navigate(['profile']);
   }
+  async toggleFollow(): Promise<void> {
+    this.user.isFollowing
+      ? await this.userService.unfollowUser(this.user.userId!)
+      : await this.userService.followUser(this.user.userId!);
 
+    this.user = await this.userService.getUserById(this.user.userId!);
+  }
   goto(url: string) {
     this.router.navigate([url]);
   }

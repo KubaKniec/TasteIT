@@ -22,7 +22,7 @@ public class CommentService {
     private final ModelMapper modelMapper;
 
     public CommentDto addComment(String postId, CommentDto commentDto, String token) {
-        UserReturnDto userByToken = userService.getUserByToken(token);
+        UserReturnDto userByToken = userService.getCurrentUserDtoBySessionToken(token);
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         if (commentDto.getContent() == null || commentDto.getContent().trim().isEmpty()) {
@@ -43,7 +43,7 @@ public class CommentService {
     }
 
     public void deleteComment(String postId, String commentId, String token) {
-        UserReturnDto userByToken = userService.getUserByToken(token);
+        UserReturnDto userByToken = userService.getCurrentUserDtoBySessionToken(token);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 

@@ -10,13 +10,22 @@
     <div class="comments">
       <div class="single-comment" *ngFor="let comment of comments">
         <div class="avatar">
-          <img src="assets/user_placeholder.png" alt="user" class="user-image" width="50px" height="50px">
+          <img src="assets/user_placeholder.png" alt="user" class="user-image" width="50px" height="50px" (click)="gotoProfile(comment.userId)">
         </div>
-        <div class="comment-content">
-          <p class="user-name">{{getUserName(comment.userId)}}</p>
-          <p class="comment-text">{{comment.content}}</p>
-          <p class="comment-date">2 days ago</p>
+        <div class="comment-content-wrapper">
+          <div class="comment-content">
+            <p class="user-name" (click)="gotoProfile(comment.userId)">{{userNames[comment.userId]}}</p>
+            <p class="comment-text">{{comment.content}}</p>
+            <p class="comment-date">{{DateFormatter.getFormattedDate(comment.date) || 'Loading...'}}</p>
+          </div>
+          <div class="comment-action">
+            <button class="delete-comment-button"
+                    *ngIf="isCurrentUserAuthor(comment)"
+                    (click)="deleteComment(comment)"
+            ><mat-icon>delete</mat-icon></button>
+          </div>
         </div>
+
       </div>
     </div>
 <!--    COMMENT FORM-->

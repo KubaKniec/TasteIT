@@ -129,4 +129,13 @@ export class PostService {
       return Promise.reject(error.response?.data || error);
     }
   }
+  async createPost(post: Post): Promise<Post> {
+    try {
+      const res = await taste_api.post('/post', post);
+      return res.data as Post;
+    } catch (error: any) {
+      this.logger.logError('Error creating post', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
 }

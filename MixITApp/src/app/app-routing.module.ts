@@ -15,6 +15,7 @@ import {SetupProfileComponent} from "./pages/setup-profile/setup-profile.compone
 import {FoodlistsComponent} from "./pages/foodlists/foodlists.component";
 import {UserProfileComponent} from "./pages/user-profile/user-profile.component";
 import {UserLikesComponent} from "./pages/user-likes/user-likes.component";
+import {PostBuilderComponent} from "./pages/post-builder/post-builder.component";
 
 const routes: Routes = [
   {path: '', redirectTo:'/welcome', pathMatch: 'full'},
@@ -30,7 +31,8 @@ const routes: Routes = [
   {path: 'setup-profile', component: SetupProfileComponent, data: {showNav: false}, canActivate: [AuthGuard]},
   {path: 'foodlists', component: FoodlistsComponent, data: {showNav: true}, canActivate: [AuthGuard]},
   {path: 'user-profile/:id', component: UserProfileComponent, data: {showNav: true}, canActivate: [AuthGuard]},
-  {path: 'userLikes', component: UserLikesComponent, data: {showNav: true}, canActivate: [AuthGuard]}
+  {path: 'userLikes', component: UserLikesComponent, data: {showNav: true}, canActivate: [AuthGuard]},
+  {path: 'postBuilder', component: PostBuilderComponent, data: {showNav: true}, canActivate: [AuthGuard]}
 
 ];
 

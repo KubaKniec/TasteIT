@@ -7,6 +7,7 @@ import {CommentValidator} from "../../validators/CommentValidator";
 import {HotToastService} from "@ngneat/hot-toast";
 import {User} from "../../model/user/User";
 import {DateFormatter} from "../../helpers/DateFormatter";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-comments-section',
@@ -40,7 +41,8 @@ export class CommentsSectionComponent implements OnInit{
   constructor(
     private postService: PostService,
     private userService: UserService,
-    private toastService: HotToastService
+    private toastService: HotToastService,
+    private router: Router
     ) {
   }
   async ngOnInit(): Promise<void> {
@@ -65,6 +67,9 @@ export class CommentsSectionComponent implements OnInit{
       const commentAuthor = await this.userService.getUserById(comment.userId);
       this.userNames[comment.userId] = commentAuthor.displayName || 'Unknown';
     }
+  }
+  gotoProfile(userId: string){
+    this.router.navigate(['/user-profile', userId]);
   }
   onClose() {
     this.state = 'void';

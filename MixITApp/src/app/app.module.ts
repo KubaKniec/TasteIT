@@ -61,6 +61,7 @@ import { FoodlistsComponent } from './pages/foodlists/foodlists.component';
 import { AddToFoodListComponent } from './components/add-to-food-list/add-to-food-list.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { UserLikesComponent } from './pages/user-likes/user-likes.component';
+import {LoggerService} from "./service/logger.service";
 
 @NgModule({
   declarations: [
@@ -135,7 +136,8 @@ import { UserLikesComponent } from './pages/user-likes/user-likes.component';
     SplashScreenFactoryService,
     UserService,
     CommentsSectionFactoryService,
-    ScrollPositionService
+    ScrollPositionService,
+    LoggerService
 
   ],
   bootstrap: [AppComponent]

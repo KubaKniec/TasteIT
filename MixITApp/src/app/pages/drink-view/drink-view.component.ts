@@ -55,6 +55,9 @@ export class DrinkViewComponent implements OnInit{
     this.postAuthor = await this.userService.getUserById(this.activePost.userId!)
     this.isPostLikedByCurrentUser = this.activePost.likedByCurrentUser || false;
   }
+  gotoProfile(userId: string){
+    this.router.navigate(['/user-profile', userId]).then();
+  }
 
   getAuthorName(): string{
    return this.postAuthor.displayName || "Unknown"

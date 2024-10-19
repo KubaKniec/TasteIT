@@ -1,3 +1,11 @@
 <div class="container">
   <p class="title-text">Your likes</p>
+    <app-post-grid
+      *ngIf="likedPosts.length > 0"
+      [posts] = "likedPosts"
+    />
+    <div class="empty-state" *ngIf="likedPosts.length === 0 && !isLoading">
+      <img src="assets/sad_cocktail.png" alt="sad cocktail" class="empty-state-image" width="150px" height="150px">
+      <p class="no-posts-text">Looks like you haven't liked any posts yet!</p>
+    </div>
 </div>

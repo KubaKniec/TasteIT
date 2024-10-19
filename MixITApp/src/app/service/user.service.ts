@@ -3,7 +3,7 @@ import taste_api from '../api/taste_api';
 import { User } from '../model/user/User';
 import { UserProfile } from '../model/user/UserProfile';
 import { UserTags } from '../model/user/UserTags';
-import { LoggerService } from './logger.service';  // Importujemy LoggerService
+import { LoggerService } from './logger.service';
 
 @Injectable({
   providedIn: 'root'

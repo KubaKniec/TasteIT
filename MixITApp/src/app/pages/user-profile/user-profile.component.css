@@ -76,6 +76,6 @@
   font-size: 2rem;
 }
 .active{
-  color: var(--theme-color-50);
-  background-color: var(--theme-color-800);
+  color: var(--theme-color-950);
+  background-color: var(--theme-color-50);
 }

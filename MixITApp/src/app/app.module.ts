@@ -65,6 +65,7 @@ import {LoggerService} from "./service/logger.service";
 import { PostBuilderComponent } from './pages/post-builder/post-builder.component';
 import {IonicModule} from "@ionic/angular";
 import {CameraService} from "./service/camera.service";
+import { PostGridComponent } from './components/post-grid/post-grid.component';
 
 @NgModule({
   declarations: [
@@ -95,6 +96,7 @@ import {CameraService} from "./service/camera.service";
     UserProfileComponent,
     UserLikesComponent,
     PostBuilderComponent,
+    PostGridComponent,
   ],
   imports: [
     BrowserModule,

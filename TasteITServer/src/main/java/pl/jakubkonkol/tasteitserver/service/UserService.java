@@ -75,11 +75,17 @@ public class UserService {
         User targetUser = getUserById(targetUserId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
 
+        if (currentUser.getUserId().equals(targetUserId)) {
+            throw new IllegalArgumentException("User cannot follow themselves.");
+        }
+
         if (!currentUser.getFollowing().contains(targetUserId)) {
             currentUser.getFollowing().add(targetUserId);
             targetUser.getFollowers().add(currentUser.getUserId());
             userRepository.save(currentUser);
             userRepository.save(targetUser);
+        } else {
+            throw new IllegalStateException("User is already following the target user.");
         }
     }
 
@@ -87,11 +93,17 @@ public class UserService {
         User targetUser = getUserById(targetUserId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
 
+        if (currentUser.getUserId().equals(targetUserId)) {
+            throw new IllegalArgumentException("User cannot unfollow themselves.");
+        }
+
         if (currentUser.getFollowing().contains(targetUserId)) {
             currentUser.getFollowing().remove(targetUserId);
             targetUser.getFollowers().remove(currentUser.getUserId());
             userRepository.save(currentUser);
             userRepository.save(targetUser);
+        } else {
+            throw new IllegalStateException("User is not following the target user.");
         }
     }
 

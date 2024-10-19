@@ -21,9 +21,14 @@ public class ErrorController {
         return buildErrorResponse(e, 404);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(IllegalArgumentException e) {
         return buildErrorResponse(e, 400);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(IllegalStateException e) {
+        return buildErrorResponse(e, 409);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception e, int status) {

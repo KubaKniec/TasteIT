@@ -18,12 +18,12 @@ export class UserLikesComponent implements OnInit{
   ) { }
   likedPosts: Post[] = [];
   user: User = {}
+  isLoading: boolean = true;
 
   async ngOnInit(): Promise<void> {
     this.user = await this.userService.getUserByToken();
     this.likedPosts = await this.postService.getLikedPosts(this.user.userId!);
-
-    console.log(this.likedPosts);
+    this.isLoading = false;
   }
 
 }

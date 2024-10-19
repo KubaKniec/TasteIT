@@ -26,7 +26,7 @@
   </div>
   <div class="user-actions">
     <div class="actions" *ngIf="isVisitor()">
-      <button class="button-secondary" matRipple (click)="toggleFollow()"> {{user.isFollowing ? 'Following' : 'Follow' }} </button>
+      <button class="button-secondary" matRipple [ngClass]="user.isFollowing ? '' : 'active'" (click)="toggleFollow()"> {{user.isFollowing ? 'Following' : 'Follow' }} </button>
       <button class="button-secondary" matRipple> Message </button>
       <button class="button-secondary" matRipple> Report </button>
     </div>

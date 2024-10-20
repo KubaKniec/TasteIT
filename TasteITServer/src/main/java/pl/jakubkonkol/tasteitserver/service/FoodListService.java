@@ -23,7 +23,7 @@ public class FoodListService {
     private final UserService userService;
 
     public FoodListDto createFoodList(String sessionToken, String name) {
-        var currentUser = this.getCurrentUser(sessionToken);
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         FoodList foodList = new FoodList();
         foodList.setName(name);
@@ -32,7 +32,7 @@ public class FoodListService {
         return convertToDto(foodList);
     }
     public FoodListDto getFoodList(String sessionToken, String foodListId) {
-        var currentUser = this.getCurrentUser(sessionToken);
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         FoodList foodList = currentUser.getFoodLists()
                 .stream()
@@ -42,7 +42,7 @@ public class FoodListService {
         return convertToDto(foodList);
     }
     public List<FoodListDto> getAllFoodLists(String sessionToken) {
-        var currentUser = this.getCurrentUser(sessionToken);
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         var foodLists = currentUser.getFoodLists();
         List<FoodListDto> foodListsDto = foodLists.stream()
@@ -51,7 +51,7 @@ public class FoodListService {
         return foodListsDto;
     }
     public void addPostToFoodlist(String sessionToken, String foodListId, Post post) {
-        var currentUser = this.getCurrentUser(sessionToken);
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId() == foodListId)
@@ -63,7 +63,7 @@ public class FoodListService {
         userRepository.save(currentUser);
     }
     public void deletePostInFoodlist(String sessionToken, String foodListId, Post post) {
-        var currentUser = this.getCurrentUser(sessionToken);
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
         currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId() == foodListId)
                 .findFirst()
@@ -75,7 +75,7 @@ public class FoodListService {
     }
 
     public void updateFoodlistName(String sessionToken, String foodListId, String name) {
-        var currentUser = this.getCurrentUser(sessionToken);
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId() == foodListId)
@@ -87,7 +87,7 @@ public class FoodListService {
     }
 
     public void deleteFoodList(String sessionToken, String foodListId) {
-        var currentUser = this.getCurrentUser(sessionToken);
+        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         var foodListToDelete = currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId() == foodListId)
@@ -102,12 +102,6 @@ public class FoodListService {
     private FoodListDto convertToDto(FoodList foodList) {
         FoodListDto foodListDto = modelMapper.map(foodList, FoodListDto.class);
         return foodListDto;
-    }
-
-    private User getCurrentUser(String sessionToken){
-        var currentUser = userRepository.findBySessionToken(sessionToken)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
-        return currentUser;
     }
 
     private FoodList convertToEntity(FoodListDto foodListDto) {

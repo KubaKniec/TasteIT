@@ -125,18 +125,27 @@ public class PostController {
         return ResponseEntity.ok(foodListDto);
     }
     @GetMapping("/foodList/{foodListId}")
-    public ResponseEntity<FoodListDto> getFoodList(@PathVariable String foodListId, @RequestHeader("Authorization") final String sessionToken) {
-        FoodListDto foodListDto = foodListService.getFoodList(foodListId);
+    public ResponseEntity<FoodListDto> getFoodListById(@PathVariable String foodListId, @RequestHeader("Authorization") final String sessionToken) {
+        FoodListDto foodListDto = foodListService.getFoodList(sessionToken, foodListId);
         return ResponseEntity.ok(foodListDto);
     }
-    @GetMapping("/foodList/getAllFromUser")
-    public ResponseEntity<List<FoodListDto>> getAllFoodListsFromUser(@RequestHeader("Authorization") final String sessionToken) {
-        List<FoodListDto> foodLists = foodListService.getAllFoodListsFromUser(sessionToken); //TODO
+    @GetMapping("/foodList")
+    public ResponseEntity<List<FoodListDto>> getAllFoodLists(@RequestHeader("Authorization") final String sessionToken) {
+        List<FoodListDto> foodLists = foodListService.getAllFoodLists(sessionToken); //TODO
         return ResponseEntity.ok(foodLists);
     }
-    @PutMapping("/foodList/posts/{foodListId}")
-    public ResponseEntity<?> updatePostsInFoodlist(@PathVariable String foodListId, @RequestBody @Valid List<Post> posts, @RequestHeader("Authorization") final String sessionToken) {
-        foodListService.updatePostsInFoodlist(foodListId, posts);
+    @PostMapping("/foodList/post/{foodListId}")
+    public ResponseEntity<?> addPostToFoodlist(@PathVariable String foodListId, @RequestBody @Valid Post post, @RequestHeader("Authorization") final String sessionToken) {
+        foodListService.addPostToFoodlist(sessionToken,foodListId, post);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("Foodlist Updated")
+                .build());
+    }
+    @DeleteMapping("/foodList/post/{foodListId}")
+    public ResponseEntity<?> deletePostInFoodlist(@PathVariable String foodListId, @RequestBody @Valid Post post, @RequestHeader("Authorization") final String sessionToken) {
+        foodListService.deletePostInFoodlist(sessionToken,foodListId, post);
         return ResponseEntity.ok(GenericResponse
                 .builder()
                 .status(HttpStatus.OK.value()).
@@ -146,7 +155,7 @@ public class PostController {
 
     @PutMapping("/foodList/name/{foodListId}")
     public ResponseEntity<?> updatePostsInFoodlist(@PathVariable String foodListId, @RequestBody @Valid String name, @RequestHeader("Authorization") final String sessionToken) {
-        foodListService.updateFoodlistName(foodListId, name);
+        foodListService.updateFoodlistName(sessionToken, foodListId, name);
         return ResponseEntity.ok(GenericResponse
                 .builder()
                 .status(HttpStatus.OK.value()).
@@ -155,7 +164,7 @@ public class PostController {
     }
     @DeleteMapping("/foodList/{foodListId}")
     public ResponseEntity<?> deleteFoodList(@PathVariable String foodListId, @RequestHeader("Authorization") final String sessionToken) {
-        foodListService.deleteFoodList(foodListId);
+        foodListService.deleteFoodList(sessionToken, foodListId);
         return ResponseEntity.ok(GenericResponse
                 .builder()
                 .status(HttpStatus.OK.value()).

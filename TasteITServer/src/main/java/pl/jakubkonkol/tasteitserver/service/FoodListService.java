@@ -7,59 +7,107 @@ import pl.jakubkonkol.tasteitserver.dto.FoodListDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.FoodList;
 import pl.jakubkonkol.tasteitserver.model.Post;
+import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.repository.FoodListRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class FoodListService {
     private final ModelMapper modelMapper;
-    private final FoodListRepository foodListRepository;
     private final UserRepository userRepository;
     private final UserService userService;
 
     public FoodListDto createFoodList(String sessionToken, String name) {
-        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
+        var currentUser = this.getCurrentUser(sessionToken);
+
         FoodList foodList = new FoodList();
-        foodList.setUserId(currentUser.getUserId());
         foodList.setName(name);
-        foodListRepository.save(foodList);
+        currentUser.getFoodLists().add(foodList);
+        userRepository.save(currentUser);
         return convertToDto(foodList);
     }
-    public FoodListDto getFoodList(String foodListId) {
-        FoodList foodList = foodListRepository.findByFoodListId(foodListId);
+    public FoodListDto getFoodList(String sessionToken, String foodListId) {
+        var currentUser = this.getCurrentUser(sessionToken);
+
+        FoodList foodList = currentUser.getFoodLists()
+                .stream()
+                .filter(f -> f.getFoodListId() == foodListId)
+                .findFirst()
+                .get();
         return convertToDto(foodList);
     }
-    public List<FoodListDto> getAllFoodListsFromUser(String sessionToken) {
-        var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
-        List<FoodList> foodLists = foodListRepository.findAllByUserId(currentUser.getUserId());
+    public List<FoodListDto> getAllFoodLists(String sessionToken) {
+        var currentUser = this.getCurrentUser(sessionToken);
+
+        var foodLists = currentUser.getFoodLists();
         List<FoodListDto> foodListsDto = foodLists.stream()
                 .map(this::convertToDto)
                 .toList();
         return foodListsDto;
     }
-    public void updatePostsInFoodlist(String foodListId, List<Post> posts) {
-        var foodlist = foodListRepository.findByFoodListId(foodListId);
-        foodlist.setPostsList(posts);
-        foodListRepository.save(foodlist);
+    public void addPostToFoodlist(String sessionToken, String foodListId, Post post) {
+        var currentUser = this.getCurrentUser(sessionToken);
+
+        currentUser.getFoodLists().stream()
+                .filter(f -> f.getFoodListId() == foodListId)
+                .findFirst()
+                .get()
+                .getPostsList()
+                .add(post);
+
+        userRepository.save(currentUser);
+    }
+    public void deletePostInFoodlist(String sessionToken, String foodListId, Post post) {
+        var currentUser = this.getCurrentUser(sessionToken);
+        currentUser.getFoodLists().stream()
+                .filter(f -> f.getFoodListId() == foodListId)
+                .findFirst()
+                .get()
+                .getPostsList()
+                .remove(post);
+
+        userRepository.save(currentUser);
     }
 
-    public void updateFoodlistName(String foodListId, String name) {
-        var foodlist = foodListRepository.findByFoodListId(foodListId);
-        foodlist.setName(name);
-        foodListRepository.save(foodlist);
+    public void updateFoodlistName(String sessionToken, String foodListId, String name) {
+        var currentUser = this.getCurrentUser(sessionToken);
+
+        currentUser.getFoodLists().stream()
+                .filter(f -> f.getFoodListId() == foodListId)
+                .findFirst()
+                .get()
+                .setName(name);
+
+        userRepository.save(currentUser);
     }
 
-    public void deleteFoodList(String foodListId) {
-        var foodList = foodListRepository.findByFoodListId(foodListId);
-        foodListRepository.delete(foodList);
+    public void deleteFoodList(String sessionToken, String foodListId) {
+        var currentUser = this.getCurrentUser(sessionToken);
+
+        var foodListToDelete = currentUser.getFoodLists().stream()
+                .filter(f -> f.getFoodListId() == foodListId)
+                .findFirst()
+                .get();
+
+        currentUser.getFoodLists().remove(foodListToDelete);
+
+        userRepository.save(currentUser);
     }
 
     private FoodListDto convertToDto(FoodList foodList) {
         FoodListDto foodListDto = modelMapper.map(foodList, FoodListDto.class);
         return foodListDto;
+    }
+
+    private User getCurrentUser(String sessionToken){
+        var currentUser = userRepository.findBySessionToken(sessionToken)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        return currentUser;
     }
 
     private FoodList convertToEntity(FoodListDto foodListDto) {

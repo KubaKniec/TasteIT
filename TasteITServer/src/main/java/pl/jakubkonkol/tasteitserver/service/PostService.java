@@ -127,11 +127,15 @@ public class PostService {
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
-        var currentUser = userService.getCurrentUserBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
+        var currentUser = userService.getCurrentUserDtoBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
         var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
         if(like.isEmpty()){
             postDto.setLikedByCurrentUser(false);
+            // nie wiem czy ustawialbym to pole w tym miejscu moze np w getRandomPosts i getPost? jest to jednak metoda konkretnie do konwersji
+            //" Aby wiedzieć, czy dany użytkownik jest obserwowany przez innego użytkownika,
+            // potrzebujesz dodatkowego kontekstu, czyli danych o użytkowniku aktualnie zalogowanym (np. currentUser).
+            // Ta informacja nie powinna być dostępna bezpośrednio w metodzie konwertującej."
         }
         else {
             postDto.setLikedByCurrentUser(true);

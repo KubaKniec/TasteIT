@@ -61,6 +61,11 @@ import { FoodlistsComponent } from './pages/foodlists/foodlists.component';
 import { AddToFoodListComponent } from './components/add-to-food-list/add-to-food-list.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { UserLikesComponent } from './pages/user-likes/user-likes.component';
+import {LoggerService} from "./service/logger.service";
+import { PostBuilderComponent } from './pages/post-builder/post-builder.component';
+import {IonicModule} from "@ionic/angular";
+import {CameraService} from "./service/camera.service";
+import { PostGridComponent } from './components/post-grid/post-grid.component';
 
 @NgModule({
   declarations: [
@@ -90,6 +95,8 @@ import { UserLikesComponent } from './pages/user-likes/user-likes.component';
     AddToFoodListComponent,
     UserProfileComponent,
     UserLikesComponent,
+    PostBuilderComponent,
+    PostGridComponent,
   ],
   imports: [
     BrowserModule,
@@ -120,7 +127,8 @@ import { UserLikesComponent } from './pages/user-likes/user-likes.component';
     ReactiveFormsModule,
     NgxPullToRefreshModule,
     InfiniteScrollModule,
-    MatStepperModule
+    MatStepperModule,
+    IonicModule
   ],
   providers: [
     HotToastService,
@@ -135,8 +143,9 @@ import { UserLikesComponent } from './pages/user-likes/user-likes.component';
     SplashScreenFactoryService,
     UserService,
     CommentsSectionFactoryService,
-    ScrollPositionService
-
+    ScrollPositionService,
+    LoggerService,
+    CameraService
   ],
   bootstrap: [AppComponent]
 })

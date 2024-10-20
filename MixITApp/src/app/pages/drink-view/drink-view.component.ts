@@ -10,6 +10,8 @@ import {PostService} from "../../service/post.service";
 import {Ingredient} from "../../model/post/Ingredient";
 import {Recipe} from "../../model/post/Recipe";
 import {CommentsSectionFactoryService} from "../../service/factories/comments-section-factory.service";
+import {UserService} from "../../service/user.service";
+import {User} from "../../model/user/User";
 
 @Component({
   selector: 'app-drink-view',
@@ -21,6 +23,8 @@ export class DrinkViewComponent implements OnInit{
  recipe!: Recipe;
  drinkId!: string;
  isLoaded: boolean = false;
+ postAuthor: User = {};
+ isPostLikedByCurrentUser: boolean = false;
  constructor(private route: ActivatedRoute,
              private toast: HotToastService,
              private instructionsFactoryService: InstructionsFactoryService,
@@ -31,6 +35,7 @@ export class DrinkViewComponent implements OnInit{
              private router: Router,
              private postService: PostService,
              private commentsSectionFactoryService: CommentsSectionFactoryService,
+             private userService: UserService
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
@@ -47,19 +52,41 @@ export class DrinkViewComponent implements OnInit{
       await this.router.navigate(['/home']);
     }
     this.isLoaded = true;
+    this.postAuthor = await this.userService.getUserById(this.activePost.userId!)
+    this.isPostLikedByCurrentUser = this.activePost.likedByCurrentUser || false;
   }
+  gotoProfile(userId: string){
+    this.router.navigate(['/user-profile', userId]).then();
+  }
+
+  getAuthorName(): string{
+   return this.postAuthor.displayName || "Unknown"
+  }
+
    getIngredients(): Ingredient[] {
     return this.recipe.ingredientsWithMeasurements.map((ingredient) => {
       return ingredient;
     }) || [];
   }
+
   refreshPost(){
     this.postService.getPostById(this.activePost.postId!).then((post) => {
       this.activePost = post;
     })
   }
+
   async getRecipe() {
     return await this.postService.getPostRecipe(this.activePost.postId!);
+  }
+
+  async toggleLike(){
+   if(this.isPostLikedByCurrentUser){
+     await this.postService.unlikePost(this.activePost.postId!)
+     await this.ngOnInit();
+   }else{
+      await this.postService.likePost(this.activePost.postId!)
+      await this.ngOnInit();
+   }
   }
   async initializeInstructionsView(post: Post) {
     const recipe = await this.getRecipe();
@@ -70,6 +97,7 @@ export class DrinkViewComponent implements OnInit{
       this.bodyScrollService.enableScroll();
     });
   }
+
    initializeIngredientView(id: number) {
     let ingredient = this.getIngredients().find((ingredient) => ingredient.ingredientId === id);
     if (!ingredient) {
@@ -81,9 +109,11 @@ export class DrinkViewComponent implements OnInit{
       this.ingredientViewFactoryService.removeDynamicComponent(componentRef)
     })
   }
+  // Nie wiem co to tu robi ale kiedys tego potrzebowalem to moze sie przyda
   preventScroll(event: TouchEvent) {
     event.preventDefault();
   }
+
   initializeCommentSection(postId: string) {
    const componentRef = this.commentsSectionFactoryService.addDynamicComponent(postId);
    componentRef.instance.close.subscribe(() => {

@@ -60,7 +60,7 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<?> likePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
+    public ResponseEntity<GenericResponse> likePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
         likeService.likePost(postId, sessionToken);
 
         return ResponseEntity.ok(GenericResponse
@@ -71,7 +71,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}/like")
-    public ResponseEntity<?> unlikePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
+    public ResponseEntity<GenericResponse> unlikePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
         likeService.unlikePost(postId, sessionToken);
 
         return ResponseEntity.ok(GenericResponse
@@ -89,7 +89,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}/comment/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable String postId, @PathVariable String commentId, @RequestHeader("Authorization") final String sessionToken) {
+    public ResponseEntity<GenericResponse> deleteComment(@PathVariable String postId, @PathVariable String commentId, @RequestHeader("Authorization") final String sessionToken) {
         commentService.deleteComment(postId, commentId, sessionToken);
 
         return ResponseEntity.ok(GenericResponse

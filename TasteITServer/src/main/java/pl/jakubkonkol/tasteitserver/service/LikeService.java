@@ -9,6 +9,8 @@ import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -17,7 +19,7 @@ public class LikeService {
     private final UserService userService;
 
     public void likePost(String postId, String token) {
-        UserReturnDto userByToken = userService.getCurrentUserBySessionToken(token);
+        UserReturnDto userByToken = userService.getCurrentUserDtoBySessionToken(token);
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         var existingLike = likeRepository.findByPostIdAndUserId(postId, userByToken.getUserId());
@@ -36,7 +38,7 @@ public class LikeService {
     }
 
     public void unlikePost(String postId, String token) {
-        UserReturnDto userByToken = userService.getCurrentUserBySessionToken(token);
+        UserReturnDto userByToken = userService.getCurrentUserDtoBySessionToken(token);
         Like like = likeRepository.findByPostIdAndUserId(postId, userByToken.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Like not found"));
 
@@ -44,5 +46,15 @@ public class LikeService {
         post.getLikes().remove(like);
         postRepository.save(post);
         likeRepository.delete(like);
+    }
+
+    public void deleteAll() {
+        List<Post> postsWithLikes = postRepository.findByLikesNotEmpty();
+
+        for (Post post : postsWithLikes) {
+            post.getLikes().clear();
+        }
+        postRepository.saveAll(postsWithLikes);
+        likeRepository.deleteAll();
     }
 }

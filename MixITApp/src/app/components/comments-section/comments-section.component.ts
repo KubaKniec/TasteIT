@@ -5,6 +5,9 @@ import {Comment} from "../../model/post/Comment";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {CommentValidator} from "../../validators/CommentValidator";
 import {HotToastService} from "@ngneat/hot-toast";
+import {User} from "../../model/user/User";
+import {DateFormatter} from "../../helpers/DateFormatter";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-comments-section',
@@ -32,25 +35,58 @@ export class CommentsSectionComponent implements OnInit{
   comments: Comment[] = [];
   commentContent: string = '';
   state = 'enter'
+  userNames: { [userId: string]: string } = {};
+  currentUserId: string = '';
 
   constructor(
     private postService: PostService,
     private userService: UserService,
-    private toastService: HotToastService
+    private toastService: HotToastService,
+    private router: Router
     ) {
   }
-  getUserName(userId: string): string {
-    return 'John Doe';
-  }
   async ngOnInit(): Promise<void> {
-
+    this.comments = await this.postService.getPostComments(this.postId);
+    await this.loadUserNames();
+    let user: User = await this.userService.getUserByToken()
+    this.currentUserId = user.userId || '';
+  }
+  isCurrentUserAuthor(comment: Comment): boolean{
+    return comment.userId === this.currentUserId;
+  }
+  deleteComment(comment: Comment){
+    this.postService.deletePostComment(this.postId, comment.commentId)
+      .then(async () => {
+        await this.ngOnInit();
+        this.refreshPost.emit();
+      })
+      .catch(() => this.toastService.error('Failed to delete comment'));
+  }
+  async loadUserNames() {
+    for (const comment of this.comments) {
+      const commentAuthor = await this.userService.getUserById(comment.userId);
+      this.userNames[comment.userId] = commentAuthor.displayName || 'Unknown';
+    }
+  }
+  gotoProfile(userId: string){
+    this.router.navigate(['/user-profile', userId]);
   }
   onClose() {
     this.state = 'void';
     this.close.emit()
   }
-  addComment(){
-
+  async addComment() {
+    if (!CommentValidator.isValid(this.commentContent)) {
+      this.toastService.error('Failed to add comment');
+      return;
+    }
+    await this.postService.createPostComment(this.postId, this.commentContent)
+      .catch(() => this.toastService.error('Failed to add comment'))
+      .finally(async () => {
+        this.commentContent = '';
+        await this.ngOnInit();
+        this.refreshPost.emit();
+      });
   }
-
+  protected readonly DateFormatter = DateFormatter;
 }

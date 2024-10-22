@@ -8,7 +8,6 @@ import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.FoodList;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.User;
-import pl.jakubkonkol.tasteitserver.repository.FoodListRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.util.List;

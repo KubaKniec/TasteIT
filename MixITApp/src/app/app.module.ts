@@ -66,6 +66,9 @@ import { PostBuilderComponent } from './pages/post-builder/post-builder.componen
 import {IonicModule} from "@ionic/angular";
 import {CameraService} from "./service/camera.service";
 import { PostGridComponent } from './components/post-grid/post-grid.component';
+import {AngularFireModule} from "@angular/fire/compat";
+import {environment} from "../environments/environment";
+import {AngularFireStorage, AngularFireStorageModule} from "@angular/fire/compat/storage";
 
 @NgModule({
   declarations: [
@@ -128,7 +131,9 @@ import { PostGridComponent } from './components/post-grid/post-grid.component';
     NgxPullToRefreshModule,
     InfiniteScrollModule,
     MatStepperModule,
-    IonicModule
+    IonicModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireStorageModule
   ],
   providers: [
     HotToastService,

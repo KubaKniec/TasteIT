@@ -1,7 +1,7 @@
 <div class="feed-item" *ngIf="feedItem">
   <div class="image-wrapper" (click)="emitGotoDrink()">
     <div class="profile-info" (click)="gotoUser($event)">
-      <img src="assets/user_placeholder.png">
+      <img src="{{getAuthorProfilePicture()}}">
       <p> {{getAuthorName()}}</p>
     </div>
     <img src="{{feedItem.postMedia?.pictures?.[0]}}">

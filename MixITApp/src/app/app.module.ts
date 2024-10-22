@@ -1,5 +1,5 @@
 import { NgModule, isDevMode } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {BrowserModule, HammerModule} from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -69,6 +69,8 @@ import { PostGridComponent } from './components/post-grid/post-grid.component';
 import {AngularFireModule} from "@angular/fire/compat";
 import {environment} from "../environments/environment";
 import {AngularFireStorage, AngularFireStorageModule} from "@angular/fire/compat/storage";
+import {StorageUploadService} from "./service/storage-upload.service";
+import {ImageCropperComponent} from "ngx-image-cropper";
 
 @NgModule({
   declarations: [
@@ -133,7 +135,9 @@ import {AngularFireStorage, AngularFireStorageModule} from "@angular/fire/compat
     MatStepperModule,
     IonicModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireStorageModule
+    AngularFireStorageModule,
+    ImageCropperComponent,
+    HammerModule
   ],
   providers: [
     HotToastService,
@@ -150,7 +154,8 @@ import {AngularFireStorage, AngularFireStorageModule} from "@angular/fire/compat
     CommentsSectionFactoryService,
     ScrollPositionService,
     LoggerService,
-    CameraService
+    CameraService,
+    StorageUploadService
   ],
   bootstrap: [AppComponent]
 })

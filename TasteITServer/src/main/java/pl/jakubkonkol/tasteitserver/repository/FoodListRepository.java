@@ -1,3 +1,4 @@
+/*
 package pl.jakubkonkol.tasteitserver.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,3 +12,4 @@ public interface FoodListRepository extends MongoRepository<FoodList, String> {
     FoodList findByFoodListId(String foodListId);
     List<FoodList> findAllByUserId(String userId);
 }
+*/

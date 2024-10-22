@@ -1,5 +1,7 @@
 package pl.jakubkonkol.tasteitserver.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import pl.jakubkonkol.tasteitserver.model.User;
@@ -11,5 +13,5 @@ public interface UserRepository extends MongoRepository<User, String>{
     Optional<User> findByEmail(String email);
     @Query("{ 'authentication.sessionToken' : ?0 }")
     Optional<User> findBySessionToken(String sessionToken);
-    List<User> findByDisplayNameContainingIgnoreCase(String displayName);
+    Page<User> findByUserIdIn(List<String> followers, Pageable pageable);
 }

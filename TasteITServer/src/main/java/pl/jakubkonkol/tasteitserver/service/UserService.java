@@ -110,13 +110,25 @@ public class UserService {
         }
     }
 
-    public PageDto<UserReturnDto> searchUsersByDisplayName(String query, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<User> userPage = userRepository.findByDisplayNameContainingIgnoreCase(query, pageable);
+    public PageDto<UserReturnDto> getFollowers(String userId, String sessionToken, Integer page, Integer size) {
+        User targetUser = getUserById(userId);
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
 
-        List<UserReturnDto> userDtos = userPage.getContent().stream()
-                .map(this::convertToDto)
-                .toList();
+        return getUserPage(targetUser.getFollowers(), currentUser, page, size);
+    }
+
+    public PageDto<UserReturnDto> getFollowing(String userId, String sessionToken, Integer page, Integer size) {
+        User targetUser = getUserById(userId);
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+
+        return getUserPage(targetUser.getFollowing(), currentUser, page, size);
+    }
+
+    private PageDto<UserReturnDto> getUserPage(List<String> userIds, User currentUser, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findByUserIdIn(userIds, pageable);
+
+        List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> convertToFollowingUserReturnDto(user, currentUser)).toList();
 
         PageDto<UserReturnDto> pageDto = new PageDto<>();
         pageDto.setContent(userDtos);
@@ -126,6 +138,15 @@ public class UserService {
         pageDto.setTotalPages(userPage.getTotalPages());
 
         return pageDto;
+    }
+
+    private UserReturnDto convertToFollowingUserReturnDto(User user, User currentUser) {
+        UserReturnDto dto = new UserReturnDto();
+        dto.setUserId(user.getUserId());
+        dto.setDisplayName(user.getDisplayName());
+        dto.setProfilePicture(user.getProfilePicture());
+        dto.setIsFollowing(currentUser.getFollowing().contains(user.getUserId()));
+        return dto;
     }
 
     private User getUserById(String userId) {

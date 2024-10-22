@@ -28,6 +28,9 @@ export class FeedItemComponent implements OnInit{
   getAuthorName(): string {
     return this.postAuthor.displayName ?? 'Unknown';
   }
+  getAuthorProfilePicture(): string {
+    return this.postAuthor.profilePicture ?? 'https://www.gravatar.com/avatar/';
+  }
   emitGotoDrink(): void {
     this.gotoDrink.emit(this.feedItem.postId);
   }

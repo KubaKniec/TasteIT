@@ -94,9 +94,6 @@ public class PostService {
     //if title consists few words use '%20' between them in get request
     public List<PostDto> searchPostsByTitle(String query, String sessionToken) {
         List<Post> posts = postRepository.findByPostMediaTitleContainingIgnoreCase(query);
-        if (posts.isEmpty()){
-            //raczej nic nie trzeba
-        }
         return posts.stream()
                 .map(post -> convertToDto(post, sessionToken))
                 .toList();

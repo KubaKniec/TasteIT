@@ -2,6 +2,9 @@ package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.dto.*;
@@ -105,6 +108,24 @@ public class UserService {
         } else {
             throw new IllegalStateException("User is not following the target user.");
         }
+    }
+
+    public PageDto<UserReturnDto> searchUsersByDisplayName(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findByDisplayNameContainingIgnoreCase(query, pageable);
+
+        List<UserReturnDto> userDtos = userPage.getContent().stream()
+                .map(this::convertToDto)
+                .toList();
+
+        PageDto<UserReturnDto> pageDto = new PageDto<>();
+        pageDto.setContent(userDtos);
+        pageDto.setPageNumber(page);
+        pageDto.setPageSize(size);
+        pageDto.setTotalElements(userPage.getTotalElements());
+        pageDto.setTotalPages(userPage.getTotalPages());
+
+        return pageDto;
     }
 
     private User getUserById(String userId) {

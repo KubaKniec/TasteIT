@@ -5,9 +5,25 @@
   flex-direction: column;
 }
 .title-text{
-  margin-bottom: 0;
+  margin-bottom: 1rem;
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--theme-color-200)
+}
+.empty-state{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  padding-top: 10rem;
+}
+.no-posts-text{
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--theme-color-200);
+  margin-top: 1rem;
+  text-align: center;
 }

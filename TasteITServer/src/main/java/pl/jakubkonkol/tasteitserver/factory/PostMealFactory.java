@@ -20,9 +20,11 @@ public class PostMealFactory extends PostFactory {
         recipe.setIngredientsWithMeasurements(createIngredients(postObj));
         newPost.setRecipe(recipe);
 
+        var tags = createTags(postObj);
+        newPost.setTags(tags);
+
         // TODO: Set proper user and tags, likes, comments, etc.
         newPost.setUserId("0"); //userId=0 -> id admina
-        newPost.setTags(null);
         newPost.setLikes(null);
         newPost.setComments(null);
 

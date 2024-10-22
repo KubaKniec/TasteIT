@@ -75,4 +75,26 @@ public class UserController {
                 message("Unfollowed")
                 .build());
     }
+
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<PageDto<UserReturnDto>> getFollowers(
+            @PathVariable String userId,
+            @RequestHeader("Authorization") String sessionToken,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        PageDto<UserReturnDto> followers = userService.getFollowers(userId, sessionToken, page, size);
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<PageDto<UserReturnDto>> getFollowing(
+            @PathVariable String userId,
+            @RequestHeader("Authorization") String sessionToken,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        PageDto<UserReturnDto> following = userService.getFollowing(userId, sessionToken, page, size);
+        return ResponseEntity.ok(following);
+    }
 }

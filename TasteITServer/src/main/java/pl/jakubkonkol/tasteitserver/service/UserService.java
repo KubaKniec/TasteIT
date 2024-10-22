@@ -2,6 +2,9 @@ package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.dto.*;
@@ -105,6 +108,45 @@ public class UserService {
         } else {
             throw new IllegalStateException("User is not following the target user.");
         }
+    }
+
+    public PageDto<UserReturnDto> getFollowers(String userId, String sessionToken, Integer page, Integer size) {
+        User targetUser = getUserById(userId);
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+
+        return getUserPage(targetUser.getFollowers(), currentUser, page, size);
+    }
+
+    public PageDto<UserReturnDto> getFollowing(String userId, String sessionToken, Integer page, Integer size) {
+        User targetUser = getUserById(userId);
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+
+        return getUserPage(targetUser.getFollowing(), currentUser, page, size);
+    }
+
+    private PageDto<UserReturnDto> getUserPage(List<String> userIds, User currentUser, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findByUserIdIn(userIds, pageable);
+
+        List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> convertToFollowingUserReturnDto(user, currentUser)).toList();
+
+        PageDto<UserReturnDto> pageDto = new PageDto<>();
+        pageDto.setContent(userDtos);
+        pageDto.setPageNumber(page);
+        pageDto.setPageSize(size);
+        pageDto.setTotalElements(userPage.getTotalElements());
+        pageDto.setTotalPages(userPage.getTotalPages());
+
+        return pageDto;
+    }
+
+    private UserReturnDto convertToFollowingUserReturnDto(User user, User currentUser) {
+        UserReturnDto dto = new UserReturnDto();
+        dto.setUserId(user.getUserId());
+        dto.setDisplayName(user.getDisplayName());
+        dto.setProfilePicture(user.getProfilePicture());
+        dto.setIsFollowing(currentUser.getFollowing().contains(user.getUserId()));
+        return dto;
     }
 
     private User getUserById(String userId) {

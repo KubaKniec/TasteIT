@@ -48,7 +48,7 @@ public class FoodListController {
     }
 
     @PutMapping("/name/{foodListId}")
-    public ResponseEntity<?> updateFoodlistName(
+    public ResponseEntity<GenericResponse> updateFoodlistName(
             @RequestHeader("Authorization") final String sessionToken,
             @PathVariable String foodListId, @RequestBody @Valid String name) {
         foodListService.updateFoodlistName(sessionToken, foodListId, name);
@@ -60,7 +60,7 @@ public class FoodListController {
     }
 
     @DeleteMapping("/{foodListId}")
-    public ResponseEntity<?> deleteFoodList(
+    public ResponseEntity<GenericResponse> deleteFoodList(
             @RequestHeader("Authorization") final String sessionToken,
             @PathVariable String foodListId) {
         foodListService.deleteFoodList(sessionToken, foodListId);
@@ -72,7 +72,7 @@ public class FoodListController {
     }
 
     @PostMapping("/post/{foodListId}")
-    public ResponseEntity<?> addPostToFoodlist(
+    public ResponseEntity<GenericResponse> addPostToFoodlist(
             @RequestHeader("Authorization") final String sessionToken,
             @PathVariable String foodListId, @RequestBody @Valid Post post) {
         foodListService.addPostToFoodlist(sessionToken, foodListId, post);
@@ -84,7 +84,7 @@ public class FoodListController {
     }
 
     @DeleteMapping("/post/{foodListId}")
-    public ResponseEntity<?> deletePostInFoodlist(
+    public ResponseEntity<GenericResponse> deletePostInFoodlist(
             @RequestHeader("Authorization") final String sessionToken,
             @PathVariable String foodListId, @RequestBody @Valid Post post) {
         foodListService.deletePostInFoodlist(sessionToken, foodListId, post);

@@ -74,6 +74,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-MixITApp/src/app/environments/environment.ts
+MixITApp/src/environments/environment.development.ts
+MixITApp/src/environments/environment.ts
 
 firebaseKey.json

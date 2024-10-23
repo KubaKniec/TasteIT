@@ -71,6 +71,9 @@ import {environment} from "../environments/environment";
 import {AngularFireStorage, AngularFireStorageModule} from "@angular/fire/compat/storage";
 import {StorageUploadService} from "./service/storage-upload.service";
 import {ImageCropperComponent} from "ngx-image-cropper";
+import {SearchService} from "./service/search.service";
+import { UsersListComponent } from './components/users-list/users-list.component';
+import { TagsListComponent } from './components/tags-list/tags-list.component';
 
 @NgModule({
   declarations: [
@@ -102,6 +105,8 @@ import {ImageCropperComponent} from "ngx-image-cropper";
     UserLikesComponent,
     PostBuilderComponent,
     PostGridComponent,
+    UsersListComponent,
+    TagsListComponent,
   ],
   imports: [
     BrowserModule,
@@ -155,7 +160,8 @@ import {ImageCropperComponent} from "ngx-image-cropper";
     ScrollPositionService,
     LoggerService,
     CameraService,
-    StorageUploadService
+    StorageUploadService,
+    SearchService
   ],
   bootstrap: [AppComponent]
 })

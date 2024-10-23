@@ -60,16 +60,6 @@ export class PostService {
     }
   }
 
-  async searchPostByTitle(query: string): Promise<Post[]> {
-    try {
-      const res = await taste_api.get(`/post/search?query=${query}`);
-      return res.data as Post[];
-    } catch (error: any) {
-      this.logger.logError(`Error searching posts by title: ${query}`, error.response?.data || error);
-      return Promise.reject(error.response?.data || error);
-    }
-  }
-
   async getPostComments(id: string): Promise<Comment[]> {
     try {
       const res = await taste_api.get(`/post/${id}/comments`);

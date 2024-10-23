@@ -41,13 +41,6 @@ public class PostController {
         return ResponseEntity.ok(pageDto);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<PostDto>> searchPostsByTitle(@RequestParam String query,
-                                                            @RequestHeader("Authorization") String sessionToken) {
-        List<PostDto> postDtos = postService.searchPostsByTitle(query, sessionToken);
-        return ResponseEntity.ok(postDtos);
-    }
-
     @GetMapping("/{postId}/recipe")
     public ResponseEntity<Recipe> getPostRecipe(@PathVariable String postId) {
         Recipe recipe = postService.getPostRecipe(postId);

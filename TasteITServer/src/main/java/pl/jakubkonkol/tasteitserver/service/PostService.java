@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
@@ -16,6 +18,7 @@ import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -60,24 +63,52 @@ public class PostService {
 
     //temp implementation
     public PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken) {
-        // Create a Pageable object for pagination information
         Pageable pageable = PageRequest.of(page, size);
 
-        // Count the total number of posts
         long total = postRepository.count();
 
-        // Create an aggregation to sample random documents from the collection
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.sample(size)
         );
 
-        // Execute the aggregation query
         AggregationResults<Post> results = mongoTemplate.aggregate(aggregation, "post", Post.class);
         List<Post> posts = results.getMappedResults();
-        if(posts.isEmpty()){
+
+        if (posts.isEmpty()) {
             throw new NoSuchElementException("No random posts found in repository");
         }
 
+        return getPostDtoPageDto(posts, total, pageable, sessionToken);
+    }
+
+    //if title consists few words use '%20' between them in get request
+    public PageDto<PostDto> searchPosts(String title, String postType, String sessionToken, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("postMedia.title").regex(title, "i"));
+
+        if (postType != null) {
+            query.addCriteria(Criteria.where("postType").is(postType));
+        }
+
+        long total = mongoTemplate.count(query, Post.class);
+
+        query.with(pageable);
+
+        List<Post> posts = mongoTemplate.find(query, Post.class);
+
+        return getPostDtoPageDto(posts, total, pageable, sessionToken);
+    }
+
+    public PageDto<PostDto> searchPostsByTagName(String tagName, String sessionToken, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findByTagNameIgnoreCase(tagName, pageable);
+
+        return getPostDtoPageDto(postPage.getContent(), postPage.getTotalElements(), pageable, sessionToken);
+    }
+
+    private PageDto<PostDto> getPostDtoPageDto(List<Post> posts, long total, Pageable pageable, String sessionToken) {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> convertToDto(post, sessionToken))
                 .toList();
@@ -91,40 +122,6 @@ public class PostService {
         pageDto.setTotalElements(pageImpl.getTotalElements());
         pageDto.setTotalPages(pageImpl.getTotalPages());
 
-        return pageDto;
-    }
-
-    //if title consists few words use '%20' between them in get request
-    public PageDto<PostDto> searchPosts(String query, Boolean isAlcoholic, String sessionToken, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<Post> postPage = postRepository.findByPostMediaTitleContainingIgnoreCaseAndIsAlcoholic(query, isAlcoholic, pageable);
-
-        List<PostDto> postDtos = postPage.getContent().stream()
-                .map(post -> convertToDto(post, sessionToken))
-                .toList();
-
-        return getPostDtoPageDto(page, size, postDtos, postPage);
-    }
-
-    public PageDto<PostDto> searchPostsByTagName(String tagName, String sessionToken, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> postPage = postRepository.findByTagNameIgnoreCase(tagName, pageable);
-
-        List<PostDto> postDtos = postPage.getContent().stream()
-                .map(post -> convertToDto(post, sessionToken))
-                .toList();
-
-        return getPostDtoPageDto(page, size, postDtos, postPage);
-    }
-
-    private static PageDto<PostDto> getPostDtoPageDto(Integer page, Integer size, List<PostDto> postDtos, Page<Post> postPage) {
-        PageDto<PostDto> pageDto = new PageDto<>();
-        pageDto.setContent(postDtos);
-        pageDto.setPageNumber(page);
-        pageDto.setPageSize(size);
-        pageDto.setTotalElements(postPage.getTotalElements());
-        pageDto.setTotalPages(postPage.getTotalPages());
         return pageDto;
     }
 

@@ -29,15 +29,19 @@
 
     </div>
 </div>
-<div *ngIf="searchType === 'Posts'">
-  <app-post-grid [posts]="foundPosts" *ngIf="!isLoading"></app-post-grid>
+<div [ngSwitch]="searchType">
+  <ng-container *ngSwitchCase="'Posts'">
+    <app-post-grid [posts]="foundPosts" *ngIf="!isLoading"></app-post-grid>
+  </ng-container>
+  <ng-container *ngSwitchCase="'Users'">
+    <app-users-list [users]="foundUsers" *ngIf="!isLoading"></app-users-list>
+  </ng-container>
+  <ng-container *ngSwitchCase="'Tags'">
+    <app-tags-list [tags]="foundTags" *ngIf="!isLoading"></app-tags-list>
+  </ng-container>
 </div>
-<div *ngIf="searchType === 'Users'">
-  <app-users-list [users]="foundUsers" *ngIf="!isLoading"></app-users-list>
-</div>
-<div *ngIf="searchType === 'Tags'">
-  <app-tags-list [tags]="foundTags" *ngIf="!isLoading"></app-tags-list>
-</div>
+
+
 
 <button
     class="button-tertiary centered"

@@ -20,6 +20,7 @@ public class Post {
     private PostType postType;
     private PostMedia postMedia;
     private Recipe recipe;
+    private Boolean isAlcoholic;
     private List<Tag> tags = new ArrayList<>();
     @DBRef
     private List<Like> likes = new ArrayList<>();

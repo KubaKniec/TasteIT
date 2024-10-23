@@ -1,6 +1,8 @@
 package pl.jakubkonkol.tasteitserver.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +11,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
+import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
@@ -92,11 +95,37 @@ public class PostService {
     }
 
     //if title consists few words use '%20' between them in get request
-    public List<PostDto> searchPostsByTitle(String query, String sessionToken) {
-        List<Post> posts = postRepository.findByPostMediaTitleContainingIgnoreCase(query);
-        return posts.stream()
+    public PageDto<PostDto> searchPosts(String query, Boolean isAlcoholic, String sessionToken, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Post> postPage = postRepository.findByPostMediaTitleContainingIgnoreCaseAndIsAlcoholic(query, isAlcoholic, pageable);
+
+        List<PostDto> postDtos = postPage.getContent().stream()
                 .map(post -> convertToDto(post, sessionToken))
                 .toList();
+
+        return getPostDtoPageDto(page, size, postDtos, postPage);
+    }
+
+    public PageDto<PostDto> searchPostsByTagName(String tagName, String sessionToken, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findByTagNameIgnoreCase(tagName, pageable);
+
+        List<PostDto> postDtos = postPage.getContent().stream()
+                .map(post -> convertToDto(post, sessionToken))
+                .toList();
+
+        return getPostDtoPageDto(page, size, postDtos, postPage);
+    }
+
+    private static PageDto<PostDto> getPostDtoPageDto(Integer page, Integer size, List<PostDto> postDtos, Page<Post> postPage) {
+        PageDto<PostDto> pageDto = new PageDto<>();
+        pageDto.setContent(postDtos);
+        pageDto.setPageNumber(page);
+        pageDto.setPageSize(size);
+        pageDto.setTotalElements(postPage.getTotalElements());
+        pageDto.setTotalPages(postPage.getTotalPages());
+        return pageDto;
     }
 
     public Recipe getPostRecipe(String postId) {

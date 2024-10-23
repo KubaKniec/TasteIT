@@ -1,7 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {HotToastService} from "@ngneat/hot-toast";
-import {Post} from "../../model/post/Post";
 import {Router} from "@angular/router";
+import {SearchService} from "../../service/search.service";
+import {Post} from "../../model/post/Post";
+import {FormControl} from "@angular/forms";
+import {debounceTime, distinctUntilChanged, filter, from, of, startWith, switchMap, tap} from "rxjs";
+import {User} from "../../model/user/User";
+import {Tag} from "../../model/user/Tag";
 
 @Component({
   selector: 'app-search',
@@ -9,53 +13,85 @@ import {Router} from "@angular/router";
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit{
-  foundDrinks: Post[] = []
-  query: string = ''
-  isLoading: boolean = false;
-  drinkCategories: string[] = [];
-  glassTypes: string[] = [];
-  visibleCategories: number = 6;
-  constructor(
-              private toast: HotToastService,
-              private router: Router
+  constructor(private router: Router,
+              private searchService: SearchService
               ) {}
+
+  isLoading = false;
+  foundPosts: Post[] = [];
+  foundUsers: User[] = [];
+  foundTags: Tag[] = [];
+  currentPage = 0;
+  searchControl = new FormControl();
+  pageSize = 10;
+  searchType: 'Posts' | 'Users' | 'Tags' = 'Posts';
   ngOnInit(): void {
-    // this.publicDrinkService.getAllCategories().then((drinkCategories) => {
-    //   this.drinkCategories = drinkCategories;
-    // }).catch((error) => {
-    //   this.toast.error(error.message);
-    // })
-    // this.publicDrinkService.getAllGlassTypes().then((glassTypes) => {
-    //   this.glassTypes = glassTypes;
-    // }).catch((error) => {
-    //   this.toast.error(error.message);
-    // })
+    this.searchControl.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        filter(value => value.length >= 2 || value.length === 0),
+        tap(() => {this.isLoading = true; this.currentPage = 0}),
+        switchMap(value => {
+          if (value.length === 0) {
+            return of([]);
+          } else {
+            switch (this.searchType) {
+              case 'Posts':
+                return from(this.searchService.searchPosts(value));
+              case 'Users':
+                return from(this.searchService.searchUsers(value));
+              case 'Tags':
+                return from(this.searchService.searchTags(value));
+              default:
+                return of([]);
+            }
+          }
+        })
+      )
+      .subscribe(result => {
+        switch (this.searchType) {
+          case 'Posts':
+            this.foundPosts = result;
+            break;
+          case 'Users':
+            this.foundUsers = result;
+            break;
+          case 'Tags':
+            this.foundTags = result;
+            break;
+        }
+        this.isLoading = false;
+      });
   }
-  searchDrink(query: string){
-    // this.isLoading = true;
-    // if(query === ''){
-    //   this.isLoading = false;
-    //   this.foundDrinks = [];
-    //   return;
-    // }
-    // this.publicDrinkService.searchForDrinks(query).then((drinks) => {
-    //   this.foundDrinks = drinks;
-    // }).catch((error) => {
-    //   this.toast.error(error.message);
-    // }).finally(() => {
-    //   this.isLoading = false
-    //   }
-    // )
+  setSearchType(type: 'Posts' | 'Users' | 'Tags') {
+    this.searchType = type;
   }
-  handleCategoryClick(category: string) {
-    this.router.navigate(['/category', category]).then();
+  async loadMorePosts() {
+    this.currentPage++;
+    try {
+      let newResults;
+      switch (this.searchType) {
+        case 'Posts':
+          newResults = await this.searchService.searchPosts(this.searchControl.value, this.currentPage, this.pageSize);
+          this.foundPosts = [...this.foundPosts, ...newResults];
+          break;
+        case 'Users':
+          newResults = await this.searchService.searchUsers(this.searchControl.value, this.currentPage, this.pageSize);
+          this.foundUsers = [...this.foundUsers, ...newResults];
+          break;
+        case 'Tags':
+          newResults = await this.searchService.searchTags(this.searchControl.value, this.currentPage, this.pageSize);
+          this.foundTags = [...this.foundTags, ...newResults];
+          break;
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  showAllCategories() {
-    this.visibleCategories = this.drinkCategories.length;
-  }
 
-  hideAllCategories() {
-    this.visibleCategories = 6;
-  }
 }

@@ -1,0 +1,6 @@
+<div class="list">
+  <div class="single-user" *ngFor="let user of users" (click)="gotoUser(user.userId || '0')">
+    <img src="{{user.profilePicture}}" alt="{{user.displayName}}" />
+    <p>{{user.displayName}}</p>
+  </div>
+</div>

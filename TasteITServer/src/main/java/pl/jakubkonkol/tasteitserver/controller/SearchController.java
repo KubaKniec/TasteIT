@@ -7,6 +7,7 @@ import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.dto.TagDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
+import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import pl.jakubkonkol.tasteitserver.service.PostService;
 import pl.jakubkonkol.tasteitserver.service.TagService;
 import pl.jakubkonkol.tasteitserver.service.UserService;
@@ -23,11 +24,11 @@ public class SearchController {
 
     @GetMapping("/posts")
     public ResponseEntity<PageDto<PostDto>> searchPosts(@RequestParam String query,
-                                                        @RequestParam(required = false) Boolean isAlcoholic,
+                                                        @RequestParam(required = false) String type,
                                                         @RequestHeader("Authorization") String sessionToken,
                                                         @RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "20") int size) {
-        PageDto<PostDto> pageDto = postService.searchPosts(query, isAlcoholic, sessionToken, page, size);
+        PageDto<PostDto> pageDto = postService.searchPosts(query, type, sessionToken, page, size);
         return ResponseEntity.ok(pageDto);
     }
 

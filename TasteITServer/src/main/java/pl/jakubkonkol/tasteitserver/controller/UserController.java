@@ -82,7 +82,6 @@ public class UserController {
             @RequestHeader("Authorization") String sessionToken,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size) {
-
         PageDto<UserReturnDto> followers = userService.getFollowers(userId, sessionToken, page, size);
         return ResponseEntity.ok(followers);
     }
@@ -93,7 +92,6 @@ public class UserController {
             @RequestHeader("Authorization") String sessionToken,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size) {
-
         PageDto<UserReturnDto> following = userService.getFollowing(userId, sessionToken, page, size);
         return ResponseEntity.ok(following);
     }

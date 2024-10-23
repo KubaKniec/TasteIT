@@ -1,16 +1,17 @@
 import {Injectable} from "@angular/core";
 import {Post} from "../model/post/Post";
 import taste_api from "../api/taste_api";
+import {EPostType} from "../model/post/EPostType";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
 
-  async searchPosts(query: string, page?: number, size?: number, isAlcoholic?: boolean,): Promise<Post[]> {
+  async searchPosts(query: string, page?: number, size?: number, type?: EPostType,): Promise<Post[]> {
     try {
       const params: any = { query };
-      if (isAlcoholic !== undefined) params.isAlcoholic = isAlcoholic;
+      if (type !== undefined) params.type = type;
       if (page !== undefined) params.page = page;
       if (size !== undefined) params.size = size;
 

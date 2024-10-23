@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
 import {SearchService} from "../../service/search.service";
 import {Post} from "../../model/post/Post";
 import {FormControl} from "@angular/forms";
-import {debounceTime, distinctUntilChanged, filter, from, of, startWith, switchMap, tap} from "rxjs";
+import {debounceTime, distinctUntilChanged, filter, from, Observable, of, startWith, switchMap, tap} from "rxjs";
 import {User} from "../../model/user/User";
 import {Tag} from "../../model/user/Tag";
 
@@ -13,8 +12,8 @@ import {Tag} from "../../model/user/Tag";
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit{
-  constructor(private router: Router,
-              private searchService: SearchService
+  constructor(
+    private searchService: SearchService
               ) {}
 
   isLoading = false;
@@ -37,33 +36,40 @@ export class SearchComponent implements OnInit{
           if (value.length === 0) {
             return of([]);
           } else {
-            switch (this.searchType) {
-              case 'Posts':
-                return from(this.searchService.searchPosts(value));
-              case 'Users':
-                return from(this.searchService.searchUsers(value));
-              case 'Tags':
-                return from(this.searchService.searchTags(value));
-              default:
-                return of([]);
-            }
+            const encodedQuery = encodeURIComponent(value);
+            return this.search(encodedQuery);
           }
         })
       )
       .subscribe(result => {
-        switch (this.searchType) {
-          case 'Posts':
-            this.foundPosts = result;
-            break;
-          case 'Users':
-            this.foundUsers = result;
-            break;
-          case 'Tags':
-            this.foundTags = result;
-            break;
-        }
+        this.assignResults(result);
         this.isLoading = false;
       });
+  }
+  assignResults(results: Post[] | User[] | Tag[]) {
+    switch (this.searchType) {
+      case 'Posts':
+        this.foundPosts = results as Post[];
+        break;
+      case 'Users':
+        this.foundUsers = results as User[];
+        break;
+      case 'Tags':
+        this.foundTags = results as Tag[];
+        break;
+    }
+  }
+  search(value: string): Observable<any[]> {
+    switch (this.searchType) {
+      case 'Posts':
+        return from(this.searchService.searchPosts(value));
+      case 'Users':
+        return from(this.searchService.searchUsers(value));
+      case 'Tags':
+        return from(this.searchService.searchTags(value));
+      default:
+        return of([]);
+    }
   }
   setSearchType(type: 'Posts' | 'Users' | 'Tags') {
     this.searchType = type;

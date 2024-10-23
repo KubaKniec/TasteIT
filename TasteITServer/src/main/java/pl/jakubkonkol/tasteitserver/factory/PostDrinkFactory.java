@@ -19,6 +19,9 @@ public class PostDrinkFactory extends PostFactory {
         Recipe recipe = createRecipe(postObj, "strInstructions");
         recipe.setIngredientsWithMeasurements(createIngredients(postObj));
         newPost.setRecipe(recipe);
+        String strAlcoholic = postObj.getString("strAlcoholic");
+        boolean isAlcoholic = strAlcoholic.equals("Alcoholic");
+        newPost.setIsAlcoholic(isAlcoholic);
 
         var tags = createTags(postObj);
         newPost.setTags(tags);

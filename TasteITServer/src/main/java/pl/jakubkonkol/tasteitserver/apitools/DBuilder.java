@@ -28,7 +28,7 @@ public class DBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
 
-    @PostConstruct
+//    @PostConstruct
     public void createDefaultAdminAccount() throws IOException{
         adminUserFactory.CreateAdmin();
     }

@@ -1,6 +1,7 @@
 package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -130,6 +131,20 @@ public class UserService {
 
         List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> convertToFollowingUserReturnDto(user, currentUser)).toList();
 
+        return getUsersPageDto(page, size, userPage, userDtos);
+    }
+
+    public PageDto<UserReturnDto> searchUsersByDisplayName(String query, String sessionToken, Integer page, Integer size) {
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findByDisplayNameContainingIgnoreCase(query, pageable);
+
+        List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> convertToFollowingUserReturnDto(user, currentUser)).toList();
+
+        return getUsersPageDto(page, size, userPage, userDtos);
+    }
+
+    private PageDto<UserReturnDto> getUsersPageDto(Integer page, Integer size, Page<User> userPage, List<UserReturnDto> userDtos) {
         PageDto<UserReturnDto> pageDto = new PageDto<>();
         pageDto.setContent(userDtos);
         pageDto.setPageNumber(page);

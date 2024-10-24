@@ -11,8 +11,7 @@ import java.util.List;
 
 public class FoodListDto {
     public String foodListId;
-    public String userId;
-    private String name;
+    public String name;
     public Date createdDate;
     public List<Post> postsList = new ArrayList<>();;
 }

@@ -47,7 +47,7 @@ public class FoodListController {
         return ResponseEntity.ok(foodLists);
     }
 
-    @GetMapping()
+    @GetMapping("/simple")
     public ResponseEntity<List<FoodListDto>> getAllFoodListsSimpleInfo(
             @RequestHeader("Authorization") final String sessionToken) {
         List<FoodListDto> foodLists = foodListService.getAllFoodListsSimpleInfo(sessionToken);

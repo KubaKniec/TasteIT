@@ -57,7 +57,7 @@ public class FoodListController {
     @PutMapping("/name/{foodListId}")
     public ResponseEntity<GenericResponse> updateFoodlistName(
             @RequestHeader("Authorization") final String sessionToken,
-            @PathVariable String foodListId, @RequestBody @Valid String name) {
+            @PathVariable String foodListId, @RequestBody FoodListDto name) {
         foodListService.updateFoodlistName(sessionToken, foodListId, name);
         return ResponseEntity.ok(GenericResponse
                 .builder()
@@ -81,7 +81,7 @@ public class FoodListController {
     @PostMapping("/post/{foodListId}")
     public ResponseEntity<GenericResponse> addPostToFoodlist(
             @RequestHeader("Authorization") final String sessionToken,
-            @PathVariable String foodListId, @RequestBody @Valid String postId) {
+            @PathVariable String foodListId, @RequestBody PostDto postId) {
         foodListService.addPostToFoodlist(sessionToken, foodListId, postId);
         return ResponseEntity.ok(GenericResponse
                 .builder()
@@ -93,7 +93,7 @@ public class FoodListController {
     @DeleteMapping("/post/{foodListId}")
     public ResponseEntity<GenericResponse> deletePostInFoodlist(
             @RequestHeader("Authorization") final String sessionToken,
-            @PathVariable String foodListId, @RequestBody @Valid String postId) {
+            @PathVariable String foodListId, @RequestBody PostDto postId) {
         foodListService.deletePostInFoodlist(sessionToken, foodListId, postId);
         return ResponseEntity.ok(GenericResponse
                 .builder()

@@ -19,4 +19,5 @@ public interface PostRepository extends MongoRepository<Post, String> {
     List<Post> findByLikesNotEmpty();
     @Query("{ 'comments': { $exists: true, $ne: [] } }")
     List<Post> findByCommentsNotEmpty();
+    Optional<Post> findById(String id);
 }

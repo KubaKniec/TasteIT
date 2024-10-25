@@ -8,6 +8,5 @@ import java.util.List;
 
 @Data
 public class UserTagsDto {
-    private List<Tag> mainTags;
-    private List<Tag> customTags;
+    private List<Tag> tags;
 }

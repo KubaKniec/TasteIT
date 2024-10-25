@@ -3,10 +3,12 @@ package pl.jakubkonkol.tasteitserver.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import pl.jakubkonkol.tasteitserver.data.BasicTagsData;
 import pl.jakubkonkol.tasteitserver.dto.TagDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.model.Tag;
 import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.enums.TagType;
 import pl.jakubkonkol.tasteitserver.repository.TagRepository;
 
 import java.util.List;
@@ -38,6 +40,29 @@ public class TagService {
         return tags.stream()
                 .map(this::convertToDto)
                 .toList();
+    }
+    public List<Tag> getBasicTags() {
+        List<Tag> basicTags = tagRepository.findByTagType(TagType.BASIC);
+        if (basicTags.isEmpty()) {
+            throw new NoSuchElementException("No basic tags found.");
+        }
+        return basicTags;
+    }
+
+    /**
+     * Saves basic tags to the database.
+     * Basic tags are predefined tags that are used in the application.
+     */
+    public void saveBasicTags(){
+        for(String tagName: BasicTagsData.basicTags){
+            Tag tag = new Tag();
+            tag.setTagName(tagName);
+            tag.setTagType(TagType.BASIC);
+            tagRepository.save(tag);
+        }
+    }
+    public void deleteAll(){
+        tagRepository.deleteAll();
     }
 
     private TagDto convertToDto(Tag tag) {

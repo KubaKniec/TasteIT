@@ -18,8 +18,7 @@ public class UserReturnDto {
     private LocalDate birthDate;
     private Boolean firstLogin;
     private List<String> roles;
-    private List<Tag> mainTags;
-    private List<Tag> customTags;
+    private List<Tag> tags;
     private Long followersCount;
     private Long followingCount;
     private Boolean isFollowing;

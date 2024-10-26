@@ -71,8 +71,15 @@ export class SearchComponent implements OnInit{
         return of([]);
     }
   }
+  resetSearch() {
+    this.searchControl.setValue('');
+    this.foundTags = [];
+    this.foundUsers = [];
+    this.foundPosts = [];
+  }
   setSearchType(type: 'Posts' | 'Users' | 'Tags') {
     this.searchType = type;
+    this.resetSearch();
   }
   async loadMorePosts() {
     this.currentPage++;

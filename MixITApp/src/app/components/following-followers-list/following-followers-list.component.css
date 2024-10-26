@@ -1,0 +1,33 @@
+.container{
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.navigation{
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  width: 100%;
+}
+.title-text{
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--theme-color-50);
+  margin: 0;
+}
+.go-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--theme-color-100);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.go-back mat-icon{
+  color: var(--theme-color-500);
+}

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {UserService} from "../../service/user.service";
 import {User} from "../../model/user/User";
 import {ActivatedRoute, Router} from "@angular/router";
+import {NavigationService} from "../../service/navigation.service";
 
 @Component({
   selector: 'app-user-profile',
@@ -13,6 +14,7 @@ export class UserProfileComponent implements OnInit{
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
+    public navigationService: NavigationService
   ) { }
   user: User = {};
   userId: string = '';
@@ -44,5 +46,11 @@ export class UserProfileComponent implements OnInit{
   }
   goto(url: string) {
     this.router.navigate([url]);
+  }
+  gotoFollowing(): void {
+    this.router.navigate([`/user-profile/${this.userId}/following`]);
+  }
+  gotoFollowers(): void {
+    this.router.navigate([`/user-profile/${this.userId}/followers`]);
   }
 }

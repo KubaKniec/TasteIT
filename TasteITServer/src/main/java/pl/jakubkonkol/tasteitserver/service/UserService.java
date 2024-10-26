@@ -26,7 +26,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PostRepository postRepository;
-    private final PostService postService;
 
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
         User user = getUserById(userId);
@@ -45,14 +44,6 @@ public class UserService {
 
         User currentUser = getCurrentUserBySessionToken(sessionToken);
         return convertUserProfileViewToUserReturnDto(userId, userProfileView, currentUser);
-    }
-
-    public PageDto<PostDto> getUserPosts(String userId, Integer page, Integer size) {
-        checkIfUserExists(userId);
-        Pageable pageable = PageRequest.of(page, size);
-        Page<PostPhotoView> postsPhotoViewPage = postRepository.findPostsByUserId(userId, pageable);
-        
-        return postService.getPostDtoPageDtoFromPostPhotoView(postsPhotoViewPage, pageable);
     }
 
     public UserReturnDto getCurrentUserDtoBySessionToken(String sessionToken) {
@@ -191,7 +182,7 @@ public class UserService {
         return modelMapper.map(dto, User.class);
     }
 
-    private void checkIfUserExists(String userId) {
+    public void checkIfUserExists(String userId) {
         if (!userRepository.existsById(userId)) {
             throw new NoSuchElementException("User with id " + userId + " does not exist.");
         }

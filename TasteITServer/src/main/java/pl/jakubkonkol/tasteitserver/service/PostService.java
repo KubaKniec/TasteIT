@@ -109,6 +109,14 @@ public class PostService {
         return getPostDtoPageDto(postPage.getContent(), postPage.getTotalElements(), pageable, sessionToken);
     }
 
+    public PageDto<PostDto> getUserPosts(String userId, Integer page, Integer size) {
+        userService.checkIfUserExists(userId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostPhotoView> postsPhotoViewPage = postRepository.findPostsByUserId(userId, pageable);
+
+        return getPostDtoPageDtoFromPostPhotoView(postsPhotoViewPage, pageable);
+    }
+
     private PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken) {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> convertToDto(post, sessionToken))

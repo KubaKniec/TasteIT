@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final PostService postService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserReturnDto> getUserById(@PathVariable String userId, @RequestHeader("Authorization") String sessionToken) {
@@ -113,7 +114,7 @@ public class UserController {
     public ResponseEntity<PageDto<PostDto>> getUserPosts(@PathVariable String userId,
                                                          @RequestParam(defaultValue = "0") int page,
                                                          @RequestParam(defaultValue = "20") int size) {
-        PageDto<PostDto> posts = userService.getUserPosts(userId, page, size);
+        PageDto<PostDto> posts = postService.getUserPosts(userId, page, size);
         return ResponseEntity.ok(posts);
     }
 }

@@ -42,11 +42,7 @@ public class TagService {
                 .toList();
     }
     public List<Tag> getBasicTags() {
-        List<Tag> basicTags = tagRepository.findByTagType(TagType.BASIC);
-        if (basicTags.isEmpty()) {
-            throw new NoSuchElementException("No basic tags found.");
-        }
-        return basicTags;
+        return tagRepository.findByTagType(TagType.BASIC);
     }
 
     /**

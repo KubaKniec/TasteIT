@@ -30,7 +30,9 @@ public class User implements UserDetails {
     private List<Tag> tags = new ArrayList<>();
     private List<String> followers = new ArrayList<>();
     private List<String> following = new ArrayList<>();
-    private List<FoodList> foodLists = new ArrayList<FoodList>();
+    private List<FoodList> foodLists = new ArrayList<>();
+    @DBRef
+    private List<Post> posts = new ArrayList<>();   //ustawiac przy budowaniu bazy
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

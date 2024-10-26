@@ -8,7 +8,9 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.factory.PostDrinkFactory;
 import pl.jakubkonkol.tasteitserver.model.Post;
+import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.service.PostService;
+import pl.jakubkonkol.tasteitserver.service.UserService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +31,16 @@ public class DrinkFetcher {
     private static final Logger LOGGER = Logger.getLogger(DrinkFetcher.class.getName());
     private final String drinkFinderURL = "https://thecocktaildb.com/api/json/v1/1/search.php?f=";
     private final PostDrinkFactory postFactory;
+    private final UserService userService;
 
     public void populateDBWithDrinks() throws IOException {
         var drinks = fetchDrinks();
-        postService.saveAll(drinks);
+        List<Post> posts = postService.saveAll(drinks);
+
+        User admin = userService.getUserById("0");
+        admin.getPosts().addAll(posts);
+        userService.saveUser(admin);
+
         LOGGER.log(Level.INFO, "Drinks saved");
     }
 

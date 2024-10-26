@@ -30,7 +30,7 @@ public class DBuilder {
     public void createDefaultAdminAccount() throws IOException{
         adminUserFactory.CreateAdmin();
     }
-    @PostConstruct
+//    @PostConstruct
     public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
         commentService.deleteAll();

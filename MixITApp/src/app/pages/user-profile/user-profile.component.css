@@ -79,3 +79,17 @@
   color: var(--theme-color-950);
   background-color: var(--theme-color-50);
 }
+.go-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--theme-color-100);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.go-back mat-icon{
+  color: var(--theme-color-500);
+}

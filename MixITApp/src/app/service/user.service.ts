@@ -79,4 +79,22 @@ export class UserService {
       return Promise.reject(error.response?.data || error);
     }
   }
+  async getFollowers(userId: string): Promise<User[]> {
+    try {
+      const res = await taste_api.get(`user/${userId}/followers`);
+      return res.data.content;
+    } catch (error: any) {
+      this.logger.logError('Error getting followers', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async getFollowing(userId: string): Promise<User[]> {
+    try {
+      const res = await taste_api.get(`user/${userId}/following`);
+      return res.data.content;
+    } catch (error: any) {
+      this.logger.logError('Error getting following', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
 }

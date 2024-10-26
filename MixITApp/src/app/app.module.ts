@@ -75,6 +75,7 @@ import {SearchService} from "./service/search.service";
 import { UsersListComponent } from './components/users-list/users-list.component';
 import { TagsListComponent } from './components/tags-list/tags-list.component';
 import {TagService} from "./service/tag.service";
+import { FollowingFollowersListComponent } from './components/following-followers-list/following-followers-list.component';
 
 @NgModule({
   declarations: [
@@ -108,6 +109,7 @@ import {TagService} from "./service/tag.service";
     PostGridComponent,
     UsersListComponent,
     TagsListComponent,
+    FollowingFollowersListComponent,
   ],
   imports: [
     BrowserModule,

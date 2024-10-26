@@ -1,5 +1,19 @@
-<div class="grid" *ngIf="posts">
-  <div class="single-post" *ngFor="let post of posts" (click)="gotoPost(post.postId || '0')">
-    <img src="{{post.postMedia?.pictures?.[0]}}" alt="{{post.postMedia?.title}}" />
+<div
+  class="grid"
+  *ngIf="posts"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="50"
+  (scrolled)="onScroll()"
+>
+  <div
+    class="single-post"
+    *ngFor="let post of posts"
+    (click)="gotoPost(post.postId || '0')"
+  >
+    <img
+      [src]="post.postMedia?.pictures?.[0]"
+      [alt]="post.postMedia?.title"
+    />
   </div>
 </div>

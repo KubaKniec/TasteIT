@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {PostService} from "../../service/post.service";
 import {UserService} from "../../service/user.service";
 import {Comment} from "../../model/post/Comment";
@@ -8,6 +8,17 @@ import {HotToastService} from "@ngneat/hot-toast";
 import {User} from "../../model/user/User";
 import {DateFormatter} from "../../helpers/DateFormatter";
 import {Router} from "@angular/router";
+
+type Author = {
+  userId: string;
+  displayName: string;
+  profilePicture: string;
+}
+
+type CommentWithAuthor = {
+  comment: Comment;
+  author: Author;
+}
 
 @Component({
   selector: 'app-comments-section',
@@ -28,53 +39,79 @@ import {Router} from "@angular/router";
     ])
   ]
 })
-export class CommentsSectionComponent implements OnInit{
+export class CommentsSectionComponent implements OnInit {
   @Input() postId!: string;
   @Output() refreshPost = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
-  comments: Comment[] = [];
+
+  commentsWithAuthors: CommentWithAuthor[] = [];
   commentContent: string = '';
   state = 'enter'
-  userNames: { [userId: string]: string } = {};
   currentUserId: string = '';
+  currentUserProfilePicture: string = '';
 
   constructor(
     private postService: PostService,
     private userService: UserService,
     private toastService: HotToastService,
     private router: Router
-    ) {
+  ) {
   }
+
   async ngOnInit(): Promise<void> {
-    this.comments = await this.postService.getPostComments(this.postId);
-    await this.loadUserNames();
-    let user: User = await this.userService.getUserByToken()
+    await this.loadCommentsWithAuthors();
+    let user: User = await this.userService.getUserByToken();
     this.currentUserId = user.userId || '';
+    this.currentUserProfilePicture = user.profilePicture || '';
   }
-  isCurrentUserAuthor(comment: Comment): boolean{
-    return comment.userId === this.currentUserId;
+
+  async loadCommentsWithAuthors(): Promise<void> {
+    try {
+      const comments = await this.postService.getPostComments(this.postId);
+      const commentsWithAuthorsPromises = comments.map(async (comment) => {
+        const user = await this.userService.getUserById(comment.userId);
+
+        const author: Author = {
+          userId: user.userId || '',
+          displayName: user.displayName || 'Unknown',
+          profilePicture: user.profilePicture || ''
+        };
+
+        return {
+          comment,
+          author
+        };
+      });
+      this.commentsWithAuthors = await Promise.all(commentsWithAuthorsPromises);
+
+    } catch (error) {
+      this.toastService.error('Failed to load comments');
+      console.error('Error loading comments with authors:', error);
+    }
   }
-  deleteComment(comment: Comment){
-    this.postService.deletePostComment(this.postId, comment.commentId)
+
+  isCurrentUserAuthor(commentWithAuthor: CommentWithAuthor): boolean {
+    return commentWithAuthor.author.userId === this.currentUserId;
+  }
+
+  deleteComment(commentWithAuthor: CommentWithAuthor) {
+    this.postService.deletePostComment(this.postId, commentWithAuthor.comment.commentId)
       .then(async () => {
-        await this.ngOnInit();
+        await this.loadCommentsWithAuthors();
         this.refreshPost.emit();
       })
       .catch(() => this.toastService.error('Failed to delete comment'));
   }
-  async loadUserNames() {
-    for (const comment of this.comments) {
-      const commentAuthor = await this.userService.getUserById(comment.userId);
-      this.userNames[comment.userId] = commentAuthor.displayName || 'Unknown';
-    }
-  }
-  gotoProfile(userId: string){
+
+  gotoProfile(userId: string) {
     this.router.navigate(['/user-profile', userId]);
   }
+
   onClose() {
     this.state = 'void';
     this.close.emit()
   }
+
   async addComment() {
     if (!CommentValidator.isValid(this.commentContent)) {
       this.toastService.error('Failed to add comment');
@@ -84,9 +121,10 @@ export class CommentsSectionComponent implements OnInit{
       .catch(() => this.toastService.error('Failed to add comment'))
       .finally(async () => {
         this.commentContent = '';
-        await this.ngOnInit();
+        await this.loadCommentsWithAuthors();
         this.refreshPost.emit();
       });
   }
+
   protected readonly DateFormatter = DateFormatter;
 }

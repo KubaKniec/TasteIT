@@ -1,7 +1,12 @@
 <div class="container">
   <div class="navigation">
-    <p>Your Profile</p>
-    <p (click)="gotoSettings()"><mat-icon>settings</mat-icon></p>
+    <p *ngIf="!isVisitor()">Your Profile</p>
+    <div *ngIf="isVisitor()" class="go-back" (click)="navigationService.goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </div>
+    <div class="go-back"
+       (click)="gotoSettings()">
+      <mat-icon>settings</mat-icon></div>
   </div>
   <div class="user-info">
     <div class="user-avatar">
@@ -13,11 +18,11 @@
         <p class="social-details-item-counter">0</p>
         <p class="social-details-item-label">Posts</p>
       </div>
-      <div class="social-details-item">
+      <div class="social-details-item" (click)="gotoFollowers()">
         <p class="social-details-item-counter">{{user.followersCount || 0}}</p>
         <p class="social-details-item-label">Followers</p>
       </div>
-      <div class="social-details-item">
+      <div class="social-details-item" (click)="gotoFollowing()">
         <p class="social-details-item-counter">{{user.followingCount || 0}}</p>
         <p class="social-details-item-label">Following</p>
       </div>

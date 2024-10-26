@@ -1,24 +1,18 @@
 package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.dto.*;
-import pl.jakubkonkol.tasteitserver.model.Ingredient;
-import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.User;
-import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,9 +62,7 @@ public class UserService {
 
     public UserReturnDto updateUserTags(String userId, UserTagsDto userTagsDto) {
         User user = getUserById(userId);
-        user.setMainTags(userTagsDto.getMainTags());
-        user.setCustomTags(userTagsDto.getCustomTags());
-
+        user.setTags(userTagsDto.getTags());
         userRepository.save(user);
         return convertToDto(user);
     }

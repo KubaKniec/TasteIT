@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.factory.AdminUserFactory;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
-import pl.jakubkonkol.tasteitserver.service.CommentService;
-import pl.jakubkonkol.tasteitserver.service.IngredientService;
-import pl.jakubkonkol.tasteitserver.service.LikeService;
-import pl.jakubkonkol.tasteitserver.service.PostService;
+import pl.jakubkonkol.tasteitserver.service.*;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -25,6 +22,7 @@ public class DBuilder {
     private final LikeService likeService;
     private final CommentService commentService;
     private final AdminUserFactory adminUserFactory;
+    private final TagService tagService;
 
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
 
@@ -32,13 +30,15 @@ public class DBuilder {
     public void createDefaultAdminAccount() throws IOException{
         adminUserFactory.CreateAdmin();
     }
-//    @PostConstruct
+    @PostConstruct
     public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
         commentService.deleteAll();
         likeService.deleteAll();
         postService.deleteAll();
+        tagService.deleteAll();
         LOGGER.log(Level.INFO, "Database cleared, building new one");
+        tagService.saveBasicTags();
         foodFetcher.populateDBWithFood();
         ingredientFetcher.populateDBWithIngredients();
         drinkFetcher.populateDBWithDrinks();

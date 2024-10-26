@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Document(collection = "users")
@@ -28,9 +27,7 @@ public class User implements UserDetails {
     private Boolean firstLogin = true;
     private List<String> roles = List.of("USER");
     @DBRef
-    private List<Tag> mainTags = new ArrayList<Tag>();
-    @DBRef
-    private List<Tag> customTags = new ArrayList<Tag>();
+    private List<Tag> tags = new ArrayList<>();
     private List<String> followers = new ArrayList<>();
     private List<String> following = new ArrayList<>();
     private List<FoodList> foodLists = new ArrayList<FoodList>();
@@ -39,10 +36,6 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(r -> (GrantedAuthority) () -> r).toList();
     }
-
-    /**
-     * Tutaj trzeba dodac brakujace pola
-     */
 
     @Override
     public String getPassword() {

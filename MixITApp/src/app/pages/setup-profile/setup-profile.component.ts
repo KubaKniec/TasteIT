@@ -9,6 +9,7 @@ import {Router} from '@angular/router';
 import {UserTags} from '../../model/user/UserTags';
 import {StorageUploadService} from '../../service/storage-upload.service';
 import {ImageCroppedEvent} from 'ngx-image-cropper';
+import {TagService} from "../../service/tag.service";
 
 interface Step {
   label: string;
@@ -30,17 +31,7 @@ export class SetupProfileComponent implements OnInit {
   user!: User;
   profilePicUrl: string = '';
 
-  tags: Tag[] = [
-    { tagName: 'Drinks' },
-    { tagName: 'Meat' },
-    { tagName: 'Vegetarian' },
-    { tagName: 'Burgers' },
-    { tagName: 'Pizza' },
-    { tagName: 'Pasta' },
-    { tagName: 'Italian' },
-    { tagName: 'Asian' },
-    { tagName: 'Mexican' },
-  ];
+  tags: Tag[] = [];
 
   steps: Step[] = [
     {
@@ -80,7 +71,8 @@ export class SetupProfileComponent implements OnInit {
     private hotToast: HotToastService,
     private userService: UserService,
     private router: Router,
-    private storageUploadService: StorageUploadService
+    private storageUploadService: StorageUploadService,
+    private tagService: TagService,
   ) {
     this.form = this.fb.group({
       username: ['', Validators.required],
@@ -89,12 +81,9 @@ export class SetupProfileComponent implements OnInit {
     });
   }
 
-  ngOnInit(): Promise<void> {
-    return this.loadUser();
-  }
-
-  async loadUser(): Promise<void> {
+  async ngOnInit(): Promise<void> {
     this.user = await this.userService.getUserByToken();
+    this.tags = await this.tagService.getBasicTags();
   }
 
   getProgress(): number {
@@ -171,8 +160,7 @@ export class SetupProfileComponent implements OnInit {
 
   createUserTags(): UserTags {
     return {
-      mainTags: this.preferences,
-      customTags: [],
+      tags: this.preferences,
     };
   }
 

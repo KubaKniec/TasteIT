@@ -74,6 +74,7 @@ import {ImageCropperComponent} from "ngx-image-cropper";
 import {SearchService} from "./service/search.service";
 import { UsersListComponent } from './components/users-list/users-list.component';
 import { TagsListComponent } from './components/tags-list/tags-list.component';
+import {TagService} from "./service/tag.service";
 
 @NgModule({
   declarations: [
@@ -161,7 +162,8 @@ import { TagsListComponent } from './components/tags-list/tags-list.component';
     LoggerService,
     CameraService,
     StorageUploadService,
-    SearchService
+    SearchService,
+    TagService
   ],
   bootstrap: [AppComponent]
 })

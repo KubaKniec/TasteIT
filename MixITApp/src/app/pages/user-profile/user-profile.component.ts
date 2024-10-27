@@ -27,7 +27,7 @@ export class UserProfileComponent implements OnInit{
     this.userService.getUserProfileById(this.userId).then(user => {
       this.user = user;
     }).finally(() => {
-      
+
     });
     this.userPosts = await this.userService.getUserPosts(this.userId, this.currentPostPage);
     this.userService.getUserByToken().then(user => {
@@ -52,7 +52,7 @@ export class UserProfileComponent implements OnInit{
       ? await this.userService.unfollowUser(this.user.userId!)
       : await this.userService.followUser(this.user.userId!);
 
-    this.user = await this.userService.getUserById(this.user.userId!);
+    this.user = await this.userService.getUserProfileById(this.user.userId!);
   }
   goto(url: string) {
     this.router.navigate([url]);

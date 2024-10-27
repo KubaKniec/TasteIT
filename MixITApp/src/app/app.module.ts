@@ -76,6 +76,7 @@ import { UsersListComponent } from './components/users-list/users-list.component
 import { TagsListComponent } from './components/tags-list/tags-list.component';
 import {TagService} from "./service/tag.service";
 import { FollowingFollowersListComponent } from './components/following-followers-list/following-followers-list.component';
+import { TagViewComponent } from './pages/tag-view/tag-view.component';
 
 @NgModule({
   declarations: [
@@ -110,6 +111,7 @@ import { FollowingFollowersListComponent } from './components/following-follower
     UsersListComponent,
     TagsListComponent,
     FollowingFollowersListComponent,
+    TagViewComponent,
   ],
   imports: [
     BrowserModule,

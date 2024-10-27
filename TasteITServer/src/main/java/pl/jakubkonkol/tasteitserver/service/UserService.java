@@ -51,12 +51,17 @@ public class UserService {
         return convertToDto(user);
     }// mozna pomyslesc o cache'owaniu w celu optymalizacji
 
-    public UserReturnDto updateUserProfile(
+    public void updateUserProfile(
         UserProfileDto userProfileDto
     ) {
-        User user = convertProfileToEntity(userProfileDto);
-        userRepository.save(user);
-        return convertToDto(user);
+        checkIfUserExists(userProfileDto.getUserId());
+        userRepository.updateUserProfileFields(
+                userProfileDto.getUserId(),
+                userProfileDto.getDisplayName(),
+                userProfileDto.getBio(),
+                userProfileDto.getProfilePicture(),
+                userProfileDto.getBirthDate()
+        );
     }
 
     public void changeUserFirstLogin(String userId) {
@@ -176,6 +181,10 @@ public class UserService {
         userReturnDto.setFollowingCount((long) user.getFollowing().size());
 
         return userReturnDto;
+    }
+
+    private UserProfileDto convertToProfileDto(User user) {
+        return modelMapper.map(user, UserProfileDto.class);
     }
 
     private User convertProfileToEntity(UserProfileDto dto) {

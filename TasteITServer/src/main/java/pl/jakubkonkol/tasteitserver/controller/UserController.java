@@ -1,5 +1,6 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.el.parser.Token;
 import org.springframework.http.HttpStatus;
@@ -38,9 +39,13 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<UserReturnDto> updateUserProfile(@RequestBody UserProfileDto userProfileDto) {
-        var user = userService.updateUserProfile(userProfileDto);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<GenericResponse> updateUserProfile(@Valid @RequestBody UserProfileDto userProfileDto) {
+        userService.updateUserProfile(userProfileDto);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("User updated")
+                .build());
     }
 
     @PatchMapping("/first-login/{userId}")

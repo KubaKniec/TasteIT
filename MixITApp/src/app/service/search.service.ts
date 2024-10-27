@@ -47,6 +47,18 @@ export class SearchService {
       return Promise.reject(error.response?.data || error);
     }
   }
+  async getPostsByTag(tagId: string, page?: number, size?: number): Promise<Post[]> {
+    try {
+      const params: any = {tagId};
+      if (page !== undefined) params.page = page;
+      if (size !== undefined) params.size = size;
+
+      const res = await taste_api.get(`search/tags/posts`, { params });
+      return res.data.content as Post[];
+    } catch (error: any) {
+      return Promise.reject(error.response?.data || error);
+    }
+  }
 
 
 

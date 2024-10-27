@@ -19,6 +19,7 @@ import {PostBuilderComponent} from "./pages/post-builder/post-builder.component"
 import {
   FollowingFollowersListComponent
 } from "./components/following-followers-list/following-followers-list.component";
+import {TagViewComponent} from "./pages/tag-view/tag-view.component";
 
 const routes: Routes = [
   {path: '', redirectTo:'/welcome', pathMatch: 'full'},
@@ -38,6 +39,7 @@ const routes: Routes = [
   {path: 'postBuilder', component: PostBuilderComponent, data: {showNav: true}, canActivate: [AuthGuard]},
   {path: 'user-profile/:id/following', component: FollowingFollowersListComponent, data: {showNav: true}, canActivate: [AuthGuard]},
   {path: 'user-profile/:id/followers', component: FollowingFollowersListComponent, data: {showNav: true}, canActivate: [AuthGuard]},
+  {path: 'tag/:id', component: TagViewComponent, data: {showNav: true}, canActivate: [AuthGuard]}
 
 ];
 

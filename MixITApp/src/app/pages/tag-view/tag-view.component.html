@@ -1,0 +1,14 @@
+<div class="container" *ngIf="!isLoading">
+  <div class="navigation">
+    <div class="go-back" (click)="navigationService.goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </div>
+    <p class="title-text">{{tagName}}</p>
+  </div>
+  <app-post-grid
+    [posts]="posts"
+    (loadMore)="loadMorePosts()"
+/>
+
+</div>
+

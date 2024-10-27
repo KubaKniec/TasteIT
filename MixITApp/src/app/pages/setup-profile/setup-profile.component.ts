@@ -125,7 +125,7 @@ export class SetupProfileComponent implements OnInit {
   }
 
   removeTag(tag: Tag): void {
-    this.preferences = this.preferences.filter(t => t.tag_id !== tag.tag_id);
+    this.preferences = this.preferences.filter(t => t.tagId !== tag.tagId);
   }
 
   addTag(tag: Tag): void {
@@ -167,7 +167,6 @@ export class SetupProfileComponent implements OnInit {
 
   async updateUserAccount(userTags: UserTags, userProfile: UserProfile): Promise<void> {
     try {
-      console.log(userProfile)
       await this.userService.updateUserTags(this.user.userId!, userTags);
       await this.userService.updateUserProfile(this.user.userId!, userProfile);
       await this.userService.changeUserFirstLogin(this.user.userId!);

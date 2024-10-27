@@ -13,6 +13,7 @@ import pl.jakubkonkol.tasteitserver.service.AuthenticationService;
 import pl.jakubkonkol.tasteitserver.service.UserService;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -49,7 +50,7 @@ public class AdminUserFactory {
             adminProfile.setDisplayName("TasteIT");
             adminProfile.setBio("Admin of TasteIT");
             adminProfile.setProfilePicture("placeholder.jpg");
-            adminProfile.setBirthDate(LocalDate.now());
+            adminProfile.setBirthDate(new Date());
             userService.updateUserProfile(adminProfile);
 //            userService.changeUserFirstLogin("0");
             userRepository.findById("0").ifPresent(user -> {

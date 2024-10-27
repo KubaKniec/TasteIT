@@ -1,6 +1,7 @@
 package pl.jakubkonkol.tasteitserver.model;
 
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Document(collection = "users")
@@ -21,8 +23,9 @@ public class User implements UserDetails {
     private String displayName = "guest";
     private String bio = "";
     private String profilePicture = "deafult-pic-id"; //TODO podmienić potem id jak już będziemy mieli foto
-    private LocalDate createdAt;
-    private LocalDate birthDate = LocalDate.of(2500, 1, 1); //are we sure we want to use LocalDate and not date like in Posts?
+    @CreatedDate
+    private Date createdAt;
+    private Date birthDate = new Date();
     private Authentication authentication;
     private Boolean firstLogin = true;
     private List<String> roles = List.of("USER");

@@ -4,6 +4,7 @@ import lombok.Data;
 import pl.jakubkonkol.tasteitserver.model.Tag;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 @Data
 public class UserReturnDto {
@@ -12,8 +13,8 @@ public class UserReturnDto {
     private String displayName;
     private String bio;
     private String profilePicture;
-    private LocalDate createdAt;
-    private LocalDate birthDate;
+    private Date createdAt;
+    private Date birthDate;
     private Boolean firstLogin;
     private List<String> roles;
     private List<Tag> tags;

@@ -12,6 +12,7 @@ import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,5 +61,5 @@ public interface UserRepository extends MongoRepository<User, String>{
 
     @Query("{ 'userId' : ?0 }")
     @Update("{ '$set' : { 'displayName' : ?1, 'bio' : ?2, 'profilePicture' : ?3, 'birthDate' : ?4 } }")
-    void updateUserProfileFields(String userId, String displayName, String bio, String profilePicture, LocalDate birthDate);
+    void updateUserProfileFields(String userId, String displayName, String bio, String profilePicture, Date birthDate);
 }

@@ -1,16 +1,22 @@
 package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
+import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
+import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
+import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -19,6 +25,7 @@ import java.util.NoSuchElementException;
 public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PostRepository postRepository;
 
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
         User user = getUserById(userId);
@@ -30,45 +37,45 @@ public class UserService {
         return userReturnDto;
     }
 
+    //method for fetching user info on profile
+    public UserReturnDto getUserProfileView(String userId, String sessionToken) {
+        UserProfileView userProfileView = userRepository.findUserByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        User currentUser = getCurrentUserBySessionToken(sessionToken);
+        return convertUserProfileViewToUserReturnDto(userId, userProfileView, currentUser);
+    }
+
     public UserReturnDto getCurrentUserDtoBySessionToken(String sessionToken) {
         User user = getCurrentUserBySessionToken(sessionToken);
         return convertToDto(user);
     }// mozna pomyslesc o cache'owaniu w celu optymalizacji
 
-    public UserReturnDto updateUserProfile(
-            String userId,
-            String newDisplayName,
-            String newBio,
-            String newProfilePicture,
-            LocalDate newBirthDate
+    public void updateUserProfile(
+        UserProfileDto userProfileDto
     ) {
-        User user = getUserById(userId);
-        user.setDisplayName(newDisplayName);
-        user.setBio(newBio);
-        user.setProfilePicture(newProfilePicture);
-        user.setBirthDate(newBirthDate);
-
-        userRepository.save(user);
-        return convertToDto(user);
+        checkIfUserExists(userProfileDto.getUserId());
+        userRepository.updateUserProfileFields(
+                userProfileDto.getUserId(),
+                userProfileDto.getDisplayName(),
+                userProfileDto.getBio(),
+                userProfileDto.getProfilePicture(),
+                userProfileDto.getBirthDate()
+        );
     }
 
-    public UserReturnDto changeUserFirstLogin(String userId) {
-        User user = getUserById(userId);
-        user.setFirstLogin(false);
-
-        userRepository.save(user);
-        return convertToDto(user);
+    public void changeUserFirstLogin(String userId) {
+        checkIfUserExists(userId);
+        userRepository.setFirstLoginToFalse(userId);
     }
 
-    public UserReturnDto updateUserTags(String userId, UserTagsDto userTagsDto) {
-        User user = getUserById(userId);
-        user.setTags(userTagsDto.getTags());
-        userRepository.save(user);
-        return convertToDto(user);
+    public void updateUserTags(String userId, UserTagsDto userTagsDto) {
+        checkIfUserExists(userId);
+        userRepository.updateUserTagsByUserId(userId, userTagsDto.getTags());
     }
 
     public void followUser(String targetUserId, String sessionToken) {
-        User targetUser = getUserById(targetUserId);
+        checkIfUserExists(targetUserId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
 
         if (currentUser.getUserId().equals(targetUserId)) {
@@ -76,17 +83,15 @@ public class UserService {
         }
 
         if (!currentUser.getFollowing().contains(targetUserId)) {
-            currentUser.getFollowing().add(targetUserId);
-            targetUser.getFollowers().add(currentUser.getUserId());
-            userRepository.save(currentUser);
-            userRepository.save(targetUser);
+            userRepository.addFollowing(currentUser.getUserId(), targetUserId);
+            userRepository.addFollower(targetUserId, currentUser.getUserId());
         } else {
             throw new IllegalStateException("User is already following the target user.");
         }
     }
 
     public void unfollowUser(String targetUserId, String sessionToken) {
-        User targetUser = getUserById(targetUserId);
+        checkIfUserExists(targetUserId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
 
         if (currentUser.getUserId().equals(targetUserId)) {
@@ -94,49 +99,62 @@ public class UserService {
         }
 
         if (currentUser.getFollowing().contains(targetUserId)) {
-            currentUser.getFollowing().remove(targetUserId);
-            targetUser.getFollowers().remove(currentUser.getUserId());
-            userRepository.save(currentUser);
-            userRepository.save(targetUser);
+            userRepository.removeFollowing(currentUser.getUserId(), targetUserId);
+            userRepository.removeFollower(targetUserId, currentUser.getUserId());
         } else {
             throw new IllegalStateException("User is not following the target user.");
         }
     }
 
     public PageDto<UserReturnDto> getFollowers(String userId, String sessionToken, Integer page, Integer size) {
-        User targetUser = getUserById(userId);
+        checkIfUserExists(userId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
+        List<String> followers = userRepository.findFollowersByUserId(userId)
+                .map(User::getFollowers)
+                .orElse(new ArrayList<>());
 
-        return getUserPage(targetUser.getFollowers(), currentUser, page, size);
+        return getUserPage(followers, currentUser, page, size);
     }
 
     public PageDto<UserReturnDto> getFollowing(String userId, String sessionToken, Integer page, Integer size) {
-        User targetUser = getUserById(userId);
+        checkIfUserExists(userId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
+        List<String> following = userRepository.findFollowingByUserId(userId)
+                .map(User::getFollowing)
+                .orElse(new ArrayList<>());
 
-        return getUserPage(targetUser.getFollowing(), currentUser, page, size);
+        return getUserPage(following, currentUser, page, size);
     }
 
     private PageDto<UserReturnDto> getUserPage(List<String> userIds, User currentUser, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<User> userPage = userRepository.findByUserIdIn(userIds, pageable);
-
-        List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> convertToFollowingUserReturnDto(user, currentUser)).toList();
-
-        return getUsersPageDto(page, size, userPage, userDtos);
+        Page<UserShort> userPage = userRepository.findUsersByUserIdIn(userIds, pageable);
+        return getUserReturnDtoPageDto(page, size, currentUser, userPage);
     }
 
     public PageDto<UserReturnDto> searchUsersByDisplayName(String query, String sessionToken, Integer page, Integer size) {
         User currentUser = getCurrentUserBySessionToken(sessionToken);
         Pageable pageable = PageRequest.of(page, size);
-        Page<User> userPage = userRepository.findByDisplayNameContainingIgnoreCase(query, pageable);
+        Page<UserShort> userPage = userRepository.findByDisplayNameContainingIgnoreCase(query, pageable);
 
-        List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> convertToFollowingUserReturnDto(user, currentUser)).toList();
-
-        return getUsersPageDto(page, size, userPage, userDtos);
+        return getUserReturnDtoPageDto(page, size, currentUser, userPage);
     }
 
-    private PageDto<UserReturnDto> getUsersPageDto(Integer page, Integer size, Page<User> userPage, List<UserReturnDto> userDtos) {
+    private PageDto<UserReturnDto> getUserReturnDtoPageDto(Integer page, Integer size, User currentUser, Page<UserShort> userPage) {
+        List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> {
+            UserReturnDto userReturnDto = new UserReturnDto();
+            userReturnDto.setUserId(user.getUserId());
+            userReturnDto.setDisplayName(user.getDisplayName());
+            userReturnDto.setProfilePicture(user.getProfilePicture());
+            userReturnDto.setIsFollowing(currentUser.getFollowing().contains(user.getUserId()));
+
+            return userReturnDto;
+        }).toList();
+
+        return getUsersShortPageDto(page, size, userPage, userDtos);
+    }
+
+    private PageDto<UserReturnDto> getUsersShortPageDto(Integer page, Integer size, Page<UserShort> userPage, List<UserReturnDto> userDtos) {
         PageDto<UserReturnDto> pageDto = new PageDto<>();
         pageDto.setContent(userDtos);
         pageDto.setPageNumber(page);
@@ -147,16 +165,7 @@ public class UserService {
         return pageDto;
     }
 
-    private UserReturnDto convertToFollowingUserReturnDto(User user, User currentUser) {
-        UserReturnDto dto = new UserReturnDto();
-        dto.setUserId(user.getUserId());
-        dto.setDisplayName(user.getDisplayName());
-        dto.setProfilePicture(user.getProfilePicture());
-        dto.setIsFollowing(currentUser.getFollowing().contains(user.getUserId()));
-        return dto;
-    }
-
-    private User getUserById(String userId) {
+    public User getUserById(String userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchElementException("User with id " + userId + " not found"));
     }
@@ -170,6 +179,44 @@ public class UserService {
         UserReturnDto userReturnDto = modelMapper.map(user, UserReturnDto.class);
         userReturnDto.setFollowersCount((long) user.getFollowers().size());
         userReturnDto.setFollowingCount((long) user.getFollowing().size());
+
+        return userReturnDto;
+    }
+
+    private UserProfileDto convertToProfileDto(User user) {
+        return modelMapper.map(user, UserProfileDto.class);
+    }
+
+    private User convertProfileToEntity(UserProfileDto dto) {
+        return modelMapper.map(dto, User.class);
+    }
+
+    public void checkIfUserExists(String userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NoSuchElementException("User with id " + userId + " does not exist.");
+        }
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    private UserReturnDto convertUserProfileViewToUserReturnDto(String userId, UserProfileView userProfileView, User currentUser) {
+        UserReturnDto userReturnDto = new UserReturnDto();
+        userReturnDto.setUserId(userProfileView.getUserId());
+        userReturnDto.setEmail(userProfileView.getEmail());
+        userReturnDto.setDisplayName(userProfileView.getDisplayName());
+        userReturnDto.setBio(userProfileView.getBio());
+        userReturnDto.setProfilePicture(userProfileView.getProfilePicture());
+        userReturnDto.setCreatedAt(userProfileView.getCreatedAt());
+        userReturnDto.setBirthDate(userProfileView.getBirthDate());
+        userReturnDto.setFirstLogin(userProfileView.getFirstLogin());
+        userReturnDto.setRoles(userProfileView.getRoles());
+        userReturnDto.setFollowersCount((long) userProfileView.getFollowers().size());
+        userReturnDto.setFollowingCount((long) userProfileView.getFollowing().size());
+        Long postsCount = postRepository.countByUserId(userId);
+        userReturnDto.setPostsCount(postsCount);
+        userReturnDto.setIsFollowing(currentUser.getFollowing().contains(userId));
 
         return userReturnDto;
     }

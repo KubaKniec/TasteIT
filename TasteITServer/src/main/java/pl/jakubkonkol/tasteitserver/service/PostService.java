@@ -19,6 +19,7 @@ import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
+import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,8 @@ public class PostService {
         postRepository.save(Objects.requireNonNull(post, "Post cannot be null."));
     }
 
-    public void saveAll(List<Post> posts) {
-        postRepository.saveAll(Objects.requireNonNull(posts, "List of posts cannot be null."));
+    public List<Post> saveAll(List<Post> posts) {
+        return postRepository.saveAll(Objects.requireNonNull(posts, "List of posts cannot be null."));
     }
 
     public void deleteAll() {
@@ -108,13 +109,38 @@ public class PostService {
         return getPostDtoPageDto(postPage.getContent(), postPage.getTotalElements(), pageable, sessionToken);
     }
 
-    private PageDto<PostDto> getPostDtoPageDto(List<Post> posts, long total, Pageable pageable, String sessionToken) {
+    public PageDto<PostDto> getUserPosts(String userId, Integer page, Integer size) {
+        userService.checkIfUserExists(userId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostPhotoView> postsPhotoViewPage = postRepository.findPostsByUserId(userId, pageable);
+
+        return getPostDtoPageDtoFromPostPhotoView(postsPhotoViewPage, pageable);
+    }
+
+    private PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken) {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> convertToDto(post, sessionToken))
                 .toList();
 
         PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, total);
 
+        return getPageDto(pageImpl);
+    }
+
+    public PageDto<PostDto> getPostDtoPageDtoFromPostPhotoView(Page<PostPhotoView> postsPhotoViewPage, Pageable pageable) {
+        List<PostDto> postDtos = postsPhotoViewPage.stream().map(post -> {
+            PostDto postDto = new PostDto();
+            postDto.setPostId(post.getPostId());
+            postDto.setPostMedia(post.getPostMedia());
+            return postDto;
+        }).toList();
+
+        PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, postsPhotoViewPage.getTotalElements());
+
+        return getPageDto(pageImpl);
+    }
+
+    private PageDto<PostDto> getPageDto(PageImpl<PostDto> pageImpl) {
         PageDto<PostDto> pageDto = new PageDto<>();
         pageDto.setContent(pageImpl.getContent());
         pageDto.setPageNumber(pageImpl.getNumber());

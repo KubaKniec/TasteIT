@@ -15,7 +15,7 @@
     <p class="user-name"> {{user.displayName || 'Unknown'}} </p>
     <div class="social-details">
       <div class="social-details-item">
-        <p class="social-details-item-counter">0</p>
+        <p class="social-details-item-counter">{{user.postsCount || 0}}</p>
         <p class="social-details-item-label">Posts</p>
       </div>
       <div class="social-details-item" (click)="gotoFollowers()">
@@ -42,6 +42,9 @@
     </div>
   </div>
   <div class="user-posts">
-
+    <app-post-grid
+      [posts]="userPosts"
+      (loadMore)="loadMorePosts()"
+      />
   </div>
 </div>

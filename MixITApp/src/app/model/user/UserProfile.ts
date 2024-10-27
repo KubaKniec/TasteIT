@@ -1,6 +1,7 @@
 export interface UserProfile{
+  userId: string;
   bio: string;
   displayName: string;
   profilePicture?: string;
-  birthdate: string;
+  birthDate: string;
 }

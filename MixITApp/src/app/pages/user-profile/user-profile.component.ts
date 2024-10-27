@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {UserService} from "../../service/user.service";
 import {User} from "../../model/user/User";
 import {ActivatedRoute, Router} from "@angular/router";
+import {NavigationService} from "../../service/navigation.service";
+import {Post} from "../../model/post/Post";
 
 @Component({
   selector: 'app-user-profile',
@@ -13,17 +15,21 @@ export class UserProfileComponent implements OnInit{
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
+    public navigationService: NavigationService
   ) { }
   user: User = {};
   userId: string = '';
   loggedUserId: string = '';
-  ngOnInit(): void {
+  userPosts: Post[] = [];
+  currentPostPage = 0;
+  async ngOnInit(): Promise<void> {
     this.userId = this.route.snapshot.params['id'] as string;
-    this.userService.getUserById(this.userId).then(user => {
+    this.userService.getUserProfileById(this.userId).then(user => {
       this.user = user;
     }).finally(() => {
-
+      
     });
+    this.userPosts = await this.userService.getUserPosts(this.userId, this.currentPostPage);
     this.userService.getUserByToken().then(user => {
       this.loggedUserId = user.userId!;
     });
@@ -35,6 +41,12 @@ export class UserProfileComponent implements OnInit{
   gotoSettings(): void{
     this.router.navigate(['profile']);
   }
+  async loadMorePosts(): Promise<void> {
+    this.currentPostPage++;
+    let newPosts: Post[] = [];
+    newPosts = await this.userService.getUserPosts(this.userId, this.currentPostPage);
+    this.userPosts = [...this.userPosts, ...newPosts];
+  }
   async toggleFollow(): Promise<void> {
     this.user.isFollowing
       ? await this.userService.unfollowUser(this.user.userId!)
@@ -44,5 +56,11 @@ export class UserProfileComponent implements OnInit{
   }
   goto(url: string) {
     this.router.navigate([url]);
+  }
+  gotoFollowing(): void {
+    this.router.navigate([`/user-profile/${this.userId}/following`]);
+  }
+  gotoFollowers(): void {
+    this.router.navigate([`/user-profile/${this.userId}/followers`]);
   }
 }

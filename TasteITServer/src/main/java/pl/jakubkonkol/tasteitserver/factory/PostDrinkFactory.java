@@ -19,10 +19,15 @@ public class PostDrinkFactory extends PostFactory {
         Recipe recipe = createRecipe(postObj, "strInstructions");
         recipe.setIngredientsWithMeasurements(createIngredients(postObj));
         newPost.setRecipe(recipe);
+        String strAlcoholic = postObj.getString("strAlcoholic");
+        boolean isAlcoholic = strAlcoholic.equals("Alcoholic");
+        newPost.setIsAlcoholic(isAlcoholic);
+
+        var tags = createTags(postObj);
+        newPost.setTags(tags);
 
         // TODO: Set proper user and tags, likes, comments, etc.
         newPost.setUserId("0"); //userId=0 -> id admina
-        newPost.setTags(null);
         newPost.setLikes(null);
         newPost.setComments(null);
 

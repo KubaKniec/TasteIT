@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.dto.IngredientDto;
 import pl.jakubkonkol.tasteitserver.model.*;
+import pl.jakubkonkol.tasteitserver.model.enums.TagType;
 import pl.jakubkonkol.tasteitserver.service.IngredientService;
+import pl.jakubkonkol.tasteitserver.service.TagService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -19,6 +22,8 @@ import java.util.stream.IntStream;
 public abstract class PostFactory {
     @Autowired
     protected IngredientService ingredientService;
+    @Autowired
+    protected TagService tagService;
 
     protected PostMedia createPostMedia(JSONObject postObj, String titleKey, String thumbKey, String defaultDescription) {
         PostMedia postMedia = new PostMedia();
@@ -69,6 +74,25 @@ public abstract class PostFactory {
             ingredients.add(ingDto);
         }
         return ingredients;
+    }
+    protected List<Tag> createTags(JSONObject postObj){
+        List<Tag> tags = new ArrayList<>();
+        var tagsArray = postObj.optString("strTags", "").split(",");
+
+        for (String tag: tagsArray){
+            var optionalTag = tagService.findByName(tag);
+            if (optionalTag.isPresent()){
+                tags.add(optionalTag.get());
+            } else {
+                var newTag = new Tag();
+                newTag.setTagName(tag);
+                newTag.setTagType(TagType.DETAILED);
+                var savedTag = tagService.save(newTag);
+                tags.add(savedTag);
+            }
+        }
+
+        return tags;
     }
 
     public abstract Post createPost(JSONObject postObj);

@@ -21,6 +21,15 @@ export class UserService {
       return Promise.reject(error.response?.data || error);
     }
   }
+  async getUserProfileById(userId: string): Promise<User>{
+    try {
+      const res = await taste_api.get(`user/profile/${userId}`);
+      return res.data;
+    } catch (error: any) {
+      this.logger.logError('Error fetching user profile by ID', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
 
   async getUserByToken(): Promise<User> {
     try {
@@ -34,7 +43,7 @@ export class UserService {
 
   async updateUserProfile(userId: string, userProfile: UserProfile): Promise<User> {
     try {
-      const res = await taste_api.put(`user/${userId}`, userProfile);
+      const res = await taste_api.put(`user`, userProfile);
       return res.data;
     } catch (error: any) {
       this.logger.logError('Error updating user profile', error.response?.data || error);
@@ -76,6 +85,36 @@ export class UserService {
       return res.data;
     } catch (error: any) {
       this.logger.logError('Error unfollowing user', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async getFollowers(userId: string): Promise<User[]> {
+    try {
+      const res = await taste_api.get(`user/${userId}/followers`);
+      return res.data.content;
+    } catch (error: any) {
+      this.logger.logError('Error getting followers', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async getFollowing(userId: string): Promise<User[]> {
+    try {
+      const res = await taste_api.get(`user/${userId}/following`);
+      return res.data.content;
+    } catch (error: any) {
+      this.logger.logError('Error getting following', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async getUserPosts(userId: string, page?: number, size?: number): Promise<any> {
+    try {
+      const params: any = { };
+      if (page !== undefined) params.page = page;
+      if (size !== undefined) params.size = size;
+      const res = await taste_api.get(`user/${userId}/posts`, { params });
+      return res.data.content;
+    } catch (error: any) {
+      this.logger.logError('Error getting user posts', error.response?.data || error);
       return Promise.reject(error.response?.data || error);
     }
   }

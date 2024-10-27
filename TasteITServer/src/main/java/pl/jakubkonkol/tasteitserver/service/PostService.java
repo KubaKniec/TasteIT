@@ -1,18 +1,25 @@
 package pl.jakubkonkol.tasteitserver.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
+import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.enums.PostType;
+import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +44,13 @@ public class PostService {
         postRepository.save(Objects.requireNonNull(post, "Post cannot be null."));
     }
 
-    public void saveAll(List<Post> posts) {
-        postRepository.saveAll(Objects.requireNonNull(posts, "List of posts cannot be null."));
+    public List<Post> saveAll(List<Post> posts) {
+        return postRepository.saveAll(Objects.requireNonNull(posts, "List of posts cannot be null."));
     }
 
     public void deleteAll() {
         postRepository.deleteAll();
-    }
+    } //TODO niebezpieczne
 
     public List<Post> getAll() {
         return postRepository.findAll();
@@ -57,30 +64,83 @@ public class PostService {
 
     //temp implementation
     public PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken) {
-        // Create a Pageable object for pagination information
         Pageable pageable = PageRequest.of(page, size);
 
-        // Count the total number of posts
         long total = postRepository.count();
 
-        // Create an aggregation to sample random documents from the collection
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.sample(size)
         );
 
-        // Execute the aggregation query
         AggregationResults<Post> results = mongoTemplate.aggregate(aggregation, "post", Post.class);
         List<Post> posts = results.getMappedResults();
-        if(posts.isEmpty()){
+
+        if (posts.isEmpty()) {
             throw new NoSuchElementException("No random posts found in repository");
         }
 
+        return getPostDtoPageDto(posts, total, pageable, sessionToken);
+    }
+
+    //if title consists few words use '%20' between them in get request
+    public PageDto<PostDto> searchPosts(String title, String postType, String sessionToken, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("postMedia.title").regex(title, "i"));
+
+        if (postType != null) {
+            query.addCriteria(Criteria.where("postType").is(postType));
+        }
+
+        long total = mongoTemplate.count(query, Post.class);
+
+        query.with(pageable);
+
+        List<Post> posts = mongoTemplate.find(query, Post.class);
+
+        return getPostDtoPageDto(posts, total, pageable, sessionToken);
+    }
+
+    public PageDto<PostDto> searchPostsByTagName(String tagName, String sessionToken, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findByTagNameIgnoreCase(tagName, pageable);
+
+        return getPostDtoPageDto(postPage.getContent(), postPage.getTotalElements(), pageable, sessionToken);
+    }
+
+    public PageDto<PostDto> getUserPosts(String userId, Integer page, Integer size) {
+        userService.checkIfUserExists(userId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostPhotoView> postsPhotoViewPage = postRepository.findPostsByUserId(userId, pageable);
+
+        return getPostDtoPageDtoFromPostPhotoView(postsPhotoViewPage, pageable);
+    }
+
+    private PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken) {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> convertToDto(post, sessionToken))
                 .toList();
 
         PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, total);
 
+        return getPageDto(pageImpl);
+    }
+
+    public PageDto<PostDto> getPostDtoPageDtoFromPostPhotoView(Page<PostPhotoView> postsPhotoViewPage, Pageable pageable) {
+        List<PostDto> postDtos = postsPhotoViewPage.stream().map(post -> {
+            PostDto postDto = new PostDto();
+            postDto.setPostId(post.getPostId());
+            postDto.setPostMedia(post.getPostMedia());
+            return postDto;
+        }).toList();
+
+        PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, postsPhotoViewPage.getTotalElements());
+
+        return getPageDto(pageImpl);
+    }
+
+    private PageDto<PostDto> getPageDto(PageImpl<PostDto> pageImpl) {
         PageDto<PostDto> pageDto = new PageDto<>();
         pageDto.setContent(pageImpl.getContent());
         pageDto.setPageNumber(pageImpl.getNumber());
@@ -89,17 +149,6 @@ public class PostService {
         pageDto.setTotalPages(pageImpl.getTotalPages());
 
         return pageDto;
-    }
-
-    //if title consists few words use '%20' between them in get request
-    public List<PostDto> searchPostsByTitle(String query, String sessionToken) {
-        List<Post> posts = postRepository.findByPostMediaTitleContainingIgnoreCase(query);
-        if (posts.isEmpty()){
-            //raczej nic nie trzeba
-        }
-        return posts.stream()
-                .map(post -> convertToDto(post, sessionToken))
-                .toList();
     }
 
     public Recipe getPostRecipe(String postId) {

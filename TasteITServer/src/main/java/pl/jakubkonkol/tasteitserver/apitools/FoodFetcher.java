@@ -11,8 +11,11 @@ import pl.jakubkonkol.tasteitserver.factory.IngredientMealFactory;
 import pl.jakubkonkol.tasteitserver.factory.PostMealFactory;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.model.Post;
+import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.IngredientService;
 import pl.jakubkonkol.tasteitserver.service.PostService;
+import pl.jakubkonkol.tasteitserver.service.UserService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ public class FoodFetcher {
     private final PostMealFactory postFactory;
     private final String foodFinderURL = "https://themealdb.com/api/json/v1/1/search.php?f=";
     private final String ingredientListURL = "https://www.themealdb.com/api/json/v1/1/list.php?i=list";
+    private final UserService userService;
 //    private final ExecutorService executor = Executors.newFixedThreadPool(3);
 
     /**
@@ -50,7 +54,12 @@ public class FoodFetcher {
         ingredientService.saveAll(ingredients);
         LOGGER.log(Level.INFO, "Ingredients saved");
         var foodPosts = searchFoodForEveryLetter();
-        postService.saveAll(foodPosts);
+        List<Post> posts = postService.saveAll(foodPosts);
+
+        User admin = userService.getUserById("0");
+        admin.getPosts().addAll(posts);
+        userService.saveUser(admin);
+
         LOGGER.log(Level.INFO, "Food posts saved");
     }
 

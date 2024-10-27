@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import pl.jakubkonkol.tasteitserver.apitools.IngredientFetcher;
 import pl.jakubkonkol.tasteitserver.dto.UserCreationRequestDto;
+import pl.jakubkonkol.tasteitserver.dto.UserProfileDto;
 import pl.jakubkonkol.tasteitserver.model.Authentication;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
@@ -12,6 +13,7 @@ import pl.jakubkonkol.tasteitserver.service.AuthenticationService;
 import pl.jakubkonkol.tasteitserver.service.UserService;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -43,13 +45,14 @@ public class AdminUserFactory {
             userRepository.save(admin);
 
             //set admin profile
-            userService.updateUserProfile(
-                    "0",
-                    "TasteIT",
-                    "Admin of TasteIT",
-                    "placeholder.jpg",
-                    LocalDate.now());
-            userService.changeUserFirstLogin("0");
+            UserProfileDto adminProfile = new UserProfileDto();
+            adminProfile.setUserId("0");
+            adminProfile.setDisplayName("TasteIT");
+            adminProfile.setBio("Admin of TasteIT");
+            adminProfile.setProfilePicture("placeholder.jpg");
+            adminProfile.setBirthDate(new Date());
+            userService.updateUserProfile(adminProfile);
+//            userService.changeUserFirstLogin("0");
             userRepository.findById("0").ifPresent(user -> {
                 user.setRoles(roles);
                 userRepository.save(user);

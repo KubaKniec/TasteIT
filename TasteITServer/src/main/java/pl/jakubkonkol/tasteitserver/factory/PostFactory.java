@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.dto.IngredientDto;
 import pl.jakubkonkol.tasteitserver.model.*;
+import pl.jakubkonkol.tasteitserver.model.enums.TagType;
 import pl.jakubkonkol.tasteitserver.service.IngredientService;
 import pl.jakubkonkol.tasteitserver.service.TagService;
 
@@ -85,6 +86,7 @@ public abstract class PostFactory {
             } else {
                 var newTag = new Tag();
                 newTag.setTagName(tag);
+                newTag.setTagType(TagType.DETAILED);
                 var savedTag = tagService.save(newTag);
                 tags.add(savedTag);
             }

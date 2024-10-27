@@ -74,6 +74,8 @@ import {ImageCropperComponent} from "ngx-image-cropper";
 import {SearchService} from "./service/search.service";
 import { UsersListComponent } from './components/users-list/users-list.component';
 import { TagsListComponent } from './components/tags-list/tags-list.component';
+import {TagService} from "./service/tag.service";
+import { FollowingFollowersListComponent } from './components/following-followers-list/following-followers-list.component';
 
 @NgModule({
   declarations: [
@@ -107,6 +109,7 @@ import { TagsListComponent } from './components/tags-list/tags-list.component';
     PostGridComponent,
     UsersListComponent,
     TagsListComponent,
+    FollowingFollowersListComponent,
   ],
   imports: [
     BrowserModule,
@@ -161,7 +164,8 @@ import { TagsListComponent } from './components/tags-list/tags-list.component';
     LoggerService,
     CameraService,
     StorageUploadService,
-    SearchService
+    SearchService,
+    TagService
   ],
   bootstrap: [AppComponent]
 })

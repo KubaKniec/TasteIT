@@ -31,22 +31,15 @@
 </div>
 <div [ngSwitch]="searchType">
   <ng-container *ngSwitchCase="'Posts'">
-    <app-post-grid [posts]="foundPosts" *ngIf="!isLoading"></app-post-grid>
+    <app-post-grid (loadMore)="loadMorePosts()" [posts]="foundPosts" *ngIf="!isLoading"></app-post-grid>
   </ng-container>
   <ng-container *ngSwitchCase="'Users'">
-    <app-users-list [users]="foundUsers" *ngIf="!isLoading"></app-users-list>
+    <app-users-list (loadMore)="loadMorePosts()" [users]="foundUsers" *ngIf="!isLoading"></app-users-list>
   </ng-container>
   <ng-container *ngSwitchCase="'Tags'">
     <app-tags-list [tags]="foundTags" *ngIf="!isLoading"></app-tags-list>
   </ng-container>
 </div>
-
-
-
-<button
-    class="button-tertiary centered"
-    (click)="loadMorePosts()"
-    *ngIf="foundPosts.length >= 20 || foundUsers.length>= 20 || foundTags.length >=20 && !isLoading"> Load more</button>
 
 <!--  spinner for loading-->
   <div class="centered-content" *ngIf="isLoading">

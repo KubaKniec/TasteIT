@@ -102,11 +102,11 @@ public class PostService {
         return getPostDtoPageDto(posts, total, pageable, sessionToken);
     }
 
-    public PageDto<PostDto> searchPostsByTagName(String tagName, String sessionToken, Integer page, Integer size) {
+    public PageDto<PostDto> searchPostsByTagName(String tagId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> postPage = postRepository.findByTagNameIgnoreCase(tagName, pageable);
+        Page<PostPhotoView> postPage = postRepository.findPostsByTagsTagId(tagId, pageable);
 
-        return getPostDtoPageDto(postPage.getContent(), postPage.getTotalElements(), pageable, sessionToken);
+        return getPostDtoPageDtoFromPostPhotoView(postPage, pageable);
     }
 
     public PageDto<PostDto> getUserPosts(String userId, Integer page, Integer size) {

@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends MongoRepository<Post, String> {
-    @Query("{ 'tags.tagName': { $regex: '^?0$', $options: 'i' } }")
-    Page<Post> findByTagNameIgnoreCase(String tagName, Pageable pageable);
+    Page<PostPhotoView> findPostsByTagsTagId(String tagId, Pageable pageable);
 
     List<Post> findByLikesIn(List<Like> likes);
 

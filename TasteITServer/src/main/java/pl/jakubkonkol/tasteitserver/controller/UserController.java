@@ -12,16 +12,22 @@ import pl.jakubkonkol.tasteitserver.service.UserService;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final PostService postService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserReturnDto> getUserById(@PathVariable String userId, @RequestHeader("Authorization") String sessionToken) {
         var user = userService.getUserDtoById(userId, sessionToken);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/profile/{userId}") //temp endpoint
+    public ResponseEntity<UserReturnDto> getUserProfileById(@PathVariable String userId, @RequestHeader("Authorization") String sessionToken) {
+        var user = userService.getUserProfileView(userId, sessionToken);
         return ResponseEntity.ok(user);
     }
 
@@ -31,24 +37,30 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserReturnDto> updateUserProfile(@PathVariable String userId, @RequestBody UserProfileDto userProfileDto) {
-        var user = userService.updateUserProfile(userId, userProfileDto.getDisplayName(),
-                userProfileDto.getBio(), userProfileDto.getProfilePicture(),
-                userProfileDto.getBirthDate());
+    @PutMapping()
+    public ResponseEntity<UserReturnDto> updateUserProfile(@RequestBody UserProfileDto userProfileDto) {
+        var user = userService.updateUserProfile(userProfileDto);
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/first-login/{userId}")
-    public ResponseEntity<UserReturnDto> changeUserFirstLogin(@PathVariable String userId) {
-        var user = userService.changeUserFirstLogin(userId);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<GenericResponse> changeUserFirstLogin(@PathVariable String userId) {
+        userService.changeUserFirstLogin(userId);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("User updated")
+                .build());
     }
 
     @PatchMapping("/tags/{userId}")
-    public ResponseEntity<UserReturnDto> updateUserTags(@PathVariable String userId, @RequestBody UserTagsDto userTagsDto) {
-        var user = userService.updateUserTags(userId, userTagsDto);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<GenericResponse> updateUserTags(@PathVariable String userId, @RequestBody UserTagsDto userTagsDto) {
+        userService.updateUserTags(userId, userTagsDto);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("User updated")
+                .build());
     }
 
     //POST jest najbardziej naturalny w tym kontekście, ponieważ follow tworzy nową relację
@@ -94,5 +106,13 @@ public class UserController {
             @RequestParam(defaultValue = "20") Integer size) {
         PageDto<UserReturnDto> following = userService.getFollowing(userId, sessionToken, page, size);
         return ResponseEntity.ok(following);
+    }
+
+    @GetMapping("/{userId}/posts")
+    public ResponseEntity<PageDto<PostDto>> getUserPosts(@PathVariable String userId,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "20") int size) {
+        PageDto<PostDto> posts = postService.getUserPosts(userId, page, size);
+        return ResponseEntity.ok(posts);
     }
 }

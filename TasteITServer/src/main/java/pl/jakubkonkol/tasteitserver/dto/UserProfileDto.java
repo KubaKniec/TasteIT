@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class UserProfileDto {
+    private String userId;
     private String bio;
     private String displayName;
     private String profilePicture;

@@ -22,5 +22,6 @@ export interface User {
   preferences?: Tag[];
   isFollowing?: boolean;
   authentication?: Authentication;
+  postsCount?: number;
 }
 

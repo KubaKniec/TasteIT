@@ -144,10 +144,11 @@ export class SetupProfileComponent implements OnInit {
     const formattedDate = this.formatBirthdate(new Date(birthdateInput));
 
     return {
+      userId: this.user.userId!,
       bio: this.form.get('bio')?.value,
       displayName: this.form.get('username')?.value,
       profilePicture: this.profilePicUrl,
-      birthdate: formattedDate,
+      birthDate: formattedDate,
     };
   }
 
@@ -166,6 +167,7 @@ export class SetupProfileComponent implements OnInit {
 
   async updateUserAccount(userTags: UserTags, userProfile: UserProfile): Promise<void> {
     try {
+      console.log(userProfile)
       await this.userService.updateUserTags(this.user.userId!, userTags);
       await this.userService.updateUserProfile(this.user.userId!, userProfile);
       await this.userService.changeUserFirstLogin(this.user.userId!);

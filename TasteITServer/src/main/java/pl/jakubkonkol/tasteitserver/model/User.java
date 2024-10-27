@@ -22,7 +22,7 @@ public class User implements UserDetails {
     private String email;
     private String displayName = "guest";
     private String bio = "";
-    private String profilePicture = "deafult-pic-id"; //TODO podmienić potem id jak już będziemy mieli foto
+    private String profilePicture = "https://github.com/JakubKonkol/TasteIT/blob/master/assets/guest.png";
     @CreatedDate
     private Date createdAt;
     private Date birthDate = new Date();

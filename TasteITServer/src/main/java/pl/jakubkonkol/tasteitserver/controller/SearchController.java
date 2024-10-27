@@ -48,11 +48,10 @@ public class SearchController {
     }
 
     @GetMapping("/tags/posts")
-    public ResponseEntity<PageDto<PostDto>> searchPostsByTag(@RequestParam String query,
-                                                             @RequestHeader("Authorization") String sessionToken,
+    public ResponseEntity<PageDto<PostDto>> searchPostsByTag(@RequestParam String tagId,
                                                              @RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "20") int size) {
-        PageDto<PostDto> pageDto = postService.searchPostsByTagName(query, sessionToken, page, size);
+        PageDto<PostDto> pageDto = postService.searchPostsByTagName(tagId, page, size);
         return ResponseEntity.ok(pageDto);
     }
 }

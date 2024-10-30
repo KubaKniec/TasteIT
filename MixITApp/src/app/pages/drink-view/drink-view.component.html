@@ -41,7 +41,7 @@
       <button  *ngIf="isPostLikedByCurrentUser" (click)="toggleLike()" class="button-actions-small active" matRipple><mat-icon>favorite</mat-icon></button>
       <button  *ngIf="!isPostLikedByCurrentUser" (click)="toggleLike()" class="button-actions-small" matRipple><mat-icon>favorite</mat-icon></button>
       <button class="button-actions-small" matRipple (click)="initializeCommentSection(activePost.postId || '')"><mat-icon>chat</mat-icon></button>
-      <button class="button-actions-small" matRipple><mat-icon>bookmark</mat-icon></button>
+      <button class="button-actions-small" matRipple (click)="initializeAddToFoodList()"><mat-icon>bookmark</mat-icon></button>
     </div>
     <button class="button-actions-big" matRipple (click)="initializeInstructionsView(activePost)">Let's cook</button>
   </div>

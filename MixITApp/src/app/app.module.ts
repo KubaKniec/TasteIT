@@ -78,7 +78,10 @@ import {TagService} from "./service/tag.service";
 import { FollowingFollowersListComponent } from './components/following-followers-list/following-followers-list.component';
 import { TagViewComponent } from './pages/tag-view/tag-view.component';
 import 'hammerjs';
-import {GesturesModule} from "./gestures.module";
+import {FoodlistService} from "./service/foodlist.service";
+import {AddToFoodlistFactoryService} from "./service/factories/add-to-foodlist-factory.service";
+import { FoodlistGridComponent } from './components/foodlist-grid/foodlist-grid.component';
+import {GestureCloseDirective} from "./directives/GestureCloseDirective";
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,6 +116,8 @@ import {GesturesModule} from "./gestures.module";
     TagsListComponent,
     FollowingFollowersListComponent,
     TagViewComponent,
+    FoodlistGridComponent,
+    GestureCloseDirective
   ],
   imports: [
     BrowserModule,
@@ -149,7 +154,6 @@ import {GesturesModule} from "./gestures.module";
     AngularFireStorageModule,
     ImageCropperComponent,
     HammerModule,
-    GesturesModule
   ],
   providers: [
     HotToastService,
@@ -169,7 +173,9 @@ import {GesturesModule} from "./gestures.module";
     CameraService,
     StorageUploadService,
     SearchService,
-    TagService
+    TagService,
+    FoodlistService,
+    AddToFoodlistFactoryService
   ],
   bootstrap: [AppComponent]
 })

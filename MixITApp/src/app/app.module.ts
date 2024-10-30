@@ -77,7 +77,8 @@ import { TagsListComponent } from './components/tags-list/tags-list.component';
 import {TagService} from "./service/tag.service";
 import { FollowingFollowersListComponent } from './components/following-followers-list/following-followers-list.component';
 import { TagViewComponent } from './pages/tag-view/tag-view.component';
-
+import 'hammerjs';
+import {GesturesModule} from "./gestures.module";
 @NgModule({
   declarations: [
     AppComponent,
@@ -147,7 +148,8 @@ import { TagViewComponent } from './pages/tag-view/tag-view.component';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireStorageModule,
     ImageCropperComponent,
-    HammerModule
+    HammerModule,
+    GesturesModule
   ],
   providers: [
     HotToastService,

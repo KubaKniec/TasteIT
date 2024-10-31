@@ -1,7 +1,10 @@
-<div class="transparent-modal" [@dialog]="'enter'">
-  <div class="content">
+<div class="transparent-modal" [@dialog]="'enter'"
+  appGestureClose (closeGesture)="onClose()"
+
+>
+  <div class="content" appGestureClose (closeGesture)="onClose()">
 <!--    CLOSING MODAL BUTTON-->
-    <div class="controls">
+    <div class="controls drag-handle">
       <button class="comment-button" (click)="onClose()"><mat-icon>arrow_back</mat-icon> </button>
       <p class="controls-text"> Comments </p>
       <button class="bean invisible-button"><mat-icon>arrow_back</mat-icon> </button>

@@ -9,7 +9,10 @@
   <div
     class="single-post"
     *ngFor="let post of posts"
-    (click)="gotoPost(post.postId || '0')"
+    (click)="handlePostClick(post)"
+    [class.selectable]="mode === 'select'"
+    [class.selected]="isSelected(post)"
+    [class.wiggle]="mode === 'select'"
   >
     <img
       [src]="post.postMedia?.pictures?.[0]"

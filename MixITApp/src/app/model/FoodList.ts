@@ -1,5 +1,8 @@
+import {Post} from "./post/Post";
+
 export interface FoodList{
-  foodlist_id: string;
+  foodListId: string;
   name: string;
-  posts_id: string[];
+  createdDate: Date;
+  postsList: Post[];
 }

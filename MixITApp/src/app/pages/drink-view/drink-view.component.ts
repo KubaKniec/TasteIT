@@ -12,6 +12,7 @@ import {Recipe} from "../../model/post/Recipe";
 import {CommentsSectionFactoryService} from "../../service/factories/comments-section-factory.service";
 import {UserService} from "../../service/user.service";
 import {User} from "../../model/user/User";
+import {AddToFoodlistFactoryService} from "../../service/factories/add-to-foodlist-factory.service";
 
 @Component({
   selector: 'app-drink-view',
@@ -25,6 +26,7 @@ export class DrinkViewComponent implements OnInit{
  isLoaded: boolean = false;
  postAuthor: User = {};
  isPostLikedByCurrentUser: boolean = false;
+ currentUserId: string = ''
  constructor(private route: ActivatedRoute,
              private toast: HotToastService,
              private instructionsFactoryService: InstructionsFactoryService,
@@ -35,15 +37,20 @@ export class DrinkViewComponent implements OnInit{
              private router: Router,
              private postService: PostService,
              private commentsSectionFactoryService: CommentsSectionFactoryService,
-             private userService: UserService
+             private userService: UserService,
+             private addToFoodlistFactoryService: AddToFoodlistFactoryService
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
-    this.commentsSectionFactoryService.setRootViewContainerRef(this.viewContainerRef);
+   this.commentsSectionFactoryService.setRootViewContainerRef(this.viewContainerRef);
+   this.addToFoodlistFactoryService.setRootViewContainerRef(this.viewContainerRef);
  }
 
   async ngOnInit(): Promise<void> {
     this.drinkId = this.route.snapshot.params['id'] as string;
+    let user = await this.userService.getUserByToken();
+    this.currentUserId = user.userId!;
+
     try {
       this.activePost = await this.postService.getPostById(this.drinkId)
       this.recipe = await this.getRecipe();
@@ -78,7 +85,6 @@ export class DrinkViewComponent implements OnInit{
   async getRecipe() {
     return await this.postService.getPostRecipe(this.activePost.postId!);
   }
-
   async toggleLike(){
    if(this.isPostLikedByCurrentUser){
      await this.postService.unlikePost(this.activePost.postId!)
@@ -123,4 +129,11 @@ export class DrinkViewComponent implements OnInit{
       this.refreshPost();
     })
   }
+  initializeAddToFoodList(){
+   const componentRef = this.addToFoodlistFactoryService.addDynamicComponent(this.currentUserId, this.drinkId);
+    componentRef.instance.close.subscribe(() => {
+      this.addToFoodlistFactoryService.removeDynamicComponent(componentRef)
+    })
+  }
+
 }

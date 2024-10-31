@@ -11,7 +11,6 @@ export class DrinksGridComponent {
   @Input() iterableDrinks: Post[] = [];
   constructor(private router: Router) {
   }
-
   goto(idDrink: string) {
     this.router.navigate([`/drink/${idDrink}`]).then();
   }

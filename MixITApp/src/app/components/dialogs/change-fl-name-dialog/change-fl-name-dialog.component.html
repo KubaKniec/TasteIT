@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Change Food List Name</h2>
+<mat-dialog-content>
+  <p>Enter a new name for the food list:</p>
+  <mat-form-field appearance="outline">
+    <mat-label>New Name</mat-label>
+    <input matInput [(ngModel)]="newName" />
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onConfirm()" [disabled]="!newName.trim()">OK</button>
+</mat-dialog-actions>

@@ -82,6 +82,10 @@ import {FoodlistService} from "./service/foodlist.service";
 import {AddToFoodlistFactoryService} from "./service/factories/add-to-foodlist-factory.service";
 import { FoodlistGridComponent } from './components/foodlist-grid/foodlist-grid.component';
 import {GestureCloseDirective} from "./directives/GestureCloseDirective";
+import { FoodlistViewComponent } from './pages/foodlist-view/foodlist-view.component';
+import {MatDialog, MatDialogModule} from "@angular/material/dialog";
+import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
+import { ChangeFlNameDialogComponent } from './components/dialogs/change-fl-name-dialog/change-fl-name-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -117,7 +121,10 @@ import {GestureCloseDirective} from "./directives/GestureCloseDirective";
     FollowingFollowersListComponent,
     TagViewComponent,
     FoodlistGridComponent,
-    GestureCloseDirective
+    GestureCloseDirective,
+    FoodlistViewComponent,
+    ConfirmDialogComponent,
+    ChangeFlNameDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -154,6 +161,7 @@ import {GestureCloseDirective} from "./directives/GestureCloseDirective";
     AngularFireStorageModule,
     ImageCropperComponent,
     HammerModule,
+    MatDialogModule,
   ],
   providers: [
     HotToastService,
@@ -175,7 +183,8 @@ import {GestureCloseDirective} from "./directives/GestureCloseDirective";
     SearchService,
     TagService,
     FoodlistService,
-    AddToFoodlistFactoryService
+    AddToFoodlistFactoryService,
+    MatDialog
   ],
   bootstrap: [AppComponent]
 })

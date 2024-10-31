@@ -1,0 +1,83 @@
+.container {
+  margin: 0 auto;
+  padding: 1rem;
+  background: var(--theme-color-950);
+  color: var(--theme-color-50);
+}
+.foodlist-card {
+  padding: 20px;
+  background: linear-gradient(180deg,
+  rgba(46, 63, 95, 0.8) 0%,
+  rgba(42, 55, 80, 0.8) 100%
+  );
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 60px rgba(14, 18, 27, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.foodlist-card::before {
+  content: '🍽️';
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  font-size: 80px;
+  opacity: 0.1;
+  transform: rotate(15deg);
+}
+
+.fl-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 4px rgba(14, 18, 27, 0.3);
+  color: var(--theme-color-50);
+}
+
+.fl-post-count {
+  font-size: 14px;
+  color: var(--theme-color-300);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.fl-date {
+  font-size: 14px;
+  color: var(--theme-color-300);
+  font-weight: 400;
+}
+.manage-foodlist {
+  background: rgba(51, 73, 113, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  backdrop-filter: blur(5px);
+}
+
+.fl-button {
+  background: rgba(var(--theme-color-700), 0.3);
+  border: 1px solid var(--theme-color-600);
+  color: var(--theme-color-100);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fl-button:last-child {
+  margin-left: auto;
+  background: rgba(180, 0, 0, 0.1);
+  border-color: rgba(180, 0, 0, 0.3);
+}
+
+.fl-button:last-child:hover {
+  background: rgba(180, 0, 0, 0.2);
+  border-color: rgba(180, 0, 0, 0.5);
+}
+

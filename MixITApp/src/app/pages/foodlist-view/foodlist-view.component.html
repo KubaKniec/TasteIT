@@ -1,0 +1,24 @@
+<div class="container" *ngIf="foodList">
+  <div class="foodlist-card">
+    <div class="fl-title">{{foodList.name}}</div>
+    <div class="fl-post-count">{{foodList.postsList.length}} posts already added</div>
+    <div class="fl-date">Created: {{DateFormatter.getFormattedDate(foodList.createdDate)}}</div>
+  </div>
+  <div class="manage-foodlist">
+    <button class="fl-button" (click)="changeFoodListName()">Edit</button>
+    <button class="fl-button" (click)="toggleSelectionMode()">
+      {{ selectionMode ? 'Cancel Selection' : 'Remove posts' }}
+    </button>
+    <button class="fl-button"
+            *ngIf="selectionMode && selectedPosts.length > 0"
+            (click)="removeSelectedPosts()">
+      Remove Selected ({{selectedPosts.length}})
+    </button>
+    <button class="fl-button" (click)="deleteFoodList()">Delete Foodlist</button>
+  </div>
+    <app-post-grid
+      [posts]="foodList.postsList"
+      [mode]="selectionMode ? 'select' : 'normal'"
+      (selectionChange)="handleSelectionChange($event)"
+    />
+</div>

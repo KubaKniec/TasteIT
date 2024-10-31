@@ -66,7 +66,7 @@ export class FoodlistService{
   }
   async removePostFromFoodList(foodListId: string, postId: string): Promise<GenericResponse>{
     try{
-      const res = await taste_api.post(`foodlist/post/${foodListId}`, {postId: postId});
+      const res = await taste_api.delete(`foodlist/post/${foodListId}`,{data: {postId: postId}});
       return res.data;
     }catch (error: any){
       this.logger.logError('Error removing post from food list', error.response?.data || error);

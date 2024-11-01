@@ -1,56 +1,90 @@
-.container{
-  box-sizing: border-box;
-  width: 100%;
+.container {
+  background-color: var(--theme-color-950);
+  overflow: hidden;
   padding: 1rem;
-  background-color: var(--theme-color-50);
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  margin-bottom: 20px;
+  position: relative;
 }
-.search-wrapper{
-  padding: 1rem;
-}
-.search-controls{
+
+.search-controls {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 1rem;
   width: 100%;
-  gap: 0.5rem;
-  background-color: var(--theme-color-50);
 }
-.centered-content{
+
+.filter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.5rem;
+  background-color: var(--theme-color-900);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--smooth-shadow);
+}
+
+.filter-option {
+  flex: 1;
+  padding: 0.5rem;
+  text-align: center;
+  color: var(--theme-color-300);
+  font-weight: 500;
+  font-size: 0.9rem;
+  position: relative;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  perspective: 300px;
+}
+
+.filter-option::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--accent-color);
+  transform: scaleX(0) rotateX(90deg);
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0s,
+    transform 0.2s ease-out 0s;
+  transform-origin: center center;
+  box-shadow: 0 2px 10px rgba(255, 210, 229, 0.4);
+}
+
+.filter-option.active {
+  color: white;
+}
+
+.filter-option.active::after {
+  transform: scaleX(1) rotateX(0deg);
+  box-shadow: 0 2px 15px rgba(255, 210, 229, 0.6);
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0s,
+    transform 0.2s ease-out 0s;
+}
+
+.filter-option.active {
+  animation: subtle-glow 2s infinite alternate;
+}
+
+@keyframes subtle-glow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 210, 229, 0.3);
+  }
+  100% {
+    text-shadow: 0 0 10px rgba(255, 210, 229, 0.5);
+  }
+}
+.filter-options {
+  position: relative;
+}
+.centered-content {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  background-color: rgba(var(--theme-color-950), 0.8);
 }
-.centered{
-  text-align: center;
-  width: 100%;
-}
-.filter{
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  width: 100%;
-  gap: 1rem;
-}
-.filter > .label{
-  margin: 0;
-  font-size: 1.2rem;
-}
-.filter-option{
-  flex: 1;
-  border: 1px solid var(--theme-color-950);
-  padding: 0.2rem 1rem;
-  border-radius: 5px;
-  text-align: center;
-}
-.active{
-  transition: 0.3s ease;
-  background-color: var(--theme-color-900);
-  color: var(--accent-color);
-  border: 1px solid var(--accent-color);
-}
+

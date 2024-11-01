@@ -11,4 +11,7 @@
   --theme-color-900: #2a3750;
   --theme-color-950: #0e121b;
   --accent-color: #FFD2E5;
+  --soft-radius: 8px;
+  --smooth-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }

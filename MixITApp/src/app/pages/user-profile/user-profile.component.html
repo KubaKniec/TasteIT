@@ -1,4 +1,25 @@
 <div class="container">
+
+  <div class="skeleton-wrapper" *ngIf="isLoading">
+    <div class="user-info-skeleton">
+      <div class="user-avatar skeleton"></div>
+      <div class="skeleton-text"></div>
+      <div class="social-details">
+        <div class="social-details-item" *ngFor="let i of [1,2,3]">
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text"></div>
+        </div>
+      </div>
+      <div class="skeleton-text skeleton-bio"></div>
+    </div>
+    <div class="user-actions">
+      <div class="actions">
+        <div class="skeleton-button" *ngFor="let i of [1,2,3]"></div>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
   <div class="navigation">
     <p *ngIf="!isVisitor()">Your Profile</p>
     <div *ngIf="isVisitor()" class="go-back" (click)="navigationService.goBack()">
@@ -47,4 +68,5 @@
       (loadMore)="loadMorePosts()"
       />
   </div>
+  </ng-container>
 </div>

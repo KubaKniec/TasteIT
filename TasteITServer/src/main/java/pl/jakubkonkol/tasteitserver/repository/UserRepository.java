@@ -53,10 +53,6 @@ public interface UserRepository extends MongoRepository<User, String>{
     @Update("{ '$set' : { 'firstLogin' : false } }")
     void setFirstLoginToFalse(String userId);
 
-    @Query("{'userId' : ?0}")
-    @Update("{ '$set' : { 'tags' : ?1 } }")
-    void updateUserTagsByUserId(String userId, List<Tag> tags);
-
     Optional<UserProfileView> findUserByUserId(String userId);
 
     @Query("{ 'userId' : ?0 }")

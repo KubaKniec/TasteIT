@@ -192,6 +192,13 @@ public class PostService {
         return postDto;
     }
 
+    public PageDto<PostDto> getPostsExcludingIngredients(List<String> ingredientNames, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostPhotoView> postPage = postRepository.findByExcludedIngredients(ingredientNames, pageable);
+
+        return getPostDtoPageDtoFromPostPhotoView(postPage, pageable);
+    }
+
     private Post convertToEntity(PostDto postDto) {
         return modelMapper.map(postDto, Post.class);
     }

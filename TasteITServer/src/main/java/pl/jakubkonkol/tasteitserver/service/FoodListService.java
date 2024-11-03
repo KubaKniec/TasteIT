@@ -63,6 +63,7 @@ public class FoodListService {
                     foodlistDto.foodListId = f.getFoodListId();
                     foodlistDto.name = f.getName();
                     foodlistDto.createdDate = f.getCreatedDate();
+                    foodlistDto.postsCount = f.getPostsList().size();
                     return foodlistDto;
                 })
                 .toList();

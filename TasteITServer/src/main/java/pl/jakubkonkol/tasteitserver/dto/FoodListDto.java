@@ -15,5 +15,7 @@ public class FoodListDto {
     public String foodListId;
     public String name;
     public Date createdDate;
-    public List<Post> postsList = new ArrayList<>();;
+    public List<Post> postsList = new ArrayList<>();
+
+    public int postsCount;
 }

@@ -22,11 +22,14 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  /*background-color: rgba(0, 0, 0, 0.5);*/
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
   z-index: 9999;
+  touch-action: pan-y;
+  will-change: transform;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
 .fs-container > * {
@@ -56,7 +59,7 @@ html, body {
   align-items: center;
   gap: 0.4em;
   padding: 0.8rem;
-  border-radius: 0.2rem;
+  border-radius: 4px;
   background-color: var(--theme-color-50);
   box-shadow: 0 0 10px 0 var(--theme-color-900);
 }

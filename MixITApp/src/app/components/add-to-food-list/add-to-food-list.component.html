@@ -1,1 +1,24 @@
-<p>add-to-food-list works!</p>
+<div class="transparent-modal" [@dialog]='state'>
+  <div class="content">
+    <div class="foodlists">
+      <p class="title"> Add to FoodList</p>
+      <app-foodlist-grid
+          *ngIf="!isCreatingNewFoodlist"
+          [foodLists]="foodLists"
+          (foodListClicked)="addPostToFoodList($event)"
+        />
+      <div class="foodlist-form" *ngIf="isCreatingNewFoodlist">
+        <div class="input-field">
+          <mat-icon>list_alt</mat-icon>
+          <input type="text" [(ngModel)]="newFoodlistName" placeholder="Enter FoodList name" />
+        </div>
+
+        <button class="button-primary" (click)="onSubmitNewFoodlist()">Confirm</button>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="button-primary" *ngIf="!isCreatingNewFoodlist" (click)="onCreateNewFoodlist()" >Create New Foodlist</button>
+      <button class="button-tertiary full-wd" (click)="onClose()">Close</button>
+    </div>
+  </div>
+</div>

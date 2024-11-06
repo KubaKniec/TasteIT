@@ -76,7 +76,16 @@ import { UsersListComponent } from './components/users-list/users-list.component
 import { TagsListComponent } from './components/tags-list/tags-list.component';
 import {TagService} from "./service/tag.service";
 import { FollowingFollowersListComponent } from './components/following-followers-list/following-followers-list.component';
-
+import { TagViewComponent } from './pages/tag-view/tag-view.component';
+import 'hammerjs';
+import {FoodlistService} from "./service/foodlist.service";
+import {AddToFoodlistFactoryService} from "./service/factories/add-to-foodlist-factory.service";
+import { FoodlistGridComponent } from './components/foodlist-grid/foodlist-grid.component';
+import {GestureCloseDirective} from "./directives/GestureCloseDirective";
+import { FoodlistViewComponent } from './pages/foodlist-view/foodlist-view.component';
+import {MatDialog, MatDialogModule} from "@angular/material/dialog";
+import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
+import { ChangeFlNameDialogComponent } from './components/dialogs/change-fl-name-dialog/change-fl-name-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -110,6 +119,12 @@ import { FollowingFollowersListComponent } from './components/following-follower
     UsersListComponent,
     TagsListComponent,
     FollowingFollowersListComponent,
+    TagViewComponent,
+    FoodlistGridComponent,
+    GestureCloseDirective,
+    FoodlistViewComponent,
+    ConfirmDialogComponent,
+    ChangeFlNameDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -145,7 +160,8 @@ import { FollowingFollowersListComponent } from './components/following-follower
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireStorageModule,
     ImageCropperComponent,
-    HammerModule
+    HammerModule,
+    MatDialogModule,
   ],
   providers: [
     HotToastService,
@@ -165,7 +181,10 @@ import { FollowingFollowersListComponent } from './components/following-follower
     CameraService,
     StorageUploadService,
     SearchService,
-    TagService
+    TagService,
+    FoodlistService,
+    AddToFoodlistFactoryService,
+    MatDialog
   ],
   bootstrap: [AppComponent]
 })

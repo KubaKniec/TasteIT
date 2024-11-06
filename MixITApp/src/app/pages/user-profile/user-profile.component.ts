@@ -22,18 +22,25 @@ export class UserProfileComponent implements OnInit{
   loggedUserId: string = '';
   userPosts: Post[] = [];
   currentPostPage = 0;
+  isLoading = true;
   async ngOnInit(): Promise<void> {
-    this.userId = this.route.snapshot.params['id'] as string;
-    this.userService.getUserProfileById(this.userId).then(user => {
-      this.user = user;
-    }).finally(() => {
-      
-    });
-    this.userPosts = await this.userService.getUserPosts(this.userId, this.currentPostPage);
-    this.userService.getUserByToken().then(user => {
-      this.loggedUserId = user.userId!;
-    });
+    this.isLoading = true;
+    try {
+      this.userId = this.route.snapshot.params['id'] as string;
+      const [user, posts, loggedUser] = await Promise.all([
+        this.userService.getUserProfileById(this.userId),
+        this.userService.getUserPosts(this.userId, this.currentPostPage),
+        this.userService.getUserByToken(),
+      ]);
 
+      this.user = user;
+      this.userPosts = posts;
+      this.loggedUserId = loggedUser.userId!;
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
   isVisitor(): boolean {
     return this.loggedUserId !== this.userId;
@@ -52,7 +59,7 @@ export class UserProfileComponent implements OnInit{
       ? await this.userService.unfollowUser(this.user.userId!)
       : await this.userService.followUser(this.user.userId!);
 
-    this.user = await this.userService.getUserById(this.user.userId!);
+    this.user = await this.userService.getUserProfileById(this.user.userId!);
   }
   goto(url: string) {
     this.router.navigate([url]);

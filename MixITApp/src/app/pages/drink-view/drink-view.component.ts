@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewContainerRef} from '@angular/core';
 import {Post} from "../../model/post/Post";
 import {ActivatedRoute, Router} from "@angular/router";
 import {HotToastService} from "@ngneat/hot-toast";
@@ -12,19 +12,23 @@ import {Recipe} from "../../model/post/Recipe";
 import {CommentsSectionFactoryService} from "../../service/factories/comments-section-factory.service";
 import {UserService} from "../../service/user.service";
 import {User} from "../../model/user/User";
+import {AddToFoodlistFactoryService} from "../../service/factories/add-to-foodlist-factory.service";
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-drink-view',
   templateUrl: './drink-view.component.html',
   styleUrls: ['./drink-view.component.css']
 })
-export class DrinkViewComponent implements OnInit{
+export class DrinkViewComponent implements OnInit, OnDestroy{
  activePost!: Post;
  recipe!: Recipe;
  drinkId!: string;
  isLoaded: boolean = false;
  postAuthor: User = {};
  isPostLikedByCurrentUser: boolean = false;
+ currentUserId: string = '';
+ destroy$ = new Subject<void>();
  constructor(private route: ActivatedRoute,
              private toast: HotToastService,
              private instructionsFactoryService: InstructionsFactoryService,
@@ -35,25 +39,47 @@ export class DrinkViewComponent implements OnInit{
              private router: Router,
              private postService: PostService,
              private commentsSectionFactoryService: CommentsSectionFactoryService,
-             private userService: UserService
+             private userService: UserService,
+             private addToFoodlistFactoryService: AddToFoodlistFactoryService
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
-    this.commentsSectionFactoryService.setRootViewContainerRef(this.viewContainerRef);
+   this.commentsSectionFactoryService.setRootViewContainerRef(this.viewContainerRef);
+   this.addToFoodlistFactoryService.setRootViewContainerRef(this.viewContainerRef);
  }
-
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
   async ngOnInit(): Promise<void> {
-    this.drinkId = this.route.snapshot.params['id'] as string;
+    this.route.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.drinkId = params['id'];
+      });
+
     try {
-      this.activePost = await this.postService.getPostById(this.drinkId)
-      this.recipe = await this.getRecipe();
+      const [user, activePost] = await Promise.all([
+        this.userService.getUserByToken(),
+        this.postService.getPostById(this.drinkId)
+      ]);
+
+      this.currentUserId = user.userId!;
+      this.activePost = activePost;
+
+      const [recipe, postAuthor] = await Promise.all([
+        this.getRecipe(),
+        this.userService.getUserById(this.activePost.userId!)
+      ]);
+      this.recipe = recipe;
+      this.postAuthor = postAuthor;
+      this.isPostLikedByCurrentUser = this.activePost.likedByCurrentUser || false;
     } catch (e) {
       this.toast.error("Check your internet connection and try again");
       await this.router.navigate(['/home']);
+    } finally {
+      this.isLoaded = true;
     }
-    this.isLoaded = true;
-    this.postAuthor = await this.userService.getUserById(this.activePost.userId!)
-    this.isPostLikedByCurrentUser = this.activePost.likedByCurrentUser || false;
   }
   gotoProfile(userId: string){
     this.router.navigate(['/user-profile', userId]).then();
@@ -78,7 +104,6 @@ export class DrinkViewComponent implements OnInit{
   async getRecipe() {
     return await this.postService.getPostRecipe(this.activePost.postId!);
   }
-
   async toggleLike(){
    if(this.isPostLikedByCurrentUser){
      await this.postService.unlikePost(this.activePost.postId!)
@@ -109,10 +134,6 @@ export class DrinkViewComponent implements OnInit{
       this.ingredientViewFactoryService.removeDynamicComponent(componentRef)
     })
   }
-  // Nie wiem co to tu robi ale kiedys tego potrzebowalem to moze sie przyda
-  preventScroll(event: TouchEvent) {
-    event.preventDefault();
-  }
 
   initializeCommentSection(postId: string) {
    const componentRef = this.commentsSectionFactoryService.addDynamicComponent(postId);
@@ -123,4 +144,11 @@ export class DrinkViewComponent implements OnInit{
       this.refreshPost();
     })
   }
+  initializeAddToFoodList(){
+   const componentRef = this.addToFoodlistFactoryService.addDynamicComponent(this.currentUserId, this.drinkId);
+    componentRef.instance.close.subscribe(() => {
+      this.addToFoodlistFactoryService.removeDynamicComponent(componentRef)
+    })
+  }
+
 }

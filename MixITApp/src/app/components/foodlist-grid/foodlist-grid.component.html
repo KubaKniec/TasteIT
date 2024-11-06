@@ -1,0 +1,6 @@
+<div class="list">
+  <div class="single-foodlist" *ngFor="let fl of foodLists" (click)="onFoodListClicked(fl)">
+    <div class="foodlist-title"> {{fl.name}} </div>
+    <div class="foodlist-count">{{fl.postsCount}} posts</div>
+  </div>
+</div>

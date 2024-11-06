@@ -36,8 +36,7 @@ export class SearchComponent implements OnInit{
           if (value.length === 0) {
             return of([]);
           } else {
-            const encodedQuery = encodeURIComponent(value);
-            return this.search(encodedQuery);
+            return this.search(value);
           }
         })
       )

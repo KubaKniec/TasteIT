@@ -1,7 +1,7 @@
 import {TagType} from "./TagType";
 
 export interface Tag{
-  tag_id?: string;
+  tagId?: string;
   tagName: string;
   tagType: TagType;
 }

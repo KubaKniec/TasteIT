@@ -70,8 +70,9 @@ public class UserService {
     }
 
     public void updateUserTags(String userId, UserTagsDto userTagsDto) {
-        checkIfUserExists(userId);
-        userRepository.updateUserTagsByUserId(userId, userTagsDto.getTags());
+        User user = getUserById(userId);
+        user.setTags(userTagsDto.getTags());
+        userRepository.save(user);
     }
 
     public void followUser(String targetUserId, String sessionToken) {
@@ -129,7 +130,7 @@ public class UserService {
     private PageDto<UserReturnDto> getUserPage(List<String> userIds, User currentUser, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserShort> userPage = userRepository.findUsersByUserIdIn(userIds, pageable);
-        return getUserReturnDtoPageDto(page, size, currentUser, userPage);
+        return getUserReturnDtoPageDto(currentUser, userPage, pageable);
     }
 
     public PageDto<UserReturnDto> searchUsersByDisplayName(String query, String sessionToken, Integer page, Integer size) {
@@ -137,10 +138,10 @@ public class UserService {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserShort> userPage = userRepository.findByDisplayNameContainingIgnoreCase(query, pageable);
 
-        return getUserReturnDtoPageDto(page, size, currentUser, userPage);
+        return getUserReturnDtoPageDto(currentUser, userPage, pageable);
     }
 
-    private PageDto<UserReturnDto> getUserReturnDtoPageDto(Integer page, Integer size, User currentUser, Page<UserShort> userPage) {
+    private PageDto<UserReturnDto> getUserReturnDtoPageDto(User currentUser, Page<UserShort> userPage, Pageable pageable) {
         List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> {
             UserReturnDto userReturnDto = new UserReturnDto();
             userReturnDto.setUserId(user.getUserId());
@@ -151,16 +152,17 @@ public class UserService {
             return userReturnDto;
         }).toList();
 
-        return getUsersShortPageDto(page, size, userPage, userDtos);
+        PageImpl<UserReturnDto> pageImpl = new PageImpl<>(userDtos, pageable, userPage.getTotalElements());
+        return getUsersShortPageDto(pageImpl);
     }
 
-    private PageDto<UserReturnDto> getUsersShortPageDto(Integer page, Integer size, Page<UserShort> userPage, List<UserReturnDto> userDtos) {
+    private PageDto<UserReturnDto> getUsersShortPageDto(PageImpl<UserReturnDto> pageImpl) {
         PageDto<UserReturnDto> pageDto = new PageDto<>();
-        pageDto.setContent(userDtos);
-        pageDto.setPageNumber(page);
-        pageDto.setPageSize(size);
-        pageDto.setTotalElements(userPage.getTotalElements());
-        pageDto.setTotalPages(userPage.getTotalPages());
+        pageDto.setContent(pageImpl.getContent());
+        pageDto.setPageNumber(pageImpl.getNumber());
+        pageDto.setPageSize(pageImpl.getSize());
+        pageDto.setTotalElements(pageImpl.getTotalElements());
+        pageDto.setTotalPages(pageImpl.getTotalPages());
 
         return pageDto;
     }

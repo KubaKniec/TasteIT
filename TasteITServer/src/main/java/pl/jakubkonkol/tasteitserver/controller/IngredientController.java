@@ -42,10 +42,11 @@ public class IngredientController {
         return ResponseEntity.ok("Ingredients deleted succesfully");
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<IngredientDto>> searchIngredientByName(@RequestParam String name) {
-        return ResponseEntity.ok(ingredientService.searchByName(name));
-    }
+// na razie nie potrzebna
+//    @GetMapping("/search")
+//    public ResponseEntity<List<IngredientDto>> searchIngredientByName(@RequestParam String name) {
+//        return ResponseEntity.ok(ingredientService.searchByName(name));
+//    }
 
     @GetMapping("/{ingredientId}")
     public ResponseEntity<IngredientDto> getIngredient(@PathVariable String ingredientId) {

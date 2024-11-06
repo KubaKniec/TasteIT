@@ -26,4 +26,7 @@ public interface PostRepository extends MongoRepository<Post, String> {
     Long countByUserId(String userId);
 
     Page<PostPhotoView> findPostsByUserId(String userId, Pageable pageable);
+
+    @Query("{ 'recipe.ingredientsWithMeasurements.name': { $nin: ?0 } }")
+    Page<PostPhotoView> findByExcludedIngredients(List<String> ingredientNames, Pageable pageable);
 }

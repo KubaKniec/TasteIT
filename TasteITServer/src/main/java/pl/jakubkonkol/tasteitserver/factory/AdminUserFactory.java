@@ -49,7 +49,7 @@ public class AdminUserFactory {
             adminProfile.setUserId("0");
             adminProfile.setDisplayName("TasteIT");
             adminProfile.setBio("Admin of TasteIT");
-            adminProfile.setProfilePicture("https://github.com/JakubKonkol/TasteIT/blob/master/assets/icon.png");
+            adminProfile.setProfilePicture("https://github.com/JakubKonkol/TasteIT/blob/master/assets/icon.png?raw=true");
             adminProfile.setBirthDate(new Date());
             userService.updateUserProfile(adminProfile);
 //            userService.changeUserFirstLogin("0");

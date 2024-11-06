@@ -58,8 +58,8 @@
     </div>
     <div class="actions" *ngIf="!isVisitor()">
       <button class="button-secondary" matRipple> Edit Profile </button>
-      <button class="button-secondary" matRipple> Share Profile </button>
       <button class="button-secondary" matRipple> Badges </button>
+      <button class="button-secondary" matRipple (click)="goto('foodlists')"> Foodlists </button>
     </div>
   </div>
   <div class="user-posts">

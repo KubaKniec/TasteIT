@@ -5,4 +5,5 @@ export interface FoodList{
   name: string;
   createdDate: Date;
   postsList: Post[];
+  postsCount: number;
 }

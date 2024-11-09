@@ -25,24 +25,23 @@ type CommentWithAuthor = {
   templateUrl: './comments-section.component.html',
   styleUrls: ['./comments-section.component.css'],
   animations: [
-    trigger('dialog', [
+    trigger('slideAnimation', [
       state('void', style({
-        transform: 'translateY(20px)',
-        opacity: 0
+        transform: 'translateY(100%)'
       })),
-      state('enter', style({
-        transform: 'translateY(0)',
-        opacity: 1
+      state('visible', style({
+        transform: 'translateY(0)'
       })),
-      transition('void => enter', animate('300ms cubic-bezier(0.25, 0.8, 0.25, 1)')),
-      transition('enter => void', animate('300ms cubic-bezier(0.25, 0.8, 0.25, 1)'))
-    ])
+      transition('void => visible', animate('300ms ease-out')),
+      transition('visible => void', animate('300ms ease-in'))
+    ]),
   ]
 })
 export class CommentsSectionComponent implements OnInit {
   @Input() postId!: string;
   @Output() refreshPost = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
+  currentState: string = 'visible';
 
   commentsWithAuthors: CommentWithAuthor[] = [];
   commentContent: string = '';

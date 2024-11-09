@@ -1,41 +1,53 @@
-<div class="transparent-modal" [@dialog]="'enter'"
-  appGestureClose (closeGesture)="onClose()"
+<div class="comments-modal" [@slideAnimation]="currentState">
+  <div class="modal-content" appGestureClose (closeGesture)="onClose()">
+    <header class="modal-header drag-handle">
+        <button class="icon-button" (click)="onClose()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <h2>Comments</h2>
+        <div class="spacer"></div>
+    </header>
 
->
-  <div class="content" appGestureClose (closeGesture)="onClose()">
-<!--    CLOSING MODAL BUTTON-->
-    <div class="controls drag-handle">
-      <button class="comment-button" (click)="onClose()"><mat-icon>arrow_back</mat-icon> </button>
-      <p class="controls-text"> Comments </p>
-      <button class="bean invisible-button"><mat-icon>arrow_back</mat-icon> </button>
-    </div>
-<!--    COMMENT SECTION-->
-    <div class="comments">
-      <div class="single-comment" *ngFor="let comment of commentsWithAuthors">
-        <div class="avatar">
-          <img src="{{comment.author.profilePicture}}" alt="user" class="user-image" width="50px" height="50px" (click)="gotoProfile(comment.author.userId)">
-        </div>
-        <div class="comment-content-wrapper">
-          <div class="comment-content">
-            <p class="user-name" (click)="gotoProfile(comment.author.userId)">{{comment.author.displayName}}</p>
-            <p class="comment-text">{{comment.comment.content}}</p>
-            <p class="comment-date">{{DateFormatter.getFormattedDate(comment.comment.date) || 'Loading...'}}</p>
-          </div>
-          <div class="comment-action">
-            <button class="delete-comment-button"
-                    *ngIf="isCurrentUserAuthor(comment)"
-                    (click)="deleteComment(comment)"
-            ><mat-icon>delete</mat-icon></button>
-          </div>
-        </div>
+    <div class="comments-container">
+      <div class="comment" *ngFor="let comment of commentsWithAuthors">
+        <img [src]="comment.author.profilePicture"
+             [alt]="comment.author.displayName"
+             class="avatar"
+             (click)="gotoProfile(comment.author.userId)">
 
+        <div class="comment-body">
+          <div class="comment-header">
+            <span class="username" (click)="gotoProfile(comment.author.userId)">
+              {{comment.author.displayName}}
+            </span>
+            <button *ngIf="isCurrentUserAuthor(comment)"
+                    class="delete-button"
+                    (click)="deleteComment(comment)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <p class="comment-text">{{comment.comment.content}}</p>
+          <span class="timestamp">{{DateFormatter.getFormattedDate(comment.comment.date)}}</span>
+        </div>
       </div>
     </div>
-<!--    COMMENT FORM-->
-    <div class="comment-form">
-      <img src="{{currentUserProfilePicture}}" alt="user" class="user-image">
-      <input type="text" class="comment-input" placeholder="Write a comment..." [(ngModel)]="commentContent"/>
-      <button class="comment-button" (click)="addComment()" ><mat-icon>send</mat-icon></button>
+
+    <div class="comment-input-container">
+      <img [src]="currentUserProfilePicture"
+           alt="Your profile"
+           class="avatar">
+      <div class="input-wrapper">
+        <input type="text"
+               placeholder="Add a comment..."
+               [(ngModel)]="commentContent"
+               (keyup.enter)="addComment()">
+        <button class="send-button"
+                [disabled]="!commentContent.trim()"
+                (click)="addComment()">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 </div>

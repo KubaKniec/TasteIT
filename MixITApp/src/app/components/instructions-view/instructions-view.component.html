@@ -12,8 +12,6 @@
 
   <div class="content"
        [@contentAnimation]="currentStep"
-       (swipeleft)="onSwipeLeft()"
-       (swiperight)="onSwipeRight()"
   >
     <ng-container *ngIf="currentStep === 0">
       <div class="step-content ingredients-step">
@@ -30,8 +28,6 @@
 
     <!-- Recipe Steps -->
     <ng-container *ngIf="currentStep > 0 && currentStep <= getTotalSteps()"
-                  (swipeleft)="onSwipeLeft()"
-                  (swiperight)="onSwipeRight()"
     >
       <div class="step-content recipe-step">
         <h2 class="step-title">Step {{currentStep}}</h2>

@@ -115,6 +115,8 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
   }
   async initializeInstructionsView(post: Post) {
     const recipe = await this.getRecipe();
+    window.scrollTo(0, 0);
+    this.bodyScrollService.disableScroll();
     const componentRef = this.instructionsFactoryService.addDynamicComponent(post, recipe);
 
     componentRef.instance.close.subscribe(() => {

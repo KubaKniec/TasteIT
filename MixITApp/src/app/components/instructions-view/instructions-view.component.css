@@ -1,99 +1,161 @@
-.setup-step{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  max-height: 100vh;
-}
-.steps{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-}
-.complete-screen{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-}
-.controls{
-  display: flex;
-  flex-direction: column;
+:host {
+  display: block;
   width: 100%;
-  gap: 0.5rem;
-}
-.title-text{
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--theme-color-50);
-  text-align: center;
-  letter-spacing: 0.1rem;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: var(--theme-color-950);
+  z-index: 1000;
 }
 .accent{
-  color: var(--accent-color)
+  color: var(--accent-color);
 }
-ul{
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.recipe-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  text-align: center;
-  Width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
-li{
+.progress-bar {
   display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  text-align: center;
-  color: var(--theme-color-50);
+  margin: 1rem;
+  padding: 0.5rem;
 }
-.text{
-  font-size: 1.2rem;
-  font-weight: 400;
-  color: var(--theme-color-50);
-  text-align: center;
-  letter-spacing: 0.1rem;
+
+.progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--theme-color-800);
+  transition: var(--transition-smooth);
 }
-.close-btn{
-  height: 3rem;
-  background-color: transparent;
-  color: var(--theme-color-300);
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: underline;
+
+.progress-dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: var(--accent-color);
 }
-.ingredient-text{
-  color: var(--theme-color-300);
-  font-weight: bold;
-  font-size: 1rem;
-}
-.am{
-  color: var(--theme-color-200);
-}
-.margin-bottom-1rem{
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1rem;
   margin-bottom: 1rem;
 }
-.ingredient-wrapper{
+
+.step-content {
+  width: 100%;
+  text-align: center;
+  background: var(--theme-color-950);
+  border-radius: var(--soft-radius);
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 280px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.step-title {
+  color: var(--theme-color-50);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  font-weight: 600;
+}
+
+.step-image {
+  width: 180px;
+  height: 180px;
+  margin: 1.5rem 0;
+  object-fit: contain;
+}
+
+.ingredients-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  max-height: 250px;
-  overflow-x: scroll;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
-.next-prev-btns{
+
+.ingredient-item {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  padding: 1.25rem;
+  background: var(--theme-color-900);
+  border: 1px solid var(--theme-color-800);
+  border-radius: var(--soft-radius);
+  color: var(--theme-color-100);
+  transition: var(--transition-smooth);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ingredient-item:active {
+  background: var(--theme-color-800);
+}
+
+.amount {
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+.instruction {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  text-align: left;
+  color: var(--theme-color-100);
+  padding: 0 0.5rem;
+}
+
+.completion-text {
+  color: var(--theme-color-100);
+  font-size: 1.125rem;
+  margin-top: 1.5rem;
+  line-height: 1.6;
+}
+
+.navigation {
+  padding: 1rem 1rem 34px;
+  background: var(--theme-color-900);
+  border-top: 1px solid var(--theme-color-800);
+  display: flex;
+  justify-content: space-between;
   gap: 1rem;
+}
+
+.nav-button {
+  flex: 1;
+  height: 50px;
+  border: none;
+  background: var(--theme-color-600);
+  color: var(--theme-color-50);
+  border-radius: var(--soft-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-button:active:not(:disabled) {
+  background: var(--theme-color-500);
+  transform: scale(0.96);
+}
+
+.nav-button:disabled {
+  background: var(--theme-color-800);
+  color: var(--theme-color-600);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.nav-button .material-icons {
+  font-size: 28px;
 }

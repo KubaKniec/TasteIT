@@ -1,31 +1,77 @@
-<div class="modal" [@dialog]="state" *ngIf="post && recipe">
-    <!--  SETUP STEP-->
-    <div class="setup-step" *ngIf="isIngredientStep()">
-      <p class="title-text">Prerequisites</p>
-      <img src="assets/barman.png" width="250px" height="250px">
-      <p class="text">Before you can make a <b class="accent"> {{post.postMedia?.title}} </b>, you need to make sure you have the following ingredients:</p>
-      <div class="ingredient-wrapper">
-        <p class="ingredient-text" *ngFor="let ingredient of getIngredients()"> <b class="am"> {{ingredient.measurement?.value}} </b> {{ingredient.name}}</p>
-      </div>
-    </div>
-    <!--  -->
-    <!--  STEPS -->
-  <div class="steps" *ngIf="!isIngredientStep() && !isDone">
-    <p class="title-text"> {{currentStep}}/{{getTotalSteps()}}</p>
-    <img src="assets/bartender.png" width="250px" height="250px">
-    <p class="text"> {{getCurrentInstruction()}} </p>
-  </div>
-<!--  COMPLETE SCREEN-->
-  <div class="complete-screen" *ngIf="isDone">
-    <p class="title-text"> Enjoy! </p>
-    <img src="assets/drink_ready.png" width="250px" height="250px">
-    <p class="text"> Your <b class="accent"> {{post.postMedia?.title}} </b> is ready!  </p>
-  </div>
-    <!--  CONTROLS -->
-    <div class="controls">
-      <button (click)="nextStep()" *ngIf="!isDone" class="button-primary" matRipple>Continue</button>
-      <button (click)="onClose()" *ngIf="!isDone" class="close-btn margin-bottom-1rem">Close</button>
-      <button (click)="onClose()" *ngIf="isDone" class="button-primary margin-bottom-1rem" matRipple> Finish </button>
-    </div>
+<div class="recipe-container"
+     [@slideAnimation]="currentState"
+     (swipeleft)="onSwipeLeft()"
+     (swiperight)="onSwipeRight()">
 
+  <div class="progress-bar">
+    <div *ngFor="let step of getProgressSteps(); let i = index"
+         class="progress-dot"
+         [class.active]="currentStep === i">
+    </div>
+  </div>
+
+  <div class="content"
+       [@contentAnimation]="currentStep"
+       (swipeleft)="onSwipeLeft()"
+       (swiperight)="onSwipeRight()"
+  >
+    <ng-container *ngIf="currentStep === 0">
+      <div class="step-content ingredients-step">
+        <h2 class="step-title">Before you can make a <b class="accent"> {{post.postMedia?.title}} </b>, you'll need</h2>
+        <div class="ingredients-list">
+          <div *ngFor="let ingredient of recipe.ingredientsWithMeasurements"
+               class="ingredient-item">
+            <span class="amount">{{ingredient.measurement?.value}}</span>
+            <span class="name">{{ingredient.name}}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Recipe Steps -->
+    <ng-container *ngIf="currentStep > 0 && currentStep <= getTotalSteps()"
+                  (swipeleft)="onSwipeLeft()"
+                  (swiperight)="onSwipeRight()"
+    >
+      <div class="step-content recipe-step">
+        <h2 class="step-title">Step {{currentStep}}</h2>
+        <img src="assets/bartender.png" alt="Step"
+             class="step-image">
+
+        <p class="instruction">
+          {{getCurrentInstruction()}}
+        </p>
+      </div>
+    </ng-container>
+
+    <!-- Final Step -->
+    <ng-container *ngIf="isLastStep()">
+      <div class="step-content final-step">
+        <h2 class="step-title">Enjoy your <b class="accent">{{post.postMedia?.title}}</b></h2>
+        <img src="{{post.postMedia?.pictures?.[0]}}" alt="Complete"
+             class="step-image">
+
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Navigation -->
+  <div class="navigation">
+    <button class="nav-button" (click)="onClose()">
+      <span class="material-icons">close</span>
+    </button>
+    <button class="nav-button"
+            (click)="previousStep()"
+            [disabled]="currentStep === 0">
+      <span class="material-icons">chevron_left</span>
+    </button>
+
+    <button class="nav-button"
+            (click)="isLastStep() ? onClose() : nextStep()"
+            [disabled]="false">
+      <span class="material-icons">
+        {{isLastStep() ? 'check' : 'chevron_right'}}
+      </span>
+    </button>
+  </div>
 </div>

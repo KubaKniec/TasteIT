@@ -28,7 +28,6 @@ export class HomeComponent implements OnInit{
               private splashScreenFactoryService: SplashScreenFactoryService,
               private viewContainerRef: ViewContainerRef,
               private bodyScrollService: BodyScrollService,
-              private authService: AuthService,
               private userService: UserService,
               private scrollPositionService: ScrollPositionService
               ) {

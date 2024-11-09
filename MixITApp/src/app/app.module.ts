@@ -124,7 +124,8 @@ import { ChangeFlNameDialogComponent } from './components/dialogs/change-fl-name
     GestureCloseDirective,
     FoodlistViewComponent,
     ConfirmDialogComponent,
-    ChangeFlNameDialogComponent
+    ChangeFlNameDialogComponent,
+    InstructionsViewComponent,
   ],
   imports: [
     BrowserModule,

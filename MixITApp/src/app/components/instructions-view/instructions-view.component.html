@@ -23,7 +23,10 @@
   </div>
     <!--  CONTROLS -->
     <div class="controls">
-      <button (click)="nextStep()" *ngIf="!isDone" class="button-primary" matRipple>Continue</button>
+      <div class="next-prev-btns">
+        <button (click)="previousStep()" *ngIf="!isDone &&currentStep>0" class="button-primary" matRipple>Previous</button>
+        <button (click)="nextStep()" *ngIf="!isDone" class="button-primary" matRipple>Continue</button>
+      </div>
       <button (click)="onClose()" *ngIf="!isDone" class="close-btn margin-bottom-1rem">Close</button>
       <button (click)="onClose()" *ngIf="isDone" class="button-primary margin-bottom-1rem" matRipple> Finish </button>
     </div>

@@ -138,8 +138,11 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
   }
 
   initializeCommentSection(postId: string) {
+    window.scrollTo(0, 0);
+    this.bodyScrollService.disableScroll();
    const componentRef = this.commentsSectionFactoryService.addDynamicComponent(postId);
    componentRef.instance.close.subscribe(() => {
+      this.bodyScrollService.enableScroll();
       this.commentsSectionFactoryService.removeDynamicComponent(componentRef)
    })
     componentRef.instance.refreshPost.subscribe(() => {

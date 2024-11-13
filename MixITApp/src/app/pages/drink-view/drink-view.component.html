@@ -38,8 +38,15 @@
 <!--  BUTTONS-->
   <div class="buttons">
     <div class="left-action">
-      <button  *ngIf="isPostLikedByCurrentUser" (click)="toggleLike()" class="button-actions-small active" matRipple><mat-icon>favorite</mat-icon></button>
-      <button  *ngIf="!isPostLikedByCurrentUser" (click)="toggleLike()" class="button-actions-small" matRipple><mat-icon>favorite</mat-icon></button>
+      <button
+        (click)="toggleLike()"
+        class="button-actions-small"
+        [class.liked]="isPostLikedByCurrentUser"
+        matRipple>
+        <mat-icon [class.animate-like]="isPostLikedByCurrentUser">
+          {{isPostLikedByCurrentUser ? 'favorite' : 'favorite'}}
+        </mat-icon>
+      </button>
       <button class="button-actions-small" matRipple (click)="initializeCommentSection(activePost.postId || '')"><mat-icon>chat</mat-icon></button>
       <button class="button-actions-small" matRipple (click)="initializeAddToFoodList()"><mat-icon>bookmark</mat-icon></button>
     </div>

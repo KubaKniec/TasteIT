@@ -222,5 +222,9 @@ public class UserService {
 
         return userReturnDto;
     }
+
+    public List<UserShort> getUserShortByIdIn(List<String> userIds) {
+        return userRepository.findUsersByUserIdIn(userIds);
+    }
 }
 

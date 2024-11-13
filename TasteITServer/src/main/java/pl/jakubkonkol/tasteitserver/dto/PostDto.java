@@ -18,6 +18,8 @@ public class PostDto {
     @NotNull(message = "UserId cannot be null.")
     @NotBlank(message = "UserId cannot be blank.")
     private String userId;
+    private String displayName;
+    private String profilePicture;
     @NotNull(message = "PostType cannot be null.")
     private PostType postType;
     private PostMedia postMedia;

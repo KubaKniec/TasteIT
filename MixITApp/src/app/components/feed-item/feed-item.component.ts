@@ -40,8 +40,11 @@ export class FeedItemComponent implements OnInit{
 
   async emitLike(event: Event) {
     event.stopPropagation();
-    await Haptics.impact({style: ImpactStyle.Medium})
-
+    try{
+      await Haptics.impact({style: ImpactStyle.Medium})
+    } catch (e) {
+      console.error('Haptics not supported');
+    }
     this.feedItem.likedByCurrentUser ?
         await this.postService.unlikePost(this.feedItem.postId!) :
         await this.postService.likePost(this.feedItem.postId!)

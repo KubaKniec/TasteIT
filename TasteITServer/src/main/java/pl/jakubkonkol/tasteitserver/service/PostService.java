@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
+import pl.jakubkonkol.tasteitserver.dto.PostAuthorDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
@@ -97,8 +98,11 @@ public class PostService {
                     PostDto postDto = convertToDto(post, sessionToken);
                     UserShort userShort = userShortMap.get(post.getUserId());
                     if (userShort != null) {
-                        postDto.setDisplayName(userShort.getDisplayName());
-                        postDto.setProfilePicture(userShort.getProfilePicture());
+                        PostAuthorDto postAuthorDto = new PostAuthorDto();
+                        postAuthorDto.setUserId(userShort.getUserId());
+                        postAuthorDto.setDisplayName(userShort.getDisplayName());
+                        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+                        postDto.setPostAuthorDto(postAuthorDto);
                     }
                     return postDto;
                 })

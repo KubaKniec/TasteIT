@@ -69,7 +69,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
 
       const [recipe, postAuthor] = await Promise.all([
         this.getRecipe(),
-        this.userService.getUserById(this.activePost.userId!)
+        this.userService.getUserById(this.activePost.postAuthorDto?.userId!)
       ]);
       this.recipe = recipe;
       this.postAuthor = postAuthor;

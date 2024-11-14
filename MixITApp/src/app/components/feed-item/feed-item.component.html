@@ -1,8 +1,8 @@
 <div class="feed-item" *ngIf="feedItem">
   <div class="image-wrapper" (click)="emitGotoDrink()">
     <div class="profile-info" (click)="gotoUser($event)">
-      <img src="{{getAuthorProfilePicture()}}" loading="lazy" alt="Profile picture">
-      <p> {{getAuthorName()}}</p>
+      <img src="{{feedItem.postAuthorDto?.profilePicture}}" loading="lazy" alt="Profile picture">
+      <p> {{feedItem.postAuthorDto?.displayName}}</p>
     </div>
     <img src="{{feedItem.postMedia?.pictures?.[0]}}" loading="lazy" alt="{{feedItem.postMedia?.title}}" class="post-picture">
     <div class="actions">

@@ -12,25 +12,13 @@ import {Router} from "@angular/router";
   templateUrl: './feed-item.component.html',
   styleUrls: ['./feed-item.component.css']
 })
-export class FeedItemComponent implements OnInit{
+export class FeedItemComponent{
   @Input() feedItem: Post = {};
   @Output() gotoDrink: EventEmitter<any> = new EventEmitter<any>();
   @Output() likeEvent: EventEmitter<any> = new EventEmitter<any>();
-  postAuthor: User = {};
   constructor(private postService: PostService,
-              private userService: UserService,
               private router: Router
-              ) {
-  }
-  async ngOnInit(): Promise<void>{
-    this.postAuthor = await this.userService.getUserById(this.feedItem.userId!);
-  }
-  getAuthorName(): string {
-    return this.postAuthor.displayName ?? 'Unknown';
-  }
-  getAuthorProfilePicture(): string {
-    return this.postAuthor.profilePicture ?? 'https://www.gravatar.com/avatar/';
-  }
+              ) {}
   emitGotoDrink(): void {
     this.gotoDrink.emit(this.feedItem.postId);
   }
@@ -54,7 +42,7 @@ export class FeedItemComponent implements OnInit{
   }
   gotoUser(event: Event): void {
     event.stopPropagation();
-    this.router.navigate([`/user-profile/${this.postAuthor.userId}`]).then();
+    this.router.navigate([`/user-profile/${this.feedItem.postAuthorDto?.userId}`]).then();
   }
 
   emitComment(event: Event) {

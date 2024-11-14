@@ -58,6 +58,8 @@ public interface UserRepository extends MongoRepository<User, String>{
 
     Optional<UserProfileView> findUserByUserId(String userId);
 
+    Optional<UserShort> findUserShortByUserId(String userId);
+
     @Query("{ 'userId' : ?0 }")
     @Update("{ '$set' : { 'displayName' : ?1, 'bio' : ?2, 'profilePicture' : ?3, 'birthDate' : ?4 } }")
     void updateUserProfileFields(String userId, String displayName, String bio, String profilePicture, Date birthDate);

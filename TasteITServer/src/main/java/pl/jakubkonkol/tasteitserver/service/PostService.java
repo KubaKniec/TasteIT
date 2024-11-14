@@ -63,14 +63,22 @@ public class PostService {
     public PostDto getPost(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
-        return convertToDto(post, sessionToken);
+
+        PostDto postDto = convertToDto(post, sessionToken);
+        PostAuthorDto postAuthorDto = new PostAuthorDto();
+
+        UserShort userShort = userService.findUserShortByUserId(post.getUserId());
+        postAuthorDto.setUserId(userShort.getUserId());
+        postAuthorDto.setDisplayName(userShort.getDisplayName());
+        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+        postDto.setPostAuthorDto(postAuthorDto);
+
+        return postDto;
     }
 
     //temp implementation
     public PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken) {
         Pageable pageable = PageRequest.of(page, size);
-
-        long total = postRepository.count();
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.sample(size)

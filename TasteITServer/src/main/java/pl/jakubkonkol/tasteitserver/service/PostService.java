@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
+import pl.jakubkonkol.tasteitserver.dto.PostAuthorDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
@@ -20,6 +21,7 @@ import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
+import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,10 @@ import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,14 +63,22 @@ public class PostService {
     public PostDto getPost(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
-        return convertToDto(post, sessionToken);
+
+        PostDto postDto = convertToDto(post, sessionToken);
+        PostAuthorDto postAuthorDto = new PostAuthorDto();
+
+        UserShort userShort = userService.findUserShortByUserId(post.getUserId());
+        postAuthorDto.setUserId(userShort.getUserId());
+        postAuthorDto.setDisplayName(userShort.getDisplayName());
+        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+        postDto.setPostAuthorDto(postAuthorDto);
+
+        return postDto;
     }
 
     //temp implementation
     public PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken) {
         Pageable pageable = PageRequest.of(page, size);
-
-        long total = postRepository.count();
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.sample(size)
@@ -79,7 +91,33 @@ public class PostService {
             throw new NoSuchElementException("No random posts found in repository");
         }
 
-        return getPostDtoPageDto(posts, total, pageable, sessionToken);
+        List<String> userIds = posts.stream()
+                .map(Post::getUserId)
+                .distinct()
+                .toList();
+
+        List<UserShort> userShorts = userService.getUserShortByIdIn(userIds);
+
+        Map<String, UserShort> userShortMap = userShorts.stream()
+                .collect(Collectors.toMap(UserShort::getUserId, userShort -> userShort));
+
+        List<PostDto> postDtos = posts.stream()
+                .map(post -> {
+                    PostDto postDto = convertToDto(post, sessionToken);
+                    UserShort userShort = userShortMap.get(post.getUserId());
+                    if (userShort != null) {
+                        PostAuthorDto postAuthorDto = new PostAuthorDto();
+                        postAuthorDto.setUserId(userShort.getUserId());
+                        postAuthorDto.setDisplayName(userShort.getDisplayName());
+                        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+                        postDto.setPostAuthorDto(postAuthorDto);
+                    }
+                    return postDto;
+                })
+                .toList();
+
+        PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, postDtos.size());
+        return getPageDto(pageImpl);
     }
 
     //if title consists few words use '%20' between them in get request

@@ -25,6 +25,9 @@ public interface UserRepository extends MongoRepository<User, String>{
     @Query(value = "{ 'userId': { $in: ?0 } }")
     Page<UserShort> findUsersByUserIdIn(List<String> userIds, Pageable pageable);
 
+    @Query(value = "{ 'userId': { $in: ?0 } }")
+    List<UserShort> findUsersByUserIdIn(List<String> userIds);
+
     Page<UserShort> findByDisplayNameContainingIgnoreCase(String displayName, Pageable pageable);
 
     @Query(value = "{ 'userId': ?0 }", fields = "{ 'followers' : 1 }")
@@ -54,6 +57,8 @@ public interface UserRepository extends MongoRepository<User, String>{
     void setFirstLoginToFalse(String userId);
 
     Optional<UserProfileView> findUserByUserId(String userId);
+
+    Optional<UserShort> findUserShortByUserId(String userId);
 
     @Query("{ 'userId' : ?0 }")
     @Update("{ '$set' : { 'displayName' : ?1, 'bio' : ?2, 'profilePicture' : ?3, 'birthDate' : ?4 } }")

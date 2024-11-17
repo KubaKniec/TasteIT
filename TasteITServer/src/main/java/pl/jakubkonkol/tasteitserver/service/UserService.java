@@ -222,5 +222,14 @@ public class UserService {
 
         return userReturnDto;
     }
+
+    public List<UserShort> getUserShortByIdIn(List<String> userIds) {
+        return userRepository.findUsersByUserIdIn(userIds);
+    }
+
+    public UserShort findUserShortByUserId(String userId) {
+        return userRepository.findUserShortByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
+    }
 }
 

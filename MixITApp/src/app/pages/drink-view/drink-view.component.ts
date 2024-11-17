@@ -69,7 +69,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
 
       const [recipe, postAuthor] = await Promise.all([
         this.getRecipe(),
-        this.userService.getUserById(this.activePost.userId!)
+        this.userService.getUserById(this.activePost.postAuthorDto?.userId!)
       ]);
       this.recipe = recipe;
       this.postAuthor = postAuthor;
@@ -115,6 +115,8 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
   }
   async initializeInstructionsView(post: Post) {
     const recipe = await this.getRecipe();
+    window.scrollTo(0, 0);
+    this.bodyScrollService.disableScroll();
     const componentRef = this.instructionsFactoryService.addDynamicComponent(post, recipe);
 
     componentRef.instance.close.subscribe(() => {
@@ -136,8 +138,11 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
   }
 
   initializeCommentSection(postId: string) {
+    window.scrollTo(0, 0);
+    this.bodyScrollService.disableScroll();
    const componentRef = this.commentsSectionFactoryService.addDynamicComponent(postId);
    componentRef.instance.close.subscribe(() => {
+      this.bodyScrollService.enableScroll();
       this.commentsSectionFactoryService.removeDynamicComponent(componentRef)
    })
     componentRef.instance.refreshPost.subscribe(() => {

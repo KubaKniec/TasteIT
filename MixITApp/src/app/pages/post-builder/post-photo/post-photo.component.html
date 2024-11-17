@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="title">
+    <h1>Upload a Photo</h1>
+    <p>Choose a photo that best represents your recipe</p>
+  </div>
+  <image-cropper
+    *ngIf="imageChangedEvent"
+    [imageChangedEvent]="imageChangedEvent"
+    format="png"
+    output="base64"
+    (imageCropped)="onImageCropped($event)"
+    [cropperMinWidth]="500"
+    [cropperMinHeight]="500"
+  ></image-cropper>
+  <button class="button-secondary with-icon" (click)="fileInput.click()"> <mat-icon>upload</mat-icon> Upload Photo </button>
+  <input
+    type="file"
+    accept="image/*"
+    #fileInput
+    (change)="onFileSelected($event)"
+    style="display: none"
+  >
+<!--  <button class="button-primary" *ngIf="imageChangedEvent" (click)="uploadPhoto()">Upload</button>-->
+</div>

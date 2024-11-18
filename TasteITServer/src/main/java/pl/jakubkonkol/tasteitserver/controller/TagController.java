@@ -22,4 +22,9 @@ public class TagController {
         List<Tag> tags = tagService.getBasicTags();
         return ResponseEntity.ok(tags);
     }
+    @GetMapping("/")
+    public ResponseEntity<List<Tag>> getAllTags(){
+        return
+                ResponseEntity.ok(tagService.getAll());
+    }
 }

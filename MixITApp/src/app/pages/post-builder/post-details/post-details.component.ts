@@ -6,6 +6,7 @@ import {EPostType} from "../../../model/post/EPostType";
 import {TagType} from "../../../model/user/TagType";
 import {PostMedia} from "../../../model/post/PostMedia";
 import {PostData} from "../shared/postData";
+import {TagService} from "../../../service/tag.service";
 
 @Component({
   selector: 'app-post-details',
@@ -23,24 +24,18 @@ export class PostDetailsComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() nextStep = new EventEmitter<any>();
   @Output() prevStep = new EventEmitter<void>();
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder,
+              private tagService: TagService
+              ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.postForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       category: [null, Validators.required]
     });
 
-    //placeholder
-    this.availableTags = [
-      { tagId: '1', tagName: 'Travel', tagType: TagType.DETAILED },
-      { tagId: '2', tagName: 'Food', tagType: TagType.DETAILED },
-      { tagId: '3', tagName: 'Lifestyle', tagType: TagType.DETAILED },
-      { tagId: '4', tagName: 'Photography', tagType: TagType.DETAILED },
-      { tagId: '5', tagName: 'Adventure', tagType: TagType.DETAILED }
-    ];
-
+    this.availableTags = await this.tagService.getAll()
     this.tagSearchControl.valueChanges
       .pipe(
         debounceTime(300),
@@ -86,14 +81,18 @@ export class PostDetailsComponent implements OnInit {
   onClose(){
     this.close.emit();
   }
+  getPostType(): EPostType {
+    return this.postForm.value.category === 'Food' ? EPostType.FOOD : EPostType.DRINK;
+  }
   onContinue(){
     if(!this.postForm.valid) return;
+    const postType = this.getPostType();
     const postMedia: PostMedia = {
       title: this.postForm.value.title,
       description: this.postForm.value.description,
     }
     const tags = this.selectedTags; //This needs to be valid tag from the backend
-    const formData = {postMedia, tags}
+    const formData = {postMedia, tags, postType}
     this.nextStep.emit(formData);
   }
 

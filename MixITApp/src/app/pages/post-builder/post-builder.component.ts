@@ -21,7 +21,7 @@ export class PostBuilderComponent implements OnInit{
     recipe: {
       steps: new Map<number, string>(),
       pictures: [],
-      ingredients: []
+      ingredientsWithMeasurements: []
     },
     postType: EPostType.FOOD,
     tags: [],
@@ -56,6 +56,7 @@ export class PostBuilderComponent implements OnInit{
     this.postData.postMedia.title = formData.postMedia.title;
     this.postData.postMedia.description = formData.postMedia.description;
     this.postData.tags = formData.tags;
+    this.postData.postType = formData.postType;
     this.nextStep();
   }
   onUpdateRecipe(recipe: PostData['recipe']){
@@ -63,7 +64,7 @@ export class PostBuilderComponent implements OnInit{
     this.nextStep();
   }
   onUpdateIngredients(ingredients: Ingredient[]){
-    this.postData.recipe.ingredients = ingredients;
+    this.postData.recipe.ingredientsWithMeasurements = ingredients;
     this.nextStep();
   }
   onClose(){

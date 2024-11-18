@@ -91,6 +91,7 @@ import { IngredientsEditorComponent } from './pages/post-builder/ingredients-edi
 import { RecipeEditorComponent } from './pages/post-builder/recipe-editor/recipe-editor.component';
 import { PostDetailsComponent } from './pages/post-builder/post-details/post-details.component';
 import { PostSummaryComponent } from './pages/post-builder/post-summary/post-summary.component';
+import { PBNavigationComponent } from './pages/post-builder/pbnavigation/pbnavigation.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -136,6 +137,7 @@ import { PostSummaryComponent } from './pages/post-builder/post-summary/post-sum
     RecipeEditorComponent,
     PostDetailsComponent,
     PostSummaryComponent,
+    PBNavigationComponent,
   ],
   imports: [
     BrowserModule,

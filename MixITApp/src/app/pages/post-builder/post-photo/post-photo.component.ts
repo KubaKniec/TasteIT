@@ -16,9 +16,10 @@ export class PostPhotoComponent implements OnInit{
   croppedImage: any;
   picUrl: string = '';
   user: User = {}
+  readyToContinue: boolean =false;
   @Input() postData!: PostData;
-  @Output() readyToContinue = new EventEmitter<boolean>();
   @Output() imageUploaded = new EventEmitter<string[]>();
+  @Output() close = new EventEmitter<void>();
   constructor(private storageUploadService: StorageUploadService,
               private userService: UserService,
               )
@@ -36,7 +37,7 @@ export class PostPhotoComponent implements OnInit{
 
   onImageCropped($event: ImageCroppedEvent): void {
     this.croppedImage = $event.base64;
-    this.readyToContinue.emit(true)
+    this.readyToContinue = true;
   }
   uploadPhoto(): void {
     if (!this.croppedImage) return;
@@ -48,12 +49,15 @@ export class PostPhotoComponent implements OnInit{
     this.storageUploadService.uploadFile(file, filePath).subscribe(url => {
       this.picUrl = url;
       this.imageUploaded.emit([this.picUrl]);
-      this.readyToContinue.emit(true);
     });
   }
   skipToNextStep(): void {
-    this.readyToContinue.emit(true);
+    this.imageUploaded.emit([]);
   }
 
 
+  onClose() {
+    if(this.picUrl) this.storageUploadService.deleteFile(this.picUrl)
+    this.close.emit();
+  }
 }

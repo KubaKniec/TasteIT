@@ -1,9 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {Tag} from "../../../model/user/Tag";
 import {EPostType} from "../../../model/post/EPostType";
 import {TagType} from "../../../model/user/TagType";
+import {PostMedia} from "../../../model/post/PostMedia";
+import {PostData} from "../shared/postData";
 
 @Component({
   selector: 'app-post-details',
@@ -11,12 +13,16 @@ import {TagType} from "../../../model/user/TagType";
   styleUrls: ['./post-details.component.css']
 })
 export class PostDetailsComponent implements OnInit {
+  readyToContinue: boolean = false;
   postForm!: FormGroup;
   tagSearchControl = new FormControl('');
   availableTags: Tag[] = [];
   filteredTags: Tag[] = [];
   selectedTags: Tag[] = [];
   postTypes = ['Food', 'Drink']
+  @Output() close = new EventEmitter<void>();
+  @Output() nextStep = new EventEmitter<any>();
+  @Output() prevStep = new EventEmitter<void>();
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
@@ -41,6 +47,10 @@ export class PostDetailsComponent implements OnInit {
         distinctUntilChanged()
       )
       .subscribe(value => this.filterTags(value as string));
+
+    this.postForm.valueChanges.subscribe(value => {
+      this.readyToContinue = this.postForm.valid;
+    })
   }
 
   filterTags(searchTerm: string) {
@@ -73,14 +83,21 @@ export class PostDetailsComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     this.filterTags(input.value);
   }
-
-  onSubmit() {
-    if (this.postForm.valid) {
-      const formData = {
-        ...this.postForm.value,
-        tags: this.selectedTags
-      };
-      console.log(formData);
+  onClose(){
+    this.close.emit();
+  }
+  onContinue(){
+    if(!this.postForm.valid) return;
+    const postMedia: PostMedia = {
+      title: this.postForm.value.title,
+      description: this.postForm.value.description,
     }
+    const tags = this.selectedTags; //This needs to be valid tag from the backend
+    const formData = {postMedia, tags}
+    this.nextStep.emit(formData);
+  }
+
+  onPrevStep() {
+    this.prevStep.emit();
   }
 }

@@ -3,13 +3,13 @@
     <h1 class="header-title">Tell us more about your post</h1>
   </header>
 
-  <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+  <form [formGroup]="postForm" class="post-form">
     <!-- Title Input -->
     <div class="input-group">
       <input
         type="text"
         formControlName="title"
-        placeholder="Write a catchy title"
+        placeholder="Your post title"
         class="input-field"
         [class.error]="postForm.get('title')?.touched && postForm.get('title')?.invalid"
       >
@@ -22,7 +22,7 @@
     <div class="input-group">
       <textarea
         formControlName="description"
-        placeholder="Share your thoughts..."
+        placeholder="Tell us more about your post"
         class="input-field input-field--multiline"
         rows="4"
         [class.error]="postForm.get('description')?.touched && postForm.get('description')?.invalid"
@@ -77,18 +77,14 @@
       </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="form-actions">
-      <button type="button" class="button-secondary">
-        Cancel
-      </button>
-      <button
-        type="submit"
-        class="button-primary"
-        [disabled]="postForm.invalid"
-      >
-        Continue
-      </button>
-    </div>
+
   </form>
+  <app-pbnavigation
+    [currentStep]="2"
+    [canProceed]="readyToContinue"
+    [isLastStep]="false"
+    (closeEmitter)="onClose()"
+    (prevStepEmitter)="onPrevStep()"
+    (nextStepEmitter)="onContinue()"
+  />
 </div>

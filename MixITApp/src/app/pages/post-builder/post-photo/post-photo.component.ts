@@ -5,6 +5,7 @@ import {UserService} from "../../../service/user.service";
 import {User} from "../../../model/user/User";
 import {PhotoHelper} from "../../../helpers/PhotoHelper";
 import {PostData} from "../shared/postData";
+import {PostBuilderModule} from "../shared/PostBuilderModule";
 
 @Component({
   selector: 'app-post-photo',

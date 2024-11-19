@@ -3,17 +3,16 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {Tag} from "../../../model/user/Tag";
 import {EPostType} from "../../../model/post/EPostType";
-import {TagType} from "../../../model/user/TagType";
 import {PostMedia} from "../../../model/post/PostMedia";
-import {PostData} from "../shared/postData";
 import {TagService} from "../../../service/tag.service";
+import {PostBuilderModule} from "../shared/PostBuilderModule";
 
 @Component({
   selector: 'app-post-details',
   templateUrl: './post-details.component.html',
   styleUrls: ['./post-details.component.css']
 })
-export class PostDetailsComponent implements OnInit {
+export class PostDetailsComponent implements PostBuilderModule, OnInit {
   readyToContinue: boolean = false;
   postForm!: FormGroup;
   tagSearchControl = new FormControl('');

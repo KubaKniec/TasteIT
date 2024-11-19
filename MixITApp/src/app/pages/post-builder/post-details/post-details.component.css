@@ -170,7 +170,10 @@
   background-color: var(--theme-color-950);
   border-top: 1px solid var(--theme-color-800);
 }
-
+.tag-suggestion--create {
+  background-color: var(--theme-color-100);
+  font-style: italic;
+}
 .form-actions button {
   flex: 1;
   min-height: 48px;

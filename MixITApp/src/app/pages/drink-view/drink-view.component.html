@@ -14,7 +14,7 @@
       <p class="name-text"> {{activePost.postMedia?.title}}</p>
       <p class="desc-text">{{activePost.likesCount}} likes {{activePost.commentsCount}} comments</p>
       <p class="desc-text">{{activePost.postMedia?.description}}</p>
-      <p class="category-text"> <b *ngFor="let tag of activePost.tags">{{tag.tagName}}  </b></p>
+      <p class="category-text"> <b *ngFor="let tag of activePost.tags">{{tag?.tagName || ''}}  </b></p>
     </div>
 
     <div class="user-info" (click)="gotoProfile(postAuthor.userId || '')">

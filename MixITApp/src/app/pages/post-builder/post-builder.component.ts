@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {PostData} from "./shared/postData";
 import {EPostType} from "../../model/post/EPostType";
-import {StorageUploadService} from "../../service/storage-upload.service";
 import {Ingredient} from "../../model/post/Ingredient";
 
 type StepNumber = 1 | 2 | 3 | 4 | 5;
@@ -30,7 +29,6 @@ export class PostBuilderComponent implements OnInit{
   currentStep: StepNumber = 1;
   constructor(
     private router: Router,
-    private storageUploadService: StorageUploadService,
   ) {}
 
   async ngOnInit(): Promise<void> {

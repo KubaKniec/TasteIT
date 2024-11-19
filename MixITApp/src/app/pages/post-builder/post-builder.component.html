@@ -18,6 +18,8 @@
     <app-ingredients-editor
       *ngSwitchCase="3"
       (close)="onClose()"
+      (prevStep)="prevStep()"
+      (nextStep)="onUpdateIngredients($event)"
 
     />
 

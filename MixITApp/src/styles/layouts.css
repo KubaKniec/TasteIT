@@ -73,6 +73,9 @@ html, body {
 .input-field > mat-icon{
   font-size: 24px;
 }
+.input-field > input:focus{
+  outline: none;
+}
 .input-field:focus {
   outline: none;
   border-color: var(--theme-color-500);

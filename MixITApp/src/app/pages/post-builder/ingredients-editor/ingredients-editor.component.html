@@ -1,1 +1,13 @@
-<p>ingredients-editor works!</p>
+<div class="container">
+
+
+  <app-pbnavigation
+    [currentStep]="3"
+    [canProceed]="canProceed"
+    [isLastStep]="false"
+    (closeEmitter)="onClose()"
+    (prevStepEmitter)="onPrevStep()"
+    (nextStepEmitter)="onNextStep()"
+    />
+
+</div>

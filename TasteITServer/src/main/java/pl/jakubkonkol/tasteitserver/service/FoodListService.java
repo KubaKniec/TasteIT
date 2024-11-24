@@ -3,6 +3,7 @@ package pl.jakubkonkol.tasteitserver.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import pl.jakubkonkol.tasteitserver.annotation.RegisterAction;
 import pl.jakubkonkol.tasteitserver.dto.FoodListDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.FoodList;
@@ -70,6 +71,7 @@ public class FoodListService {
         return foodListsDto;
     }
 
+    @RegisterAction(actionType = "ADD_TO_FOODLIST")
     public void addPostToFoodlist(String sessionToken, String foodListId, PostDto postId) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
         Post post = postRepository.findById(postId.getPostId())

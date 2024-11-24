@@ -13,10 +13,8 @@ import pl.jakubkonkol.tasteitserver.model.FoodList;
 import pl.jakubkonkol.tasteitserver.model.GenericResponse;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
-import pl.jakubkonkol.tasteitserver.service.FoodListService;
-import pl.jakubkonkol.tasteitserver.service.CommentService;
-import pl.jakubkonkol.tasteitserver.service.LikeService;
-import pl.jakubkonkol.tasteitserver.service.PostService;
+import pl.jakubkonkol.tasteitserver.repository.PostRepository;
+import pl.jakubkonkol.tasteitserver.service.*;
 
 import java.util.List;
 
@@ -27,7 +25,6 @@ public class PostController {
     private final PostService postService;
     private final LikeService likeService;
     private final CommentService commentService;
-    private final FoodListService foodListService;
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable String postId, @RequestHeader("Authorization") String sessionToken) {

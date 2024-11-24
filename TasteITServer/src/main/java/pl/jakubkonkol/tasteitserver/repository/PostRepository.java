@@ -29,4 +29,9 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     @Query("{ 'recipe.ingredientsWithMeasurements.name': { $nin: ?0 } }")
     Page<PostPhotoView> findByExcludedIngredients(List<String> ingredientNames, Pageable pageable);
+
+    @Query("{}")
+    List<Post> findTop100ByOrderByCreatedAtDesc();
+
+
 }

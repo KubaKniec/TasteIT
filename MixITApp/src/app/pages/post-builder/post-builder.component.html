@@ -1,3 +1,34 @@
 <div class="container">
+<ng-container [ngSwitch]="currentStep">
+  <div class="content">
+    <app-post-photo
+      *ngSwitchCase="1"
+      [postData]="postData"
+      (imageUploaded)="onUpdatePhoto($event)"
+      (close)="onClose()"
+    />
 
+    <app-post-details
+      *ngSwitchCase="2"
+      (close)="onClose()"
+      (prevStep)="prevStep()"
+      (nextStep)="onUpdateDetails($event)"
+    />
+
+    <app-ingredients-editor
+      *ngSwitchCase="3"
+      (close)="onClose()"
+      (prevStep)="prevStep()"
+      (nextStep)="onUpdateIngredients($event)"
+
+    />
+
+    <app-recipe-editor
+      *ngSwitchCase="4"
+    />
+    <app-post-summary
+      *ngSwitchCase="5"
+    />
+  </div>
+</ng-container>
 </div>

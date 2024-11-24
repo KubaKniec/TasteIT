@@ -14,7 +14,7 @@
       <p class="name-text"> {{activePost.postMedia?.title}}</p>
       <p class="desc-text">{{activePost.likesCount}} likes {{activePost.commentsCount}} comments</p>
       <p class="desc-text">{{activePost.postMedia?.description}}</p>
-      <p class="category-text"> <b *ngFor="let tag of activePost.tags">{{tag.tagName}}  </b></p>
+      <p class="category-text"> <b *ngFor="let tag of activePost.tags">{{tag?.tagName || ''}}  </b></p>
     </div>
 
     <div class="user-info" (click)="gotoProfile(postAuthor.userId || '')">
@@ -27,7 +27,7 @@
           *ngFor="let ingr of getIngredients()"
           highlighted
           style="background-color: var(--theme-color-600); color:var(--theme-color-50); font-size: 16px; font-weight: 700; text-transform: capitalize;"
-          (click)="initializeIngredientView(ingr.ingredientId)">
+          (click)="initializeIngredientView(ingr.ingredientId || 0)">
           {{ingr.name}}
         </mat-chip>
       </mat-chip-set>

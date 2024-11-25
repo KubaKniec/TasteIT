@@ -25,7 +25,7 @@ public class SecurityConfig{
                     "/swagger-ui.html",
                     "/swagger-resources/**",
                     "/webjars/**",
-                    "/api/v1/feed/allposts"
+                    "/api/v1/feed/**"
             };
 
 

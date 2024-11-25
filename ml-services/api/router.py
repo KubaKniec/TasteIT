@@ -12,6 +12,7 @@ router = APIRouter()
 @router.get("/")
 async def root():
     return {"message": "Yeah, it's working!"}
+
 @router.get("/api/ml/analyze-topics")
 async def analyze_topics_endpoint(database=Depends(get_database)):
     try:

@@ -1,45 +1,25 @@
 import asyncio
-import os
-from contextlib import asynccontextmanager
-from fastapi import FastAPI
-import uvicorn
-from motor.motor_asyncio import AsyncIOMotorClient
-from api.router import router
-from kafka.consumer import ClusteringConsumer
+from message_broker.clustering_consumer import ClusteringConsumer
+from message_broker.kafka_consumer_service import KafkaConsumerService
 
-MONGO_USERNAME = os.getenv("MONGO_USERNAME")
-MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
-MONGO_URL = "mongodb://"+MONGO_USERNAME+':'+MONGO_PASSWORD+"@localhost:27017/"+MONGO_DB_NAME+"?authSource=admin"
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # MongoDB
-    app.mongodb_client = AsyncIOMotorClient(MONGO_URL)
-    app.mongodb = app.mongodb_client[MONGO_DB_NAME]
-    print("Connected to MongoDB")
+async def main():
+    loop = asyncio.get_event_loop()
+    consumer_service = KafkaConsumerService()
 
-    # Kafka
-    consumer = ClusteringConsumer(kafka_bootstrap_servers="localhost:29092")
-    kafka_task = asyncio.create_task(consumer.start())
-    app.kafka_consumer = consumer
-    print("Started Kafka consumer")
+    # Tutaj mozemy dodac dowolna ilosc konsumerow
+    # np zrobisz preference_analysis_consumer = PreferenceAnalysisConsumer()
+    # consumer_service.add_consumer(preference_analysis_consumer)
+    clustering_consumer = ClusteringConsumer()
+    consumer_service.add_consumer(clustering_consumer)
+
+    consumer_service.setup_signal_handlers(loop)
 
     try:
-        yield
-    finally:
-        app.mongodb_client.close()
-        print("Disconnected from MongoDB")
-        if hasattr(app, 'kafka_consumer'):
-            await app.kafka_consumer.stop()
-            print("Stopped Kafka consumer")
+        await consumer_service.start_consumers()
+    except KeyboardInterrupt:
+        print("Received keyboard interrupt, shutting down...")
+        await consumer_service.shutdown()
 
-app = FastAPI(lifespan=lifespan)
-app.include_router(router)
 
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=3000,
-        reload=True
-    )
+    asyncio.run(main())

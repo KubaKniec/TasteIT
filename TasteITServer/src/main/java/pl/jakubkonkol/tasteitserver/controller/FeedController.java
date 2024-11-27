@@ -11,13 +11,10 @@ import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.service.ClusteringService;
-import pl.jakubkonkol.tasteitserver.service.PostService;
 import pl.jakubkonkol.tasteitserver.service.RankerService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/v1/feed")
@@ -42,14 +39,13 @@ public class FeedController {
         return ResponseEntity.ok(list);
     }
     @GetMapping("/request_clustering")
-    public ResponseEntity<?> analyzeTopics() {
+    public ResponseEntity<?> requestClustering() {
         try {
-            CompletableFuture<Map<String, Object>> result = clusteringService.requestTopicAnalysis();
-            Map<String, Object> analysisResult = result.get(30, TimeUnit.SECONDS);
-            return ResponseEntity.ok(analysisResult);
+            clusteringService.requestClustering();
+            return ResponseEntity.ok(Map.of("status", "Request sent successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(Map.of("error", "Failed to analyze topics: " + e.getMessage()));
+                    .body(Map.of("error", "Failed to send request: " + e.getMessage()));
         }
     }
 }

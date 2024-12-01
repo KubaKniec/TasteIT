@@ -18,7 +18,7 @@ import java.util.Optional;
 public class IngredientController {
     private final IngredientService ingredientService;
 
-    @PostMapping("/save")
+    @PostMapping("/")
     public ResponseEntity<String> save(@RequestBody Ingredient ingredient) {
         ingredientService.save(ingredient);
         return ResponseEntity.ok("Ingredient saved successfully, Id " + ingredient.getIngredientId());
@@ -30,7 +30,7 @@ public class IngredientController {
         return ResponseEntity.ok("Ingredients saved successfully");
     }
 
-    @DeleteMapping("/deleteById")
+    @DeleteMapping("/deleteById/{ingredientId}")
     public ResponseEntity<String> deleteById(@PathVariable String ingredientId) {
         ingredientService.deleteById(ingredientId);
         return ResponseEntity.ok("Ingredient deleted succesfully, Id: " + ingredientId);

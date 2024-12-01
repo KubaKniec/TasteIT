@@ -50,10 +50,9 @@ public class IngredientService {
         if (ingredient == null) {
             throw new IllegalArgumentException("Ingredient cannot be null.");
         }
-        if(ingredientRepository.findByNameIgnoreCase(ingredient.getName()).isPresent()){
-            throw new IllegalArgumentException("Ingredient with given name already exists.");
+        if(ingredientRepository.findByNameIgnoreCase(ingredient.getName()).isEmpty()){
+            ingredientRepository.save(ingredient);
         }
-        ingredientRepository.save(ingredient);
     }
     public void saveAll(List<Ingredient> ingredients) {
         if (ingredients == null) {

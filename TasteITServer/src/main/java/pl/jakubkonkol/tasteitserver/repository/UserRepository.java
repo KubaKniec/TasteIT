@@ -63,4 +63,8 @@ public interface UserRepository extends MongoRepository<User, String>{
     @Query("{ 'userId' : ?0 }")
     @Update("{ '$set' : { 'displayName' : ?1, 'bio' : ?2, 'profilePicture' : ?3, 'birthDate' : ?4 } }")
     void updateUserProfileFields(String userId, String displayName, String bio, String profilePicture, Date birthDate);
+
+    @Query(value = "{ '_id' : ?0 }", fields = "{ 'preferredClusterIds' : 1 }")
+    @Update("{ '$set' : { 'preferredClusterIds' : ?1 }}")
+    void updateUserClusters(String userId, List<String> clusterIds);
 }

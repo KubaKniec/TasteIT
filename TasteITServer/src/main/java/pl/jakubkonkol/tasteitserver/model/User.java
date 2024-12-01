@@ -36,6 +36,7 @@ public class User implements UserDetails {
     private List<FoodList> foodLists = new ArrayList<>();
     @DBRef
     private List<Post> posts = new ArrayList<>();   //ustawiac przy budowaniu bazy
+    private List<String> preferredClusterIds = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.Map;
 
 @Data
 @Document(collection = "userActions")
@@ -13,7 +14,6 @@ public class UserAction {
     private String id;
     private String userId;
     private String actionType;
-    private String postId; // ID posta, którego dotyczy akcja
-    //    private String commentContent; // Opcjonalne: treść komentarza
+    private Map<String, Object> metadata; // Dodatkowe informacje o akcji
     private Date timestamp;
 }

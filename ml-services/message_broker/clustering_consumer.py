@@ -15,7 +15,7 @@ class ClusteringConsumer:
         self.consumer = KafkaConsumer(
             REQUEST_TOPIC,
             bootstrap_servers=KAFKA_BROKER_URL,
-            group_id='tasteit-group',
+            group_id='clustering-group',
             auto_offset_reset='earliest',
             enable_auto_commit=True,
             max_poll_interval_ms=600000,

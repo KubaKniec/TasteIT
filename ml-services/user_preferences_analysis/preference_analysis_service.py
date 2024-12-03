@@ -1,4 +1,3 @@
-# preference_analysis/analysis_service.py
 from typing import List, Dict, Any
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -17,11 +16,16 @@ class PreferenceAnalysisService:
             'COMMENT_POST': 1.5,
             'ADD_TO_FOODLIST': 2.0
         }
+        self.cluster_boost = 0.2  # Wartość o jaką zwiększamy podobieństwo dla klastrów z postów
 
     def analyze_user_preferences(self, user_data: Dict[str, Any], clusters_data: Dict[str, Any]) -> Dict[str, Any]:
         try:
             print("\n=== Starting Preference Analysis ===")
             print(f"Analyzing preferences for user: {user_data.get('userId')}")
+
+            # Zbierz ID klastrów z akcji użytkownika i ich wagi
+            cluster_weights = self._get_cluster_weights_from_actions(user_data.get('actions', []), clusters_data)
+            print(f"Collected cluster weights from actions: {cluster_weights}")
 
             # Przetwórz dane użytkownika
             user_tags = self._process_user_tags(user_data.get('tags', []))
@@ -39,7 +43,7 @@ class PreferenceAnalysisService:
 
             # Przygotuj dane do analizy
             preference_text = ' '.join(all_preferences)
-            print(f"Preference text: {preference_text[:200]}...")  # pokazujemy tylko część
+            print(f"Preference text: {preference_text[:200]}...")
 
             cluster_texts = {}
             for cluster_id, info in clusters_data.items():
@@ -47,7 +51,7 @@ class PreferenceAnalysisService:
                 cluster_texts[cluster_id] = cluster_text
                 print(f"\nCluster {cluster_id}:")
                 print(f"- Name: {info.get('name')}")
-                print(f"- Text: {cluster_text[:100]}...")  # pokazujemy tylko część
+                print(f"- Text: {cluster_text[:100]}...")
 
             if not cluster_texts:
                 print("No cluster texts found, returning empty result")
@@ -56,13 +60,26 @@ class PreferenceAnalysisService:
             # Oblicz podobieństwa
             matrix = self.vectorizer.fit_transform([preference_text] + list(cluster_texts.values()))
             similarity_scores = cosine_similarity(matrix[0:1], matrix[1:])[0]
-            print("\nSimilarity scores:")
+            print("\nInitial similarity scores:")
             for idx, score in enumerate(similarity_scores):
                 print(f"Cluster {list(clusters_data.keys())[idx]}: {score}")
 
-            # Znajdź najlepsze dopasowania
+            # Modyfikuj wyniki podobieństwa na podstawie klastrów z akcji
+            adjusted_scores = similarity_scores.copy()
+            for idx, cluster_id in enumerate(clusters_data.keys()):
+                if cluster_id in cluster_weights:
+                    action_count = cluster_weights[cluster_id]
+                    boost = self.cluster_boost * action_count
+                    adjusted_scores[idx] += boost
+                    print(f"Boosting cluster {cluster_id} score by {boost} (actions: {action_count})")
+
+            print("\nAdjusted similarity scores:")
+            for idx, score in enumerate(adjusted_scores):
+                print(f"Cluster {list(clusters_data.keys())[idx]}: {score}")
+
+            # Znajdź najlepsze dopasowania używając zmodyfikowanych wyników
             matched_clusters = []
-            for idx, score in enumerate(similarity_scores):
+            for idx, score in enumerate(adjusted_scores):
                 if score >= 0.01:  # próg podobieństwa
                     cluster_id = list(clusters_data.keys())[idx]
                     cluster_info = clusters_data[cluster_id]
@@ -96,8 +113,27 @@ class PreferenceAnalysisService:
             traceback.print_exc()
             return self._create_empty_result(user_data.get('userId'))
 
+    def _get_cluster_weights_from_actions(self, actions: List[Dict], clusters_data: Dict[str, Any]) -> Dict[str, float]:
+        """Zlicza wystąpienia klastrów w akcjach użytkownika i przypisuje im wagi"""
+        cluster_weights = {}
+        for action in actions:
+            weight = self.action_weights.get(action.get('actionType'), 1.0)
+            post = action.get('metadata', {}).get('post', {})
+
+            if post and post.get('clusters'):
+                for cluster_ref in post['clusters']:
+                    cluster_oid = cluster_ref.get('$id', {}).get('$oid')
+                    if cluster_oid:
+                        # Znajdź cluster_id na podstawie ObjectId
+                        for cluster_id, info in clusters_data.items():
+                            if str(info.get('_id')) == cluster_oid:
+                                cluster_weights[cluster_id] = cluster_weights.get(cluster_id, 0) + weight
+                                break
+
+        return cluster_weights
+
     def _process_user_tags(self, tags: List[Dict]) -> List[str]:
-        print("\nProcessing post tags:")
+        print("\nProcessing user tags:")
         print(f"Input tags: {tags}")
         processed_tags = [tag.get('tagName', '').lower() for tag in tags if
                           isinstance(tag, dict) and tag.get('tagName')]
@@ -118,15 +154,25 @@ class PreferenceAnalysisService:
                     words = [word.lower() for word in post['postMedia']['title'].split()]
                     print(f"Adding title words: {words} (weight: {weight})")
                     keywords.extend(words * int(weight))
+
                 if post.get('tags'):
                     tags = self._process_user_tags(post['tags'])
                     print(f"Adding post tags: {tags}")
                     keywords.extend(tags)
 
+                if post.get('recipe', {}).get('ingredientsWithMeasurements'):
+                    ingredients = [
+                        ing.get('name', '').lower()
+                        for ing in post['recipe']['ingredientsWithMeasurements']
+                        if ing.get('name')
+                    ]
+                    print(f"Adding ingredients: {ingredients}")
+                    keywords.extend(ingredients)
+
             elif action.get('actionType') == 'COMMENT_POST' and metadata.get('commentContent'):
                 words = [word.lower() for word in metadata['commentContent'].split()]
                 print(f"Adding comment words: {words} (weight: {weight})")
-                keywords.extend(words * int(weight))
+                keywords.extend(words)
 
         print(f"\nFinal keywords from actions: {keywords}")
         return keywords

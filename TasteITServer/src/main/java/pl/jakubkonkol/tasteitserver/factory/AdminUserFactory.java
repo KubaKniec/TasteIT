@@ -2,17 +2,12 @@ package pl.jakubkonkol.tasteitserver.factory;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import pl.jakubkonkol.tasteitserver.apitools.IngredientFetcher;
 import pl.jakubkonkol.tasteitserver.dto.UserCreationRequestDto;
 import pl.jakubkonkol.tasteitserver.dto.UserProfileDto;
-import pl.jakubkonkol.tasteitserver.model.Authentication;
-import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
-import pl.jakubkonkol.tasteitserver.service.AuthenticationService;
-import pl.jakubkonkol.tasteitserver.service.UserService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IAuthenticationService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,8 +18,8 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class AdminUserFactory {
     private final UserRepository userRepository;
-    private final AuthenticationService authenticationService;
-    private final UserService userService;
+    private final IAuthenticationService authenticationService;
+    private final IUserService userService;
     private static final Logger LOGGER = Logger.getLogger(AdminUserFactory.class.getName());
     private final List<String> roles = List.of("ADMIN", "USER");
     public void CreateAdmin() {

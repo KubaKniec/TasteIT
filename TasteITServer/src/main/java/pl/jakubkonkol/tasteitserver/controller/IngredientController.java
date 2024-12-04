@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.jakubkonkol.tasteitserver.dto.IngredientDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
-import pl.jakubkonkol.tasteitserver.service.IngredientService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IIngredientService;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequestMapping("/api/v1/ingredient")
 @RequiredArgsConstructor
 public class IngredientController {
-    private final IngredientService ingredientService;
+    private final IIngredientService ingredientService;
 
     @PostMapping("/")
     public ResponseEntity<String> save(@RequestBody Ingredient ingredient) {

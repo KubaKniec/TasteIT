@@ -27,6 +27,8 @@ import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IPostService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class PostService {
-    private final UserService userService;
+public class PostService implements IPostService {
+    private final IUserService userService;
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
@@ -155,7 +157,7 @@ public class PostService {
         return getPostDtoPageDtoFromPostPhotoView(postsPhotoViewPage, pageable);
     }
 
-    private PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken) {
+    public PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken) {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> convertToDto(post, sessionToken))
                 .toList();
@@ -178,7 +180,7 @@ public class PostService {
         return getPageDto(pageImpl);
     }
 
-    private PageDto<PostDto> getPageDto(PageImpl<PostDto> pageImpl) {
+    public PageDto<PostDto> getPageDto(PageImpl<PostDto> pageImpl) {
         PageDto<PostDto> pageDto = new PageDto<>();
         pageDto.setContent(pageImpl.getContent());
         pageDto.setPageNumber(pageImpl.getNumber());

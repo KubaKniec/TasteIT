@@ -11,14 +11,16 @@ import pl.jakubkonkol.tasteitserver.model.Comment;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.ICommentService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CommentService {
+public class CommentService implements ICommentService {
     private final CommentRepository commentRepository;
-    private final UserService userService;
+    private final IUserService userService;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
 

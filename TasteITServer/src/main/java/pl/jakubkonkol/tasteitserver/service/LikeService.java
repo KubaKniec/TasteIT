@@ -9,15 +9,17 @@ import pl.jakubkonkol.tasteitserver.model.Like;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.ILikeService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LikeService {
+public class LikeService implements ILikeService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
-    private final UserService userService;
+    private final IUserService userService;
 
     @RegisterAction(actionType = "LIKE_POST")
     public void likePost(String postId, String token) {

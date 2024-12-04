@@ -18,7 +18,7 @@ import java.util.Optional;
 public class IngredientController {
     private final IngredientService ingredientService;
 
-    @PostMapping("/save")
+    @PostMapping("/")
     public ResponseEntity<String> save(@RequestBody Ingredient ingredient) {
         ingredientService.save(ingredient);
         return ResponseEntity.ok("Ingredient saved successfully, Id " + ingredient.getIngredientId());
@@ -30,23 +30,17 @@ public class IngredientController {
         return ResponseEntity.ok("Ingredients saved successfully");
     }
 
-    @DeleteMapping("/deleteById")
+    @DeleteMapping("/{ingredientId}")
     public ResponseEntity<String> deleteById(@PathVariable String ingredientId) {
         ingredientService.deleteById(ingredientId);
         return ResponseEntity.ok("Ingredient deleted succesfully, Id: " + ingredientId);
     }
 
-    @DeleteMapping("/deleteAll")
+    @DeleteMapping("/")
     public ResponseEntity<String> deleteAll() {
         ingredientService.deleteAll();
         return ResponseEntity.ok("Ingredients deleted succesfully");
     }
-
-// na razie nie potrzebna
-//    @GetMapping("/search")
-//    public ResponseEntity<List<IngredientDto>> searchIngredientByName(@RequestParam String name) {
-//        return ResponseEntity.ok(ingredientService.searchByName(name));
-//    }
 
     @GetMapping("/{ingredientId}")
     public ResponseEntity<IngredientDto> getIngredient(@PathVariable String ingredientId) {
@@ -57,7 +51,7 @@ public class IngredientController {
         return ResponseEntity.ok(ingredientDto);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/")
     public ResponseEntity<List<IngredientDto>> getAll() {
         return ResponseEntity.ok(ingredientService.getAll());
 

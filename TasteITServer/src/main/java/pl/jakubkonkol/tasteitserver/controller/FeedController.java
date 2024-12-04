@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
-import pl.jakubkonkol.tasteitserver.service.ClusteringService;
-import pl.jakubkonkol.tasteitserver.service.RankerService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IClusteringService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IRankerService;
 
 import java.util.List;
 import java.util.Map;
@@ -20,10 +20,10 @@ import java.util.Map;
 @RequestMapping("/api/v1/feed")
 @RequiredArgsConstructor
 public class FeedController {
-    private final RankerService rankerService;
+    private final IRankerService rankerService;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
-    private final ClusteringService clusteringService;
+    private final IClusteringService clusteringService;
 
     @GetMapping("/rankedfeed")
     public ResponseEntity<List<Post>> getRankedFeed(@RequestHeader("Authorization") String sessionToken) {

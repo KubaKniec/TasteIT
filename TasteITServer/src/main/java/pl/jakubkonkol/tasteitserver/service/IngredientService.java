@@ -16,6 +16,7 @@ import pl.jakubkonkol.tasteitserver.model.projection.IngredientSearchView;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IIngredientService;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class IngredientService {
+public class IngredientService implements IIngredientService {
     private final IngredientRepository ingredientRepository;
     private final ModelMapper modelMapper;
 

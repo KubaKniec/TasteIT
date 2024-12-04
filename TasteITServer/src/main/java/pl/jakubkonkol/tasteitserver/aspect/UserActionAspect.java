@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.aspectj.lang.annotation.Aspect;
 import pl.jakubkonkol.tasteitserver.annotation.RegisterAction;
 import pl.jakubkonkol.tasteitserver.model.UserAction;
-import pl.jakubkonkol.tasteitserver.service.UserService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.Date;
 
@@ -17,7 +17,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class UserActionAspect {
     private final MongoTemplate mongoTemplate;
-    private final UserService userService;
+    private final IUserService userService;
 
     @AfterReturning("@annotation(registerAction)")
     public void logAction(JoinPoint joinPoint, RegisterAction registerAction) {

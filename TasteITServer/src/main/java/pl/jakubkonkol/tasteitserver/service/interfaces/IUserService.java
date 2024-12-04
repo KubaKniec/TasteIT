@@ -1,0 +1,31 @@
+package pl.jakubkonkol.tasteitserver.service.interfaces;
+
+import pl.jakubkonkol.tasteitserver.dto.PageDto;
+import pl.jakubkonkol.tasteitserver.dto.UserProfileDto;
+import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
+import pl.jakubkonkol.tasteitserver.dto.UserTagsDto;
+import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
+
+import java.util.List;
+
+public interface IUserService {
+    UserReturnDto getUserDtoById(String userId, String sessionToken);
+    UserReturnDto getUserProfileView(String userId, String sessionToken);
+    UserReturnDto getCurrentUserDtoBySessionToken(String sessionToken);
+    void updateUserProfile(UserProfileDto userProfileDto);
+    void changeUserFirstLogin(String userId);
+    void updateUserTags(String userId, UserTagsDto userTagsDto);
+    void followUser(String targetUserId, String sessionToken);
+    void unfollowUser(String targetUserId, String sessionToken);
+    PageDto<UserReturnDto> getFollowers(String userId, String sessionToken, Integer page, Integer size);
+    PageDto<UserReturnDto> getFollowing(String userId, String sessionToken, Integer page, Integer size);
+    PageDto<UserReturnDto> searchUsersByDisplayName(String query, String sessionToken, Integer page, Integer size);
+    User getUserById(String userId);
+    User getCurrentUserBySessionToken(String sessionToken);
+    void checkIfUserExists(String userId);
+    User saveUser(User user);
+    List<UserShort> getUserShortByIdIn(List<String> userIds);
+    UserShort findUserShortByUserId(String userId);
+    String getCurrentUserId();
+}

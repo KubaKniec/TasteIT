@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.dto.IngredientDto;
 import pl.jakubkonkol.tasteitserver.model.*;
 import pl.jakubkonkol.tasteitserver.model.enums.TagType;
-import pl.jakubkonkol.tasteitserver.service.IngredientService;
-import pl.jakubkonkol.tasteitserver.service.TagService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IIngredientService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.ITagService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,9 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public abstract class PostFactory {
     @Autowired
-    protected IngredientService ingredientService;
+    protected IIngredientService ingredientService;
     @Autowired
-    protected TagService tagService;
+    protected ITagService tagService;
 
     protected PostMedia createPostMedia(JSONObject postObj, String titleKey, String thumbKey, String defaultDescription) {
         PostMedia postMedia = new PostMedia();

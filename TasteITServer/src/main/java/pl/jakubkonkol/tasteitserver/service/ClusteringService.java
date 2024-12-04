@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IClusteringService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ClusteringService {
+public class ClusteringService implements IClusteringService {
     private final KafkaTemplate<String, Map<String, Object>> kafkaTemplate;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;

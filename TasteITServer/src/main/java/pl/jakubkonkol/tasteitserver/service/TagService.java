@@ -10,6 +10,7 @@ import pl.jakubkonkol.tasteitserver.model.Tag;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.enums.TagType;
 import pl.jakubkonkol.tasteitserver.repository.TagRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.ITagService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class TagService {
+public class TagService implements ITagService {
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
 

@@ -85,9 +85,6 @@ public class IngredientService {
 
     public List<IngredientDto> getAll() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
-        if (ingredients.isEmpty()) {
-            throw new IllegalStateException("No ingredients found.");
-        }
         return ingredients.stream()
                 .map(this::convertToDto)
                 .toList();

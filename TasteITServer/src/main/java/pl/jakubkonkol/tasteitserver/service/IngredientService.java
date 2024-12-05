@@ -16,6 +16,7 @@ import pl.jakubkonkol.tasteitserver.model.projection.IngredientSearchView;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IIngredientService;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class IngredientService {
+public class IngredientService implements IIngredientService {
     private final IngredientRepository ingredientRepository;
     private final ModelMapper modelMapper;
 
@@ -66,15 +67,27 @@ public class IngredientService {
         });
     }
     public void deleteAll() {
+        if (ingredientRepository.count() == 0) {
+            throw new IllegalStateException("No ingredients to delete.");
+        }
         ingredientRepository.deleteAll();
     }
 
     public void deleteById(String ingredientId) {
+        if (ingredientId == null || ingredientId.isEmpty()) {
+            throw new IllegalArgumentException("Ingredient ID cannot be null or empty.");
+        }
+        if (!ingredientRepository.existsById(ingredientId)) {
+            throw new IllegalStateException("Ingredient with ID " + ingredientId + " does not exist.");
+        }
         ingredientRepository.deleteById(ingredientId);
     }
+
     public List<IngredientDto> getAll() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
-        return ingredients.stream().map(this::convertToDto).toList();
+        return ingredients.stream()
+                .map(this::convertToDto)
+                .toList();
     }
 
     //na razie nie potrzebna

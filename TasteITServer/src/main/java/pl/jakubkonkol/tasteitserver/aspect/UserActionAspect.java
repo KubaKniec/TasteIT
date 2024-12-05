@@ -11,7 +11,7 @@ import pl.jakubkonkol.tasteitserver.annotation.RegisterAction;
 import pl.jakubkonkol.tasteitserver.dto.CommentDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.UserAction;
-import pl.jakubkonkol.tasteitserver.service.UserService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class UserActionAspect {
     private final MongoTemplate mongoTemplate;
-    private final UserService userService;
+    private final IUserService userService;
 
     @AfterReturning("@annotation(registerAction)")
     public void logAction(JoinPoint joinPoint, RegisterAction registerAction) {

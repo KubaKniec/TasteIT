@@ -15,6 +15,7 @@ import pl.jakubkonkol.tasteitserver.model.Cluster;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.ClusterRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IClusteringService;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ClusteringService {
+public class ClusteringService implements IClusteringService {
     private final KafkaTemplate<String, Map<String, Object>> kafkaTemplate;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;

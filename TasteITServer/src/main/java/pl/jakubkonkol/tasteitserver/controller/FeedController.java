@@ -12,6 +12,8 @@ import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.service.ClusteringService;
 import pl.jakubkonkol.tasteitserver.service.RankerService;
 import pl.jakubkonkol.tasteitserver.service.UserPreferencesAnalysisService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IClusteringService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IRankerService;
 
 import java.util.List;
 import java.util.Map;
@@ -20,10 +22,18 @@ import java.util.Map;
 @RequestMapping("/api/v1/feed")
 @RequiredArgsConstructor
 public class FeedController {
+    private final UserPreferencesAnalysisService userPreferencesAnalysisService;
+    private final IRankerService rankerService;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
-    private final ClusteringService clusteringService;
-    private final UserPreferencesAnalysisService userPreferencesAnalysisService;
+    private final IClusteringService clusteringService;
+
+    @GetMapping("/rankedfeed")
+    public ResponseEntity<List<Post>> getRankedFeed(@RequestHeader("Authorization") String sessionToken) {
+        List<Post> all = postRepository.findTop100ByOrderByCreatedAtDesc();
+        List<Post> posts = rankerService.rankPosts(all, sessionToken);
+        return ResponseEntity.ok(posts);
+    }
 
     @GetMapping("/allposts")
     public ResponseEntity<List<PostDto>> getAllPosts() {

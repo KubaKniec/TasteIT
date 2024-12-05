@@ -1,6 +1,6 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {PostBuilderModule} from "../shared/PostBuilderModule";
-import {debounceTime, distinctUntilChanged, Subject, switchMap} from "rxjs";
+import {debounceTime, distinctUntilChanged, Subject, switchMap, takeUntil} from "rxjs";
 import {Ingredient} from "../../../model/post/Ingredient";
 import {Measurement} from "../../../model/post/Measurement";
 import {SearchService} from "../../../service/search.service";
@@ -12,12 +12,12 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
   templateUrl: './ingredients-editor.component.html',
   styleUrls: ['./ingredients-editor.component.css']
 })
-export class IngredientsEditorComponent implements PostBuilderModule, OnInit{
+export class IngredientsEditorComponent implements PostBuilderModule, OnInit, OnDestroy{
   @Output() close: EventEmitter<void> = new EventEmitter<void>();
   @Output() nextStep: EventEmitter<any> = new EventEmitter<any>();
   @Output() prevStep: EventEmitter<void> = new EventEmitter<void>();
   canProceed: boolean = false;
-
+  private destroy$ = new Subject<void>();
   searchQuery = new Subject<string>();
   suggestions: Ingredient[] = [];
   selectedIngredients: (Ingredient & { measurement: Measurement })[] = [];
@@ -28,6 +28,9 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit{
   newIngredientForm: FormGroup;
   measurementForm: FormGroup;
   currentIngredient: Ingredient | null = null;
+  errorMessage: string = '';
+  showStrengthField = false;
+
   constructor(
     private searchService: SearchService,
     private ingredientService: IngredientService,
@@ -36,7 +39,6 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit{
     this.newIngredientForm = this.fb.group({
       name: ['', Validators.required],
       description: [''],
-      type: [''],
       isAlcohol: [false],
       strength: [''],
     });
@@ -46,24 +48,29 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit{
       unit: ['', Validators.required]
     });
   }
-
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
   ngOnInit(): void {
     this.searchQuery.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(query => this.searchService.searchIngredients(query, 0, 5))
+      switchMap(query => {
+        if (query.length < 2) {
+          this.suggestions = [];
+          return [];
+        }
+        return this.searchService.searchIngredients(query, 0, 5);
+      })
     ).subscribe(results => {
       this.suggestions = results;
     });
   }
-  
+
   onSearch(event: Event) {
     const term = (event.target as HTMLInputElement).value;
-    if (term.length >= 2) {
-      this.searchQuery.next(term);
-    } else {
-      this.suggestions = [];
-    }
+    this.searchQuery.next(term);
   }
 
   selectIngredient(ingredient: Ingredient) {
@@ -82,7 +89,6 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit{
       this.showMeasurementModal = false;
       this.currentIngredient = null;
       this.measurementForm.reset();
-      this.onNextStep();
     }
   }
 
@@ -96,4 +102,39 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit{
     this.prevStep.emit();
   }
 
+  /**
+   * Na ten moment backend nie zwraca żadnych danych po zapisaniu składnika.
+   */
+  saveNewIngredient() {
+    if (this.newIngredientForm.valid) {
+      this.errorMessage = '';
+      this.ingredientService.saveIngredient(this.newIngredientForm.value)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (savedIngredient) => {
+            if (!savedIngredient || !savedIngredient.ingredientId) {
+              this.errorMessage = 'Ingredient was saved, but no data was returned. Please refresh to check.';
+              console.warn('API did not return the saved ingredient:', savedIngredient);
+              return;
+            }
+            this.currentIngredient = savedIngredient;
+            this.showNewIngredientForm = false;
+            this.showMeasurementModal = true;
+            this.newIngredientForm.reset();
+          },
+          error: (error) => {
+            this.errorMessage = 'Failed to save ingredient. Please try again.';
+            console.error('Error saving ingredient:', error);
+          }
+        });
+    }
+  }
+
+
+  toggleStrengthField() {
+    this.showStrengthField = this.newIngredientForm.get('isAlcohol')?.value;
+    if (!this.showStrengthField) {
+      this.newIngredientForm.get('strength')?.reset();
+    }
+  }
 }

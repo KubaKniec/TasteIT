@@ -1,6 +1,7 @@
 import asyncio
 import signal
 import sys
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 class KafkaConsumerService:
     def __init__(self):

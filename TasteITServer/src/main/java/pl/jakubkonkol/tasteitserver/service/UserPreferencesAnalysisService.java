@@ -1,6 +1,7 @@
 package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -34,7 +35,6 @@ public class UserPreferencesAnalysisService {
     private final MongoTemplate mongoTemplate;
     private final ClusterRepository clusterRepository;
     private final PostRepository postRepository;
-    private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final static String PREFERENCE_GROUP =  "preference-group";
     private final static String PREFERENCE_TOPIC = "preference-analysis-response";
@@ -43,16 +43,9 @@ public class UserPreferencesAnalysisService {
     public void requestPreferenceAnalysis(String userId) {
         String correlationId = UUID.randomUUID().toString();
 
-        // Pobierz akcje użytkownika z ostatnich X dni
-        // Starsze akcje możnaby ususwać, jeżeli są jakieś nowe
-        Date startDate = Date.from(LocalDateTime.now().minusDays(30).toInstant(ZoneOffset.UTC));
-        Query query = new Query();
-        query.addCriteria(Criteria.where("userId").is(userId)
-                .and("timestamp").gte(startDate));
+        List<UserAction> userActions = getUserActionFromLastMonth(userId);
 
-        List<UserAction> userActions = mongoTemplate.find(query, UserAction.class);
-
-        // Przygotuj payload z akcjami
+        // Prepare payload with user actions and all clusters
         Map<String, Object> userData = prepareUserDataWithActions(userId, userActions);
         Map<String, Object> clustersData = prepareClusterData();
 
@@ -62,86 +55,6 @@ public class UserPreferencesAnalysisService {
         payload.put("correlationId", correlationId);
 
         kafkaTemplate.send("preference-analysis-request", correlationId, payload);
-    }
-
-    /**
-     *
-     * Zwraca strukture:
-     * {
-     *     "actionType": "LIKE_POST",
-     *     "timestamp": "2024-12-01T10:31:13.112Z",
-     *     "metadata": {
-     *         "postId": "674b97b2659ea4687a17e710",
-     *         "post": {
-     *             // pełne dane posta
-     *         }
-     *     }
-     * }
-     */
-    private Map<String, Object> prepareUserDataWithActions(String userId, List<UserAction> actions) {
-        User user = userService.getUserById(userId);
-
-        Set<String> postIds = actions.stream()
-                .map(action -> action.getMetadata().get("postId").toString())
-                .collect(Collectors.toSet());
-
-        Map<String, Post> postsMap = postRepository.findAllById(postIds).stream()
-                .collect(Collectors.toMap(Post::getPostId, post -> post));
-
-        List<Map<String, Object>> enrichedActions = actions.stream()
-                .map(action -> {
-                    Map<String, Object> enrichedAction = new HashMap<>();
-                    enrichedAction.put("actionType", action.getActionType());
-                    enrichedAction.put("timestamp", action.getTimestamp());
-
-                    Map<String, Object> enrichedMetadata = new HashMap<>(action.getMetadata());
-                    String postId = action.getMetadata().get("postId").toString();
-
-                    if (postsMap.containsKey(postId)) {
-                        Post post = postsMap.get(postId);
-                        Map<String, Object> postData = new HashMap<>();
-
-                        // Dodaj podstawowe informacje o poście
-                        postData.put("postMedia", post.getPostMedia());
-                        postData.put("tags", post.getTags());
-
-                        // Dodaj informacje o składnikach
-                        if (post.getRecipe() != null) {
-                            postData.put("recipe", Map.of(
-                                    "ingredientsWithMeasurements", post.getRecipe().getIngredientsWithMeasurements()
-                            ));
-                        }
-
-                        // Dodaj referencje do klastrów (używając ObjectId)
-                        postData.put("clusters", post.getClusters());
-
-                        enrichedMetadata.put("post", postData);
-                    }
-                    enrichedAction.put("metadata", enrichedMetadata);
-                    return enrichedAction;
-                })
-                .toList();
-
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("userId", userId);
-        userData.put("tags", user.getTags());
-        userData.put("actions", enrichedActions);
-        return userData;
-    }
-
-    private Map<String, Object> prepareClusterData() {
-        Map<String, Object> clustersData = new HashMap<>();
-        List<Cluster> clusters = clusterRepository.findAll();
-
-        for (Cluster cluster : clusters) {
-            Map<String, Object> clusterInfo = new HashMap<>();
-            clusterInfo.put("name", cluster.getName());
-            clusterInfo.put("main_topics", cluster.getMainTopics());
-            clusterInfo.put("keyword_weights", cluster.getKeywordWeights());
-            clustersData.put(cluster.getClusterId(), clusterInfo);
-        }
-
-        return clustersData;
     }
 
     @Transactional
@@ -166,23 +79,16 @@ public class UserPreferencesAnalysisService {
                         (List<Map<String, Object>>) userPreferences.get("matched_clusters");
 
                 if (userId != null && matchedClusters != null) {
-                    User user = userService.getUserById(userId);
-                    Map<String, Double> clusterPreferences = new HashMap<>();
+                    if(!matchedClusters.isEmpty()) {
+                        User user = userService.getUserById(userId);
+                        Map<String, Double> clusterPreferences = processClusters(matchedClusters);
 
-                    // Przetwórz dopasowane klastry i ich wagi
-                    for (Map<String, Object> cluster : matchedClusters) {
-                        String clusterId = (String) cluster.get("cluster_id");
-                        Double score = ((Number) cluster.get("similarity_score")).doubleValue();
-
-                        // Znajdź ObjectId klastra
-                        clusterRepository.findByClusterId(clusterId).ifPresent(foundCluster -> clusterPreferences.put(foundCluster.getId(), score));
+                        user.setClusterPreferences(clusterPreferences);
+                        userRepository.save(user);
+                        LOGGER.log(Level.INFO, "Updated user cluster preferences with weights");
+                    } else {
+                        LOGGER.log(Level.INFO, "There were no clusters matched to User");
                     }
-
-                    // Zaktualizuj preferencje użytkownika
-                    user.setClusterPreferences(clusterPreferences);
-                    userRepository.save(user);
-
-                    LOGGER.log(Level.INFO, "Updated user cluster preferences with weights");
                 }
             } else {
                 LOGGER.log(Level.WARNING, "Error in preference analysis: " + response.get("message"));
@@ -190,5 +96,113 @@ public class UserPreferencesAnalysisService {
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error processing preference analysis response: " + e.getMessage());
         }
+    }
+
+    private Map<String, Double> processClusters(List<Map<String, Object>> matchedClusters) {
+        Map<String, Double> clusterPreferences = new HashMap<>();
+
+        for (Map<String, Object> cluster : matchedClusters) {
+            String clusterId = (String) cluster.get("cluster_id");
+            Double score = ((Number) cluster.get("similarity_score")).doubleValue();
+
+            clusterRepository.findByClusterId(clusterId).ifPresent(foundCluster -> clusterPreferences.put(foundCluster.getId(), score));
+        }
+        return clusterPreferences;
+    }
+
+    /**
+     * @return
+     * {
+     *     "actionType": "LIKE_POST",
+     *     "timestamp": "2024-12-01T10:31:13.112Z",
+     *     "metadata": {
+     *         "postId": "674b97b2659ea4687a17e710",
+     *         "post": {
+     *             // post's full data
+     *         }
+     *     }
+     * }
+     */
+    private Map<String, Object> prepareUserDataWithActions(String userId, List<UserAction> actions) {
+        User user = userService.getUserById(userId);
+
+        Set<String> postIds = actions.stream()
+                .map(action -> action.getMetadata().get("postId").toString())
+                .collect(Collectors.toSet());
+
+        Map<String, Post> postsMap = postRepository.findAllById(postIds).stream()
+                .collect(Collectors.toMap(Post::getPostId, post -> post));
+
+        List<Map<String, Object>> enrichedActions = prepareUserActions(actions, postsMap);
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("userId", userId);
+        userData.put("tags", user.getTags());
+        userData.put("actions", enrichedActions);
+        return userData;
+    }
+
+    private List<Map<String, Object>> prepareUserActions(List<UserAction> actions, Map<String, Post> postsMap) {
+        return actions.stream()
+                .map(action -> {
+                    Map<String, Object> enrichedAction = new HashMap<>();
+                    enrichedAction.put("actionType", action.getActionType());
+                    enrichedAction.put("timestamp", action.getTimestamp());
+
+                    Map<String, Object> enrichedMetadata = new HashMap<>(action.getMetadata());
+                    String postId = action.getMetadata().get("postId").toString();
+
+                    if (postsMap.containsKey(postId)) {
+                        Post post = postsMap.get(postId);
+                        Map<String, Object> postData = preparePostData(post);
+                        enrichedMetadata.put("post", postData);
+                    }
+                    enrichedAction.put("metadata", enrichedMetadata);
+                    return enrichedAction;
+                })
+                .toList();
+    }
+
+    private Map<String, Object> preparePostData(Post post) {
+        Map<String, Object> postData = new HashMap<>();
+
+        // Add post info
+        postData.put("postMedia", post.getPostMedia());
+        postData.put("tags", post.getTags());
+
+        // Add ingredients info
+        if (post.getRecipe() != null) {
+            postData.put("recipe", Map.of(
+                    "ingredientsWithMeasurements", post.getRecipe().getIngredientsWithMeasurements()
+            ));
+        }
+
+        // Add clusters references (ObjectId)
+        postData.put("clusters", post.getClusters());
+        return postData;
+    }
+
+    private Map<String, Object> prepareClusterData() {
+        Map<String, Object> clustersData = new HashMap<>();
+        List<Cluster> clusters = clusterRepository.findAll();
+
+        for (Cluster cluster : clusters) {
+            Map<String, Object> clusterInfo = new HashMap<>();
+            clusterInfo.put("name", cluster.getName());
+            clusterInfo.put("main_topics", cluster.getMainTopics());
+            clusterInfo.put("keyword_weights", cluster.getKeywordWeights());
+            clustersData.put(cluster.getClusterId(), clusterInfo);
+        }
+
+        return clustersData;
+    }
+
+    private List<UserAction> getUserActionFromLastMonth(String userId) {
+        Date startDate = Date.from(LocalDateTime.now().minusDays(30).toInstant(ZoneOffset.UTC));
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userId").is(userId)
+                .and("timestamp").gte(startDate));
+
+        return mongoTemplate.find(query, UserAction.class);
     }
 }

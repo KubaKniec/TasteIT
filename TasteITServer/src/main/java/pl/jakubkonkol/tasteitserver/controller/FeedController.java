@@ -20,18 +20,10 @@ import java.util.Map;
 @RequestMapping("/api/v1/feed")
 @RequiredArgsConstructor
 public class FeedController {
-    private final RankerService rankerService;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
     private final ClusteringService clusteringService;
     private final UserPreferencesAnalysisService userPreferencesAnalysisService;
-
-//    @GetMapping("/rankedfeed")
-//    public ResponseEntity<List<Post>> getRankedFeed(@RequestHeader("Authorization") String sessionToken) {
-//        List<Post> all = postRepository.findTop100ByOrderByCreatedAtDesc();
-//        List<Post> posts = rankerService.rankPosts(all, sessionToken);
-//        return ResponseEntity.ok(posts);
-//    }
 
     @GetMapping("/allposts")
     public ResponseEntity<List<PostDto>> getAllPosts() {

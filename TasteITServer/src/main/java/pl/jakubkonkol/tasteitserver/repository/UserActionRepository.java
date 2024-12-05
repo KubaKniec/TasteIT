@@ -4,5 +4,4 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import pl.jakubkonkol.tasteitserver.model.UserAction;
 
 public interface UserActionRepository extends MongoRepository<UserAction, String> {
-//    long countByActionTypeAndPostId(String actionType, String postId);
 }

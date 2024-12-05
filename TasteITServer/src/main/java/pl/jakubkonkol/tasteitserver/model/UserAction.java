@@ -14,6 +14,6 @@ public class UserAction {
     private String id;
     private String userId;
     private String actionType;
-    private Map<String, Object> metadata; // Dodatkowe informacje o akcji
+    private Map<String, Object> metadata;
     private Date timestamp;
 }

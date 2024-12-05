@@ -2,6 +2,7 @@ package pl.jakubkonkol.tasteitserver.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -75,15 +76,7 @@ public class ClusteringService {
                     .map(entry -> {
                         String clusterId = entry.getKey();
                         Map<String, Object> clusterInfo = entry.getValue();
-                        Cluster newCluster = convertResponseToCluster(clusterInfo);
-                        newCluster.setClusterId(clusterId);
-
-                        if (existingClusters.containsKey(clusterId)) {
-                            Cluster existingCluster = existingClusters.get(clusterId);
-                            newCluster.setId(existingCluster.getId());
-                        }
-
-                        return newCluster;
+                        return createOrUpdateCluster(clusterInfo, clusterId, existingClusters);
                     })
                     .toList();
 
@@ -93,7 +86,19 @@ public class ClusteringService {
         }
     }
 
-    //Jeśli klastry i posty nie zmieniają się często, można rozważyć ich buforowanie, aby zmniejszyć liczbę zapytań
+    private Cluster createOrUpdateCluster(Map<String, Object> clusterInfo, String clusterId, Map<String, Cluster> existingClusters) {
+        Cluster newCluster = convertResponseToCluster(clusterInfo);
+        newCluster.setClusterId(clusterId);
+
+        if (existingClusters.containsKey(clusterId)) {
+            Cluster existingCluster = existingClusters.get(clusterId);
+            newCluster.setId(existingCluster.getId());
+        }
+
+        return newCluster;
+    }
+
+    // SIDE NOTE: If clusters and posts do not change often, we may consider caching them to reduce the number of queries
     private void assignClusterToPosts(List<Map<String, Object>> postsAssignments) {
         try {
             Set<String> postIds = postsAssignments.stream()
@@ -110,24 +115,27 @@ public class ClusteringService {
             Map<String, Cluster> availableClusters = clusterRepository.findByClusterIdIn(newClusterIds).stream()
                     .collect(Collectors.toMap(Cluster::getClusterId, cluster -> cluster));
 
-            // Przypisz nowe klastry
-            postsAssignments.forEach(assignment -> {
-                String postId = assignment.get("post_id").toString();
-                String clusterId = assignment.get("cluster_id").toString();
-
-                Post post = posts.get(postId);
-                if (post != null) {
-                    Cluster cluster = availableClusters.get(clusterId);
-                    if (cluster != null && !post.getClusters().contains(cluster)) {
-                        post.getClusters().add(cluster);
-                    }
-                }
-            });
+            assignNewClustersToPosts(postsAssignments, posts, availableClusters);
 
             postRepository.saveAll(posts.values());
         } catch (Exception e) {
             throw new RuntimeException("Error assigning clusters to posts", e);
         }
+    }
+
+    private void assignNewClustersToPosts(List<Map<String, Object>> postsAssignments, Map<String, Post> posts, Map<String, Cluster> availableClusters) {
+        postsAssignments.forEach(assignment -> {
+            String postId = assignment.get("post_id").toString();
+            String clusterId = assignment.get("cluster_id").toString();
+
+            Post post = posts.get(postId);
+            if (post != null) {
+                Cluster cluster = availableClusters.get(clusterId);
+                if (cluster != null && !post.getClusters().contains(cluster)) {
+                    post.getClusters().add(cluster);
+                }
+            }
+        });
     }
 
     private Cluster convertResponseToCluster(Map<String, Object> clusterInfo) {

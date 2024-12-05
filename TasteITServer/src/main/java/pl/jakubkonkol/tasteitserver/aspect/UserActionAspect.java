@@ -3,6 +3,7 @@ package pl.jakubkonkol.tasteitserver.aspect;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.aspectj.lang.annotation.Aspect;
@@ -28,23 +29,25 @@ public class UserActionAspect {
     public void logAction(JoinPoint joinPoint, RegisterAction registerAction) {
         try {
             String userId = userService.getCurrentUserId();
-            UserAction action = new UserAction();
-            action.setActionType(registerAction.actionType());
-            action.setUserId(userId);
-            action.setTimestamp(new Date());
+            UserAction action = prepareUserAction(joinPoint, registerAction, userId);
 
-            // Extrakcja metadanych na podstawie typu akcji
-            Map<String, Object> metadata = extractMetadata(joinPoint, registerAction.actionType());
-            action.setMetadata(metadata);
-
-            // Asynchroniczny zapis do bazy
+            // Asynchronous save to database
             CompletableFuture.runAsync(() -> {
                 mongoTemplate.save(action, "userActions");
             });
         } catch (Exception e) {
-            // Logowanie błędu, ale nie przerywanie głównego procesu
             System.err.println("Error logging user action: " + e.getMessage());
         }
+    }
+
+    private UserAction prepareUserAction(JoinPoint joinPoint, RegisterAction registerAction, String userId) {
+        UserAction action = new UserAction();
+        action.setActionType(registerAction.actionType());
+        action.setUserId(userId);
+        action.setTimestamp(new Date());
+        Map<String, Object> metadata = extractMetadata(joinPoint, registerAction.actionType());
+        action.setMetadata(metadata);
+        return action;
     }
 
     private Map<String, Object> extractMetadata(JoinPoint joinPoint, String actionType) {

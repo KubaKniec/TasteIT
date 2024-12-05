@@ -9,10 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Document(collection = "users")
 @Data
@@ -36,6 +33,7 @@ public class User implements UserDetails {
     private List<FoodList> foodLists = new ArrayList<>();
     @DBRef
     private List<Post> posts = new ArrayList<>();   //ustawiac przy budowaniu bazy
+    private Map<String, Double> clusterPreferences = new HashMap<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

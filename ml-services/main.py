@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from message_broker.clustering_consumer import ClusteringConsumer
 from message_broker.kafka_consumer_service import KafkaConsumerService

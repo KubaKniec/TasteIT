@@ -9,12 +9,11 @@ import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.GenericResponse;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
-import pl.jakubkonkol.tasteitserver.service.ClusteringService;
-import pl.jakubkonkol.tasteitserver.service.RankerService;
 import pl.jakubkonkol.tasteitserver.service.UserPreferencesAnalysisService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IClusteringService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IRankerService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +29,7 @@ public class FeedController {
 
     @GetMapping("/rankedfeed")
     public ResponseEntity<List<Post>> getRankedFeed(@RequestHeader("Authorization") String sessionToken) {
-        List<Post> all = postRepository.findTop100ByOrderByCreatedAtDesc();
-        List<Post> posts = rankerService.rankPosts(all, sessionToken);
+        List<Post> posts = new ArrayList<>();
         return ResponseEntity.ok(posts);
     }
 

@@ -19,6 +19,8 @@ import pl.jakubkonkol.tasteitserver.model.UserAction;
 import pl.jakubkonkol.tasteitserver.repository.ClusterRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserPreferencesAnalysisService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -29,9 +31,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserPreferencesAnalysisService {
+public class UserPreferencesAnalysisService implements IUserPreferencesAnalysisService {
     private final KafkaTemplate<String, Map<String, Object>> kafkaTemplate;
-    private final UserService userService;
+    private final IUserService userService;
     private final MongoTemplate mongoTemplate;
     private final ClusterRepository clusterRepository;
     private final PostRepository postRepository;

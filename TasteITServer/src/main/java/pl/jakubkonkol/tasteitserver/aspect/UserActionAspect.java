@@ -3,7 +3,6 @@ package pl.jakubkonkol.tasteitserver.aspect;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.aspectj.lang.annotation.Aspect;

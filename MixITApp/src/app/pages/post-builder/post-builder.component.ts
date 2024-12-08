@@ -26,7 +26,7 @@ export class PostBuilderComponent implements OnInit{
     tags: [],
   }
   picUrl: string = '';
-  currentStep: StepNumber = 1;
+  currentStep: StepNumber = 3;
   constructor(
     private router: Router,
   ) {}

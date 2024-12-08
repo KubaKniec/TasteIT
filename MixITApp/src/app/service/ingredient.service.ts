@@ -13,7 +13,7 @@ export class IngredientService {
 
   saveIngredient(ingredient: Ingredient): Observable<Ingredient> {
     return from(
-      taste_api.post('ingredient/save', ingredient)
+      taste_api.post('ingredient/', ingredient)
         .then(res => res.data as Ingredient)
         .catch(error => {
           this.logger.logError(`Error saving ingredient`, error.response?.data || error);
@@ -24,7 +24,7 @@ export class IngredientService {
 
   getAll(): Observable<Ingredient[]> {
     return from(
-      taste_api.get('ingredient/getAll')
+      taste_api.get('ingredient/')
         .then(res => res.data as Ingredient[])
         .catch(error => {
           this.logger.logError(`Error fetching all ingredients`, error.response?.data || error);

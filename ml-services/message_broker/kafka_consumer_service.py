@@ -1,6 +1,7 @@
 import asyncio
 import signal
 import sys
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 class KafkaConsumerService:
     def __init__(self):
@@ -30,11 +31,15 @@ class KafkaConsumerService:
         self.running = False
 
     def setup_signal_handlers(self, loop):
-        for sig in (signal.SIGINT, signal.SIGTERM):
-            loop.add_signal_handler(
-                sig,
-                lambda: asyncio.create_task(self.shutdown(sig))
-            )
+        try:
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                loop.add_signal_handler(
+                    sig,
+                    lambda: asyncio.create_task(self.shutdown(sig))
+                )
+        except NotImplementedError:
+            if sys.platform.lower().startswith('win'):
+                pass # Windows does not support signals
 
     async def shutdown(self, sig=None):
         print(f"Received exit signal {sig}")

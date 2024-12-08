@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
@@ -17,6 +18,7 @@ import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PostRepository postRepository;

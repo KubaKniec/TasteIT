@@ -25,6 +25,9 @@
 
     <app-recipe-editor
       *ngSwitchCase="4"
+      (close)="onClose()"
+      (prevStep)="prevStep()"
+      (nextStep)="onUpdateRecipe($event)"
     />
     <app-post-summary
       *ngSwitchCase="5"

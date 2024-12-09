@@ -66,6 +66,7 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit, On
     ).subscribe(results => {
       this.suggestions = results;
     });
+    this.updateCanProceed();
   }
 
   onSearch(event: Event) {
@@ -89,6 +90,7 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit, On
       this.showMeasurementModal = false;
       this.currentIngredient = null;
       this.measurementForm.reset();
+      this.updateCanProceed();
     }
   }
 
@@ -96,7 +98,7 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit, On
     this.close.emit();
   }
   onNextStep(): void {
-    this.nextStep.emit();
+    this.nextStep.emit(this.selectedIngredients);
   }
   onPrevStep(): void {
     this.prevStep.emit();
@@ -129,7 +131,13 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit, On
         });
     }
   }
-
+  updateCanProceed() {
+    this.canProceed = this.selectedIngredients.length > 0;
+  }
+  deleteSelectedIngredient(index: number) {
+    this.selectedIngredients.splice(index, 1);
+    this.updateCanProceed();
+  }
 
   toggleStrengthField() {
     this.showStrengthField = this.newIngredientForm.get('isAlcohol')?.value;

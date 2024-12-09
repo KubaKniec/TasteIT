@@ -26,7 +26,7 @@ export class PostBuilderComponent implements OnInit{
     tags: [],
   }
   picUrl: string = '';
-  currentStep: StepNumber = 3;
+  currentStep: StepNumber = 4;
   constructor(
     private router: Router,
   ) {}
@@ -48,6 +48,7 @@ export class PostBuilderComponent implements OnInit{
   onUpdatePhoto(pictures: string[]){
     this.postData.postMedia.pictures = pictures;
     this.picUrl = pictures[0];
+    console.log(this.postData);
     this.nextStep();
   }
   onUpdateDetails(formData: any){
@@ -55,14 +56,16 @@ export class PostBuilderComponent implements OnInit{
     this.postData.postMedia.description = formData.postMedia.description;
     this.postData.tags = formData.tags;
     this.postData.postType = formData.postType;
+    console.log(this.postData);
     this.nextStep();
   }
-  onUpdateRecipe(recipe: PostData['recipe']){
-    this.postData.recipe = recipe;
+  onUpdateRecipe(steps: Map<number, string>){
+    this.postData.recipe.steps = steps;
     this.nextStep();
   }
   onUpdateIngredients(ingredients: Ingredient[]){
     this.postData.recipe.ingredientsWithMeasurements = ingredients;
+    console.log(this.postData);
     this.nextStep();
   }
   onClose(){

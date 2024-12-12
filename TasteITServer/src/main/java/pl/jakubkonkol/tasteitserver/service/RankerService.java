@@ -24,16 +24,16 @@ public class RankerService implements IRankerService {
     @Override
     public PageDto<PostDto> rankPosts(Integer page, Integer size, String sessionToken) {
 
-        // 1. Pobierz aktualnego użytkownika
+        // 1. Get current user
         User currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
-        // 2. Zbierz posty kandydujące
+        // 2. Collect candidate posts
         List<Post> candidates = postCollectionService.collectPosts(currentUser);
 
-        // 3. Oblicz score'y i posortuj
+        // 3. Calculate scores and sort
         List<ScoredPost> scoredPosts = scoringService.calculateScores(candidates, currentUser);
 
-        // 4. Przygotuj odpowiedź z paginacją
+        // 4. Prepare a response with pagination
         List<Post> rankedPosts = scoredPosts.stream()
                 .map(ScoredPost::getPost)
                 .toList();

@@ -36,9 +36,9 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     List<Post> findTop100ByOrderByCreatedDateDesc();
 
-    @Query("{ 'clusters.$id': { $in: ?0 }, 'createdDate': { $gt: ?1 } }")
+    @Query("{ 'clusters.$id': ?0, 'createdDate': { $gt: ?1 } }")
     List<Post> findByClustersAndCreatedDateAfter(
-            List<ObjectId> clusterIds,
+            ObjectId clusterId,
             Date cutoffDate,
             Pageable pageable
     );
@@ -57,4 +57,7 @@ public interface PostRepository extends MongoRepository<Post, String> {
             List<String> excludePostIds,
             Pageable pageable
     );
+
+    @Query(value = "{ 'clusters.$id': ?0, 'createdDate': { $gt: ?1 } }", count = true)
+    long countByClustersAndCreatedDateAfter(ObjectId clusterId, Date cutoffDate);
 }

@@ -16,36 +16,44 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FeedScoringService implements IFeedScoringService {
-    public static final double BASE_SCORE_WEIGHT = 0.6;  // Podstawowe metryki zaangażowania
-    public static final double TIME_BOOST_MAX = 0.3;     // Wpływ świeżości posta
-    public static final double SOCIAL_BOOST_MAX = 0.1;   // Wpływ czynników społecznościowych
+    // Weights defining the influence of different components on the final result (sum = 1.0)
+    public static final double BASE_SCORE_WEIGHT = 0.6;  // Basic Engagement Metrics
+    public static final double TIME_BOOST_MAX = 0.3;     // Impact of post freshness
+    public static final double SOCIAL_BOOST_MAX = 0.1;   // The influence of social factors
 
-    // Wagi dla komponentów podstawowego score'a (suma = 1.0)
-    public static final double LIKE_WEIGHT = 0.6;      // Waga polubień
-    public static final double COMMENT_WEIGHT = 0.4;   // Waga komentarzy
+    // Weights for the components of the basic score (sum = 1.0)
+    public static final double LIKE_WEIGHT = 0.4;
+    public static final double COMMENT_WEIGHT = 0.6;
 
-    // Progi czasowe (w godzinach)
-    public static final int FRESH_HOURS = 6;     // Posty poniżej tego wieku dostają pełny bonus
-    public static final int RECENT_HOURS = 24;   // Posty poniżej tego wieku dostają częściowy bonus
+    // Time thresholds (in hours)
+    public static final int FRESH_HOURS = 6;
+    public static final int RECENT_HOURS = 24;
 
     public List<ScoredPost> calculateScores(List<Post> posts, User currentUser) {
-        // Obliczamy wartości do normalizacji na podstawie wszystkich postów
+        // Calculate values for normalization based on all posts
         NormalizationValues normValues = calculateNormalizationValues(posts);
         Date now = new Date();
 
-        // Używamy CompletableFuture dla równoległego obliczania score'ów
+        // CompletableFuture for parallel score calculation
         List<CompletableFuture<ScoredPost>> scoringTasks = posts.stream()
                 .map(post -> CompletableFuture.supplyAsync(() ->
                         calculatePostScore(post, currentUser, now, normValues)))
                 .toList();
 
-        // Czekamy na wszystkie wyniki i sortujemy po score
+        // Wait for all results and sort by score
         return scoringTasks.stream()
                 .map(CompletableFuture::join)
                 .sorted(Comparator.comparing(ScoredPost::getScore).reversed())
                 .toList();
     }
 
+    /**
+     * Calculates the values used to normalize engagement metrics.
+     * We use the 99th percentile instead of the maximum to avoid the influence of extreme values.
+     * Example:
+     * If we have posts with likes: [2, 3, 4, 1000] (where 1000 is the outlier),
+     * then using the maximum (1000) would skew the normalization for all normal posts.
+     */
     private NormalizationValues calculateNormalizationValues(List<Post> posts) {
         List<Integer> likesCount = posts.stream()
                 .map(post -> post.getLikes().size())
@@ -58,8 +66,9 @@ public class FeedScoringService implements IFeedScoringService {
         double maxLikes = calculatePercentile(likesCount);
         double maxComments = calculatePercentile(commentsCount);
 
+        // Ensure that we will never divide by 0
         return new NormalizationValues(
-                Math.max(maxLikes, 1.0),  // Nigdy nie dzielimy przez 0
+                Math.max(maxLikes, 1.0),
                 Math.max(maxComments, 1.0)
         );
     }
@@ -70,16 +79,16 @@ public class FeedScoringService implements IFeedScoringService {
             Date now,
             NormalizationValues normValues) {
 
-        // 1. Oblicz podstawowy score za zaangażowanie
+        // 1. Calculate the basic engagement score (0-1)
         double baseScore = calculateBaseEngagementScore(post, normValues);
 
-        // 2. Oblicz bonus za świeżość
+        // 2. Calculate freshness bonus (0-1)
         double timeBoost = calculateTimeBoost(post.getCreatedDate(), now);
 
-        // 3. Oblicz bonus społecznościowy
+        // 3. Calculate social bonus (0 lub 1)
         double socialBoost = calculateSocialBoost(post, currentUser);
 
-        // Połącz wszystkie komponenty z odpowiednimi wagami
+        // Connect all components with their appropriate weights
         double finalScore = (baseScore * BASE_SCORE_WEIGHT) +
                 (timeBoost * TIME_BOOST_MAX) +
                 (socialBoost * SOCIAL_BOOST_MAX);
@@ -88,6 +97,7 @@ public class FeedScoringService implements IFeedScoringService {
     }
 
     private double calculateBaseEngagementScore(Post post, NormalizationValues normValues) {
+        // Normalize the number of likes and comments to 0-1 range
         double normalizedLikes = normalizeScore(post.getLikes().size(), normValues.getMaxLikes());
         double normalizedComments = normalizeScore(post.getComments().size(), normValues.getMaxComments());
 
@@ -99,29 +109,39 @@ public class FeedScoringService implements IFeedScoringService {
         long hours = age.toHours();
 
         if (hours <= FRESH_HOURS) {
-            return 1.0;  // Maksymalny boost dla świeżych postów
+            return 1.0;  // Maximum boost for fresh posts
         } else if (hours <= RECENT_HOURS) {
-            // Liniowy spadek między FRESH_HOURS a RECENT_HOURS
+            // Linear decrease between FRESH_HOURS and RECENT_HOURS
             return 1.0 - ((double)(hours - FRESH_HOURS) / (RECENT_HOURS - FRESH_HOURS));
         }
-        return 0.0;  // Brak bonusu dla starszych postów
+        return 0.0;  // No bonus for older posts
     }
 
     private double calculateSocialBoost(Post post, User currentUser) {
         if (currentUser.getFollowing().contains(post.getUserId())) {
-            return 1.0;  // Pełny boost jeśli użytkownik obserwuje autora
+            return 1.0;  // Full boost if user follows author
         }
         return 0.0;
     }
 
+    /**
+     * Calculates the 99th percentile from a list of values.
+     * Example:
+     * For a list [1,2,3,4,5,6,7,8,9,10], the 99th percentile is 9.9
+     * For a list [1,1,1,2,2,2,100], the 99th percentile is approximately 2
+     */
     private double calculatePercentile(List<Integer> values) {
         if (values.isEmpty()) return 1.0;
 
         Collections.sort(values);
+        // Calculate the index for the 99th percentile
         int index = (int) Math.ceil(99 / 100.0 * values.size()) - 1;
         return Math.max(values.get(Math.max(index, 0)), 1.0);
     }
 
+    /**
+     * Normalizes value to 0-1 from max value
+     */
     private double normalizeScore(double value, double maxValue) {
         if (maxValue <= 0) return 0;
         return Math.min(value / maxValue, 1.0);

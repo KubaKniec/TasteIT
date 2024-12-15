@@ -31,6 +31,9 @@
     />
     <app-post-summary
       *ngSwitchCase="5"
+      [postData]="postData"
+      (close)="onClose()"
+      (prevStep)="prevStep()"
     />
   </div>
 </ng-container>

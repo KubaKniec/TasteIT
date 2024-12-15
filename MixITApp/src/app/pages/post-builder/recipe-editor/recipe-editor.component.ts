@@ -1,6 +1,7 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {PostBuilderModule} from "../shared/PostBuilderModule";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {PostData} from "../shared/postData";
 
 @Component({
   selector: 'app-recipe-editor',
@@ -12,6 +13,7 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
   @Output() nextStep: EventEmitter<any> = new EventEmitter<any>();
   @Output() prevStep: EventEmitter<void> = new EventEmitter<void>();
   canProceed: boolean = false;
+  @Input() postData!: PostData;
 
   instructionsForm: FormGroup;
   steps: Map<number, string> = new Map();
@@ -21,6 +23,9 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
     this.instructionsForm = this.fb.group({
       currentStep: ['', [Validators.required, Validators.minLength(10)]]
     });
+  }
+  checkIfCanProceed(): void {
+    this.canProceed = this.steps.size > 0
   }
 
   ngOnInit(): void {
@@ -42,11 +47,13 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
       this.instructionsForm.get('currentStep')?.reset();
       this.validateForm();
     }
+    this.checkIfCanProceed();
   }
 
   removeStep(stepNumber: number): void {
     this.steps.delete(stepNumber);
     this.validateForm();
+    this.checkIfCanProceed();
   }
 
   getOrderedSteps(): [number, string][] {

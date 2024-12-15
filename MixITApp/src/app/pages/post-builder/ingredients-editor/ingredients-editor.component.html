@@ -31,7 +31,7 @@
         <div class="recipe-ingredient-details">
           <span class="recipe-ingredient-label">{{ingredient.name}}</span>
           <span class="recipe-ingredient-quantity">
-        {{ingredient.measurement.value}} {{ingredient.measurement.unit}}
+        {{ingredient.measurement?.value}} {{ingredient.measurement?.unit}}
       </span>
         </div>
         <button class="recipe-ingredient-remove-btn" (click)="deleteSelectedIngredient(i)">

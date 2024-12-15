@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {PostBuilderModule} from "../shared/PostBuilderModule";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PostData} from "../shared/postData";
+import {PostBuilderService} from "../shared/postBuilder.service";
 
 @Component({
   selector: 'app-recipe-editor',
@@ -17,26 +18,35 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
 
   instructionsForm: FormGroup;
   steps: Map<number, string> = new Map();
-  currentStepNumber:number = 1;
+  currentStepNumber: number = 1;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private postBuilderService: PostBuilderService) {
     this.instructionsForm = this.fb.group({
       currentStep: ['', [Validators.required, Validators.minLength(10)]]
     });
   }
+
   checkIfCanProceed(): void {
-    this.canProceed = this.steps.size > 0
+    this.canProceed = this.steps.size > 0;
+  }
+
+  initializePostData(){
+    const currentPostData = this.postBuilderService.getCurrentPostData();
+    if(currentPostData.recipe?.steps){
+      this.steps = new Map(currentPostData.recipe.steps);
+      this.checkIfCanProceed();
+    }
   }
 
   ngOnInit(): void {
     this.instructionsForm.valueChanges.subscribe(() => {
       this.validateForm();
     });
+    this.initializePostData();
   }
 
   validateForm(): void {
-    this.canProceed = this.steps.size > 0 &&
-      this.instructionsForm.valid;
+
   }
 
   addStep(): void {
@@ -45,14 +55,12 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
       this.steps.set(this.currentStepNumber, stepDescription);
       this.currentStepNumber++;
       this.instructionsForm.get('currentStep')?.reset();
-      this.validateForm();
+      this.checkIfCanProceed();
     }
-    this.checkIfCanProceed();
   }
 
   removeStep(stepNumber: number): void {
     this.steps.delete(stepNumber);
-    this.validateForm();
     this.checkIfCanProceed();
   }
 
@@ -65,13 +73,15 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
   }
 
   onContinue(): void {
-    if (this.canProceed) {
-      this.nextStep.emit({ steps: this.steps });
-    }
+    this.postBuilderService.updatePostData({
+      recipe: {
+        steps: this.steps
+      }
+    });
+    this.nextStep.emit({ steps: this.steps });
   }
 
   onPrevStep(): void {
     this.prevStep.emit();
   }
-
 }

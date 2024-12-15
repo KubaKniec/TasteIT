@@ -5,14 +5,14 @@
 
   <div class="summary-content">
     <section class="post-details">
-      <h2 class="post-title">{{ postData.postMedia.title }}</h2>
-      <p class="post-description">{{ postData.postMedia.description }}</p>
+      <h2 class="post-title">{{ getPostData().postMedia.title }}</h2>
+      <p class="post-description">{{ getPostData().postMedia.description }}</p>
     </section>
 
     <section class="ingredients-section">
       <h3 class="section-title">Ingredients</h3>
       <div class="ingredients-list">
-        <div *ngFor="let ingredient of postData.recipe.ingredientsWithMeasurements" class="ingredient-item">
+        <div *ngFor="let ingredient of getPostData().recipe.ingredientsWithMeasurements" class="ingredient-item">
           <span class="ingredient-name">{{ ingredient.name }}</span>
           <span class="ingredient-amount">
             {{ ingredient.measurement?.value }} {{ ingredient.measurement?.unit }}
@@ -24,7 +24,7 @@
     <section class="tags-section">
       <h3 class="section-title">Tags</h3>
       <div class="tags-container">
-        <span *ngFor="let tag of postData.tags" class="tag-item">
+        <span *ngFor="let tag of getPostData().tags" class="tag-item">
           {{ tag.tagName }}
         </span>
       </div>

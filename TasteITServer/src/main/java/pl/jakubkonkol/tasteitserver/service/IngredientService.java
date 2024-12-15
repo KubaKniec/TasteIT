@@ -12,6 +12,7 @@ import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
+import pl.jakubkonkol.tasteitserver.model.IngredientWrapper;
 import pl.jakubkonkol.tasteitserver.model.projection.IngredientSearchView;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -132,5 +133,9 @@ public class IngredientService implements IIngredientService {
 
     public IngredientDto convertToDto(Ingredient ingredient) {
         return modelMapper.map(ingredient, IngredientDto.class);
+    }
+
+    public IngredientWrapper convertToWrapper(Ingredient ingredient) {
+        return modelMapper.map(ingredient, IngredientWrapper.class);
     }
 }

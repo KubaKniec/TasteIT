@@ -11,6 +11,8 @@ import pl.jakubkonkol.tasteitserver.model.value.ScoredPost;
 import pl.jakubkonkol.tasteitserver.service.interfaces.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 @Service
@@ -20,6 +22,8 @@ public class RankerService implements IRankerService {
     private final IFeedScoringService scoringService;
     private final IUserService userService;
     private final IPostService postService;
+    private final IContentFilterService contentFilterService;
+    private static final Logger LOGGER = Logger.getLogger(RankerService.class.getName());
 
     @Override
     public PageDto<PostDto> rankPosts(Integer page, Integer size, String sessionToken) {
@@ -30,8 +34,12 @@ public class RankerService implements IRankerService {
         // 2. Collect candidate posts
         List<Post> candidates = postCollectionService.collectPosts(currentUser);
 
+        List<Post> filteredCandidates = contentFilterService.filterBannedContent(candidates, currentUser);
+        LOGGER.log(Level.INFO, "Filtered out {0} posts with banned content",
+                candidates.size() - filteredCandidates.size());
+
         // 3. Calculate scores and sort
-        List<ScoredPost> scoredPosts = scoringService.calculateScores(candidates, currentUser);
+        List<ScoredPost> scoredPosts = scoringService.calculateScores(filteredCandidates, currentUser);
 
         // 4. Prepare a response with pagination
         List<Post> rankedPosts = scoredPosts.stream()

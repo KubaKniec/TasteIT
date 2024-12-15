@@ -12,6 +12,7 @@ import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
+import pl.jakubkonkol.tasteitserver.model.IngredientWrapper;
 import pl.jakubkonkol.tasteitserver.model.projection.IngredientSearchView;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -63,13 +64,12 @@ public class IngredientService implements IIngredientService {
             if (ingredient == null) {
                 throw new IllegalArgumentException("Ingredient cannot be null.");
             }
-            save(ingredient);
+            if(ingredientRepository.findByNameIgnoreCase(ingredient.getName()).isEmpty()){
+                ingredientRepository.save(ingredient);
+            }
         });
     }
     public void deleteAll() {
-        if (ingredientRepository.count() == 0) {
-            throw new IllegalStateException("No ingredients to delete.");
-        }
         ingredientRepository.deleteAll();
     }
 
@@ -136,5 +136,9 @@ public class IngredientService implements IIngredientService {
 
     public Ingredient convertToEntity(IngredientDto ingredientDto) {
         return modelMapper.map(ingredientDto, Ingredient.class);
+    }
+
+    public IngredientWrapper convertToWrapper(Ingredient ingredient) {
+        return modelMapper.map(ingredient, IngredientWrapper.class);
     }
 }

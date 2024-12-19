@@ -19,4 +19,5 @@ public interface IIngredientService {
     PageDto<IngredientDto> searchIngredientsByName(String name, Integer page, Integer size);
     IngredientDto convertToDto(Ingredient ingredient);
     IngredientWrapper convertToWrapper(Ingredient ingredient);
+    Ingredient convertToEntity(IngredientDto ingredientDto);
 }

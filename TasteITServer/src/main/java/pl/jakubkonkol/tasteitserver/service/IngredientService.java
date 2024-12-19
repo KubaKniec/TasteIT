@@ -134,6 +134,10 @@ public class IngredientService implements IIngredientService {
         return modelMapper.map(ingredient, IngredientDto.class);
     }
 
+    public Ingredient convertToEntity(IngredientDto ingredientDto) {
+        return modelMapper.map(ingredientDto, Ingredient.class);
+    }
+
     public IngredientWrapper convertToWrapper(Ingredient ingredient) {
         return modelMapper.map(ingredient, IngredientWrapper.class);
     }

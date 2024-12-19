@@ -65,4 +65,8 @@ public class TagService implements ITagService {
     private TagDto convertToDto(Tag tag) {
         return modelMapper.map(tag, TagDto.class);
     }
+
+    public Tag convertToEntity(TagDto tagDto) {
+        return modelMapper.map(tagDto, Tag.class);
+    }
 }

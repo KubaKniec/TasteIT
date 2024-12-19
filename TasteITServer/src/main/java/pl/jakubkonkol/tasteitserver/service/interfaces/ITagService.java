@@ -14,4 +14,5 @@ public interface ITagService {
     List<Tag> getBasicTags();
     void saveBasicTags();
     void deleteAll();
+    Tag convertToEntity(TagDto tagDto);
 }

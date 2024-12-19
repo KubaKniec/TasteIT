@@ -64,13 +64,12 @@ public class IngredientService implements IIngredientService {
             if (ingredient == null) {
                 throw new IllegalArgumentException("Ingredient cannot be null.");
             }
-            save(ingredient);
+            if(ingredientRepository.findByNameIgnoreCase(ingredient.getName()).isEmpty()){
+                ingredientRepository.save(ingredient);
+            }
         });
     }
     public void deleteAll() {
-        if (ingredientRepository.count() == 0) {
-            throw new IllegalStateException("No ingredients to delete.");
-        }
         ingredientRepository.deleteAll();
     }
 
@@ -133,6 +132,10 @@ public class IngredientService implements IIngredientService {
 
     public IngredientDto convertToDto(Ingredient ingredient) {
         return modelMapper.map(ingredient, IngredientDto.class);
+    }
+
+    public Ingredient convertToEntity(IngredientDto ingredientDto) {
+        return modelMapper.map(ingredientDto, Ingredient.class);
     }
 
     public IngredientWrapper convertToWrapper(Ingredient ingredient) {

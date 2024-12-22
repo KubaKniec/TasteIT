@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.event.PreferenceUpdateRequiredEvent;
 import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
 import pl.jakubkonkol.tasteitserver.model.value.UpdateTask;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserPreferencesAnalysisService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
@@ -68,7 +69,7 @@ public class UserPreferenceUpdateSchedulerService {
             List<User> activeUsers = userService.findUsersActiveInLast30Days();
 
             activeUsers.forEach(user ->
-                    addToQueue(new UpdateTask(user.getUserId(), "SCHEDULE_UPDATE")));
+                    addToQueue(new UpdateTask(user.getUserId(), PreferenceUpdateReason.SCHEDULED_UPDATE)));
             LOGGER.log(Level.INFO, "Scheduled update for {0} users", activeUsers.size());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error scheduling full update", e);
@@ -135,7 +136,7 @@ public class UserPreferenceUpdateSchedulerService {
      */
     @EventListener
     public void handlePreferenceUpdateRequired(PreferenceUpdateRequiredEvent event) {
-        addToQueue(new UpdateTask(event.getUserId(), event.getReason()));
+        addToQueue(new UpdateTask(event.userId(), event.reason()));
     }
 
     /**

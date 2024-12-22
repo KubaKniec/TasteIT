@@ -23,20 +23,6 @@ public class AsyncConfig {
     @Value("${app.async.preference-update.thread-pool-size:4}")
     private int preferenceUpdateThreads;
 
-//    @Bean
-//    public ExecutorService postFetchingExecutorService() {
-//        return Executors.newFixedThreadPool(
-//                3,
-//                new ThreadFactory() {
-//                    private final AtomicInteger threadNumber = new AtomicInteger(1);
-//                    @Override
-//                    public Thread newThread(@NotNull Runnable r) {
-//                        return new Thread(r, "post-fetcher-" + threadNumber.getAndIncrement());
-//                    }
-//                }
-//        );
-//    }
-
     @Bean
     public ExecutorService postFetchingExecutorService() {
         return Executors.newFixedThreadPool(

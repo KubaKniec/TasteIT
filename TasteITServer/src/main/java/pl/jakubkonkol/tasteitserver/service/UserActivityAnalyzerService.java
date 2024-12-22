@@ -9,6 +9,7 @@ import pl.jakubkonkol.tasteitserver.event.PreferenceUpdateRequiredEvent;
 import pl.jakubkonkol.tasteitserver.event.UserActionEvent;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.UserAction;
+import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
 import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 
 import java.time.LocalDateTime;
@@ -59,7 +60,7 @@ public class UserActivityAnalyzerService {
                 LOGGER.log(Level.INFO,"Detected significant activity for user {0}", userId);
                 // Broadcast event requesting preference update
                 eventPublisher.publishEvent(
-                        new PreferenceUpdateRequiredEvent(userId, "SIGNIFICANT_ACTIVITY")
+                        new PreferenceUpdateRequiredEvent(userId, PreferenceUpdateReason.SIGNIFICANT_ACTIVITY)
                 );
             }
         } catch (Exception e) {

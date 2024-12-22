@@ -40,7 +40,7 @@ public class ClusteringService implements IClusteringService {
     @Value("${app.clustering.legacy-cutoff-days:30}")
     private int legacyCutoffDays;
 
-    @Value("${app.clustering.min-usage-count:5}")
+    @Value("${app.clustering.min-usage-count:1}")
     private int minUsageCount;
 
     @Value("${app.clustering.batch-size:100}")

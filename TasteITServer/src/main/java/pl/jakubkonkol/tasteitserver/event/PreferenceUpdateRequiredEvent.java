@@ -1,18 +1,16 @@
 package pl.jakubkonkol.tasteitserver.event;
 
 import lombok.Getter;
+import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
 
 import java.time.LocalDateTime;
 
-@Getter
-public class PreferenceUpdateRequiredEvent {
-    private final String userId;
-    private final LocalDateTime timestamp;
-    private final String reason; //enum?
-
-    public PreferenceUpdateRequiredEvent(String userId, String reason) {
-        this.userId = userId;
-        this.timestamp = LocalDateTime.now();
-        this.reason = reason;
+public record PreferenceUpdateRequiredEvent(
+        String userId,
+        LocalDateTime timestamp,
+        PreferenceUpdateReason reason
+) {
+    public PreferenceUpdateRequiredEvent(String userId, PreferenceUpdateReason reason) {
+        this(userId, LocalDateTime.now(), reason);
     }
 }

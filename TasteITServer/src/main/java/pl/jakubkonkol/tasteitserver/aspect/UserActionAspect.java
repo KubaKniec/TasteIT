@@ -12,6 +12,7 @@ import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.model.UserAction;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class UserActionAspect {
         UserAction action = new UserAction();
         action.setActionType(registerAction.actionType());
         action.setUserId(userId);
-        action.setTimestamp(new Date());
+        action.setTimestamp(LocalDateTime.now());
         Map<String, Object> metadata = extractMetadata(joinPoint, registerAction.actionType());
         action.setMetadata(metadata);
         return action;

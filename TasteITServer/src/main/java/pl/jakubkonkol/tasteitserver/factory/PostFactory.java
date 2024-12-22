@@ -48,10 +48,10 @@ public abstract class PostFactory {
         return recipe;
     }
 
-    protected List<IngredientDto> createIngredients(JSONObject postObj) {
-        List<IngredientDto> ingredients = new ArrayList<>();
+    protected List<IngredientWrapper> createIngredients(JSONObject postObj) {
+        List<IngredientWrapper> ingredients = new ArrayList<>();
         for (int i = 1; i <= 15; i++) {
-            var ingDto = new IngredientDto();
+            var ingWrapper = new IngredientWrapper();
             String ingredientName = postObj.optString("strIngredient" + i, "").toLowerCase();
             String ingredientAmount = postObj.optString("strMeasure" + i, "").trim();
 
@@ -60,18 +60,18 @@ public abstract class PostFactory {
             var optionalIngredient = this.ingredientService.findByName(ingredientName);
             if (optionalIngredient.isPresent()) {
                 var ingredient = optionalIngredient.get();
-                ingDto = ingredientService.convertToDto(ingredient);
+                ingWrapper = ingredientService.convertToWrapper(ingredient);
             } else {
                 var ingredient = new Ingredient();
                 ingredient.setName(ingredientName);
-                ingDto = ingredientService.convertToDto(ingredient);
+                ingWrapper = ingredientService.convertToWrapper(ingredient);
             }
 
             var measure = new Measurement();
             measure.setValue(ingredientAmount);
             measure.setUnit("unit");
-            ingDto.setMeasurement(measure);
-            ingredients.add(ingDto);
+            ingWrapper.setMeasurement(measure);
+            ingredients.add(ingWrapper);
         }
         return ingredients;
     }

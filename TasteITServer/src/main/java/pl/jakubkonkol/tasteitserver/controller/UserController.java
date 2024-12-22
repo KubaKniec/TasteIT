@@ -120,4 +120,24 @@ public class UserController {
         PageDto<PostDto> posts = postService.getUserPosts(userId, page, size);
         return ResponseEntity.ok(posts);
     }
+
+    @PatchMapping("/banned_ingredients")
+    public ResponseEntity<GenericResponse> updateUserBannedIngredients(@RequestHeader("Authorization") String sessionToken, @RequestBody List<IngredientDto> ingredients) {
+        userService.updateUserBannedIngredients(sessionToken, ingredients);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value())
+                .message("Banned Ingredients updated")
+                .build());
+    }
+
+    @PatchMapping("/banned_tags")
+    public ResponseEntity<GenericResponse> updateUserBannedTags(@RequestHeader("Authorization") String sessionToken, @RequestBody List<TagDto> tags) {
+        userService.updateUserBannedTags(sessionToken, tags);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value())
+                .message("Banned Tags updated")
+                .build());
+    }
 }

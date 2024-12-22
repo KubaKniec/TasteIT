@@ -1,9 +1,6 @@
 package pl.jakubkonkol.tasteitserver.service.interfaces;
 
-import pl.jakubkonkol.tasteitserver.dto.PageDto;
-import pl.jakubkonkol.tasteitserver.dto.UserProfileDto;
-import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
-import pl.jakubkonkol.tasteitserver.dto.UserTagsDto;
+import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 
@@ -28,4 +25,6 @@ public interface IUserService {
     List<UserShort> getUserShortByIdIn(List<String> userIds);
     UserShort findUserShortByUserId(String userId);
     String getCurrentUserId();
+    void updateUserBannedIngredients(String sessionToken, List<IngredientDto> ingredients);
+    void updateUserBannedTags(String sessionToken, List<TagDto> tags);
 }

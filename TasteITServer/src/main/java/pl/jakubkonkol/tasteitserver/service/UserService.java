@@ -16,6 +16,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import pl.jakubkonkol.tasteitserver.dto.*;
+import pl.jakubkonkol.tasteitserver.model.Ingredient;
+import pl.jakubkonkol.tasteitserver.model.Tag;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
@@ -34,6 +36,8 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PostRepository postRepository;
+    private final IngredientService ingredientService;
+    private final TagService tagService;
 
     @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
@@ -269,6 +273,24 @@ public class UserService implements IUserService {
             return (String) authentication.getDetails();
         }
         return null;
+    }
+
+    public void updateUserBannedIngredients(String sessionToken, List<IngredientDto> ingredients) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+        List<Ingredient> bannedIngredients = ingredients.stream()
+                .map(ingredientService::convertToEntity)
+                .toList();
+        user.setBannedIngredients(bannedIngredients);
+        userRepository.save(user);
+    }
+
+    public void updateUserBannedTags(String sessionToken, List<TagDto> tags) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+        List<Tag> bannedTags = tags.stream()
+                .map(tagService::convertToEntity)
+                .toList();
+        user.setBannedTags(bannedTags);
+        userRepository.save(user);
     }
 }
 

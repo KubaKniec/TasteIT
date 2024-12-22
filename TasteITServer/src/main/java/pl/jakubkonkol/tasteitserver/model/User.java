@@ -28,6 +28,10 @@ public class User implements UserDetails {
     private List<String> roles = List.of("USER");
     @DBRef
     private List<Tag> tags = new ArrayList<>();
+    @DBRef
+    private List<Tag> bannedTags = new ArrayList<>();
+    @DBRef
+    private List<Ingredient> bannedIngredients = new ArrayList<>();
     private List<String> followers = new ArrayList<>();
     private List<String> following = new ArrayList<>();
     private List<FoodList> foodLists = new ArrayList<>();

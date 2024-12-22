@@ -12,6 +12,7 @@ import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
+import pl.jakubkonkol.tasteitserver.model.IngredientWrapper;
 import pl.jakubkonkol.tasteitserver.model.projection.IngredientSearchView;
 import pl.jakubkonkol.tasteitserver.repository.IngredientRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,17 +51,19 @@ public class IngredientService implements IIngredientService {
     }
 
     @CacheEvict(value = {"ingredients", "ingredientsById", "ingredientsPages", "ingredientsAll"}, allEntries = true)
-    public void save(Ingredient ingredient) {
+    public IngredientDto save(Ingredient ingredient) {
         if (ingredient == null) {
             throw new IllegalArgumentException("Ingredient cannot be null.");
         }
         if(ingredientRepository.findByNameIgnoreCase(ingredient.getName()).isEmpty()){
             ingredientRepository.save(ingredient);
         }
+
+        return convertToDto(ingredient);
     }
 
     @CacheEvict(value = {"ingredients", "ingredientsById", "ingredientsPages", "ingredientsAll"}, allEntries = true)
-    public void saveAll(List<Ingredient> ingredients) {
+    public List<IngredientDto> saveAll(List<Ingredient> ingredients) {
         if (ingredients == null) {
             throw new IllegalArgumentException("List of drinks cannot be null.");
         }
@@ -68,14 +71,15 @@ public class IngredientService implements IIngredientService {
             if (ingredient == null) {
                 throw new IllegalArgumentException("Ingredient cannot be null.");
             }
-            save(ingredient);
+            if(ingredientRepository.findByNameIgnoreCase(ingredient.getName()).isEmpty()){
+                ingredientRepository.save(ingredient);
+            }
         });
+
+        return ingredients.stream().map(i -> convertToDto(i)).toList();
     }
     @CacheEvict(value = {"ingredients", "ingredientsById", "ingredientsPages", "ingredientsAll"}, allEntries = true)
     public void deleteAll() {
-        if (ingredientRepository.count() == 0) {
-            throw new IllegalStateException("No ingredients to delete.");
-        }
         ingredientRepository.deleteAll();
     }
 
@@ -140,5 +144,13 @@ public class IngredientService implements IIngredientService {
 
     public IngredientDto convertToDto(Ingredient ingredient) {
         return modelMapper.map(ingredient, IngredientDto.class);
+    }
+
+    public Ingredient convertToEntity(IngredientDto ingredientDto) {
+        return modelMapper.map(ingredientDto, Ingredient.class);
+    }
+
+    public IngredientWrapper convertToWrapper(Ingredient ingredient) {
+        return modelMapper.map(ingredient, IngredientWrapper.class);
     }
 }

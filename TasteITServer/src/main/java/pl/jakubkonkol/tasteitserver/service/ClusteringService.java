@@ -302,9 +302,13 @@ public class ClusteringService implements IClusteringService {
 
         if (post != null && cluster != null) {
             // Keep legacy clusters if they're still relevant
-            Set<Cluster> legacyClusters = post.getClusters().stream()
-                    .filter(c -> c.getStatus() == ClusterStatus.LEGACY)
-                    .collect(Collectors.toSet());
+            Set<Cluster> legacyClusters = new HashSet<>();
+            if (post.getClusters() != null) {
+                legacyClusters = post.getClusters().stream()
+                        .filter(Objects::nonNull)
+                        .filter(c -> c.getStatus() == ClusterStatus.LEGACY)
+                        .collect(Collectors.toSet());
+            }
 
             // Start with new active cluster
             Set<Cluster> newClusters = new HashSet<>();

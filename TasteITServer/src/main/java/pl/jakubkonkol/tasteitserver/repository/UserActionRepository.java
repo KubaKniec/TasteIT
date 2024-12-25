@@ -13,7 +13,5 @@ public interface UserActionRepository extends MongoRepository<UserAction, String
             fields = "{ 'metadata.postId': 1 }")
     List<UserAction> findInteractionsByUserId(String userId);
 
-    List<UserAction> findByUserIdAndTimestampAfterOrderByTimestampDesc(String userId, LocalDateTime timestamp);
-
     List<UserAction> findByTimestampAfter(LocalDateTime thirtyDaysAgo);
 }

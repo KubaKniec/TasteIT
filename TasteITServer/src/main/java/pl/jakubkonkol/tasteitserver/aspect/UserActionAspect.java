@@ -3,12 +3,14 @@ package pl.jakubkonkol.tasteitserver.aspect;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.aspectj.lang.annotation.Aspect;
 import pl.jakubkonkol.tasteitserver.annotation.RegisterAction;
 import pl.jakubkonkol.tasteitserver.dto.CommentDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
+import pl.jakubkonkol.tasteitserver.event.UserActionEvent;
 import pl.jakubkonkol.tasteitserver.model.UserAction;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
@@ -24,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 public class UserActionAspect {
     private final MongoTemplate mongoTemplate;
     private final IUserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @AfterReturning("@annotation(registerAction)")
     public void logAction(JoinPoint joinPoint, RegisterAction registerAction) {
@@ -34,6 +37,7 @@ public class UserActionAspect {
             // Asynchronous save to database
             CompletableFuture.runAsync(() -> {
                 mongoTemplate.save(action, "userActions");
+                eventPublisher.publishEvent(new UserActionEvent(userId, action));
             });
         } catch (Exception e) {
             System.err.println("Error logging user action: " + e.getMessage());

@@ -34,6 +34,7 @@ public class UserPreferenceUpdateSchedulerService {
 
     // Thread pool for parallel processing of preference updates
     private final ExecutorService preferenceUpdateExecutorService;
+    private final UserActivityAnalyzerService userActivityAnalyzerService;
     private static final Logger LOGGER = Logger.getLogger(UserPreferenceUpdateSchedulerService.class.getName());
 
     /**
@@ -68,8 +69,14 @@ public class UserPreferenceUpdateSchedulerService {
         try {
             List<User> activeUsers = userService.findUsersActiveInLast30Days();
 
-            activeUsers.forEach(user ->
-                    addToQueue(new UpdateTask(user.getUserId(), PreferenceUpdateReason.SCHEDULED_UPDATE)));
+            activeUsers.forEach(user -> {
+                if (!userActivityAnalyzerService.isUpdateInProgress(user.getUserId())) {
+                    addToQueue(new UpdateTask(user.getUserId(), PreferenceUpdateReason.SCHEDULED_UPDATE));
+                } else {
+                    LOGGER.log(Level.INFO, "Skipping user {0} - update already in progress", user.getUserId());
+                }
+            });
+
             LOGGER.log(Level.INFO, "Scheduled update for {0} users", activeUsers.size());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error scheduling full update", e);
@@ -121,6 +128,7 @@ public class UserPreferenceUpdateSchedulerService {
                     LOGGER.log(Level.INFO, "Processing preference update for user {0}", task.userId());
                     preferencesAnalysisService.requestPreferenceAnalysis(task.userId());
                     meterRegistry.counter("preference_updates_successful").increment();
+                    userActivityAnalyzerService.resetUserActivity(task.userId());
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error processing update for user " + task.userId() + " error: " + e);
                     meterRegistry.counter("preference_updates_failed").increment();

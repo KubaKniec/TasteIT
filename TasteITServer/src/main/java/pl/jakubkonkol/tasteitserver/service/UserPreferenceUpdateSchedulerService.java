@@ -13,6 +13,8 @@ import pl.jakubkonkol.tasteitserver.event.PreferenceUpdateRequiredEvent;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
 import pl.jakubkonkol.tasteitserver.model.value.UpdateTask;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserActivityAnalyzerService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserPreferenceUpdateSchedulerService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserPreferencesAnalysisService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
@@ -25,8 +27,9 @@ import java.util.Queue;
 
 @Service
 @RequiredArgsConstructor
-public class UserPreferenceUpdateSchedulerService {
+public class UserPreferenceUpdateSchedulerService implements IUserPreferenceUpdateSchedulerService {
     private final IUserPreferencesAnalysisService preferencesAnalysisService;
+    private final IUserActivityAnalyzerService userActivityAnalyzerService;
     private final IUserService userService;
 
     // Service for recording metrics and monitoring system performance
@@ -34,7 +37,6 @@ public class UserPreferenceUpdateSchedulerService {
 
     // Thread pool for parallel processing of preference updates
     private final ExecutorService preferenceUpdateExecutorService;
-    private final UserActivityAnalyzerService userActivityAnalyzerService;
     private static final Logger LOGGER = Logger.getLogger(UserPreferenceUpdateSchedulerService.class.getName());
 
     /**

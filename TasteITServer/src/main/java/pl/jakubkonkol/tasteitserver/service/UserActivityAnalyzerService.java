@@ -10,7 +10,7 @@ import pl.jakubkonkol.tasteitserver.event.PreferenceUpdateRequiredEvent;
 import pl.jakubkonkol.tasteitserver.event.UserActionEvent;
 import pl.jakubkonkol.tasteitserver.model.UserActivityInfo;
 import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
-import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IUserActivityAnalyzerService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +20,7 @@ import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
-public class UserActivityAnalyzerService {
-    private final UserActionRepository userActionRepository;
+public class UserActivityAnalyzerService implements IUserActivityAnalyzerService {
     // Publisher for broadcasting events across the application
     private final ApplicationEventPublisher eventPublisher;
     private final Map<String, UserActivityInfo> userActivities = new ConcurrentHashMap<>();
@@ -49,7 +48,7 @@ public class UserActivityAnalyzerService {
             activityInfo.incrementCount();
 
             LOGGER.log(Level.INFO, "User {0} performed action. Current count: {1}",
-                    new Object[]{userId, activityInfo.getActionCount()});;
+                    new Object[]{userId, activityInfo.getActionCount()});
 
             if (activityInfo.shouldTriggerUpdate(actionThreshold)) {
                 activityInfo.markUpdateInProgress();

@@ -11,6 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.model.Tag;
@@ -39,6 +43,7 @@ public class UserService implements IUserService {
     private final TagService tagService;
     private final UserActionRepository userActionRepository;
 
+    @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
         User user = getUserById(userId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
@@ -49,7 +54,7 @@ public class UserService implements IUserService {
         return userReturnDto;
     }
 
-    //method for fetching user info on profile
+    @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserProfileView(String userId, String sessionToken) {
         UserProfileView userProfileView = userRepository.findUserByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
@@ -58,13 +63,19 @@ public class UserService implements IUserService {
         return convertUserProfileViewToUserReturnDto(userId, userProfileView, currentUser);
     }
 
+    @Cacheable(value = "userBySessionToken", key = "#sessionToken")
     public UserReturnDto getCurrentUserDtoBySessionToken(String sessionToken) {
         User user = getCurrentUserBySessionToken(sessionToken);
         return convertToDto(user);
     }// mozna pomyslesc o cache'owaniu w celu optymalizacji
 
+    @Caching(evict = {
+        @CacheEvict(value = {"userById", "userProfileView", "userShort"}, key = "#userProfileDto.userId"),
+        @CacheEvict(value = "userBySessionToken", key = "#sessionToken")
+    })
     public void updateUserProfile(
-        UserProfileDto userProfileDto
+        UserProfileDto userProfileDto,
+        String sessionToken
     ) {
         checkIfUserExists(userProfileDto.getUserId());
         userRepository.updateUserProfileFields(
@@ -76,17 +87,26 @@ public class UserService implements IUserService {
         );
     }
 
-    public void changeUserFirstLogin(String userId) {
+    @Caching(evict = {
+        @CacheEvict(value = {"userById", "userProfileView", "userShort"}, key = "#userId"),
+        @CacheEvict(value = "userBySessionToken", key = "#sessionToken")
+    })
+    public void changeUserFirstLogin(String userId, String sessionToken) {
         checkIfUserExists(userId);
         userRepository.setFirstLoginToFalse(userId);
     }
 
-    public void updateUserTags(String userId, UserTagsDto userTagsDto) {
+    @Caching(evict = {
+        @CacheEvict(value = {"userById", "userProfileView", "userShort"}, key = "#userId"),
+        @CacheEvict(value = "userBySessionToken", key = "#sessionToken")
+    })
+    public void updateUserTags(String userId, UserTagsDto userTagsDto, String sessionToken) {
         User user = getUserById(userId);
         user.setTags(userTagsDto.getTags());
         userRepository.save(user);
     }
 
+    @CacheEvict(value = {"followers", "following"}, allEntries = true)
     public void followUser(String targetUserId, String sessionToken) {
         checkIfUserExists(targetUserId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
@@ -103,6 +123,7 @@ public class UserService implements IUserService {
         }
     }
 
+    @CacheEvict(value = {"followers", "following"}, allEntries = true)
     public void unfollowUser(String targetUserId, String sessionToken) {
         checkIfUserExists(targetUserId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
@@ -119,6 +140,7 @@ public class UserService implements IUserService {
         }
     }
 
+    @Cacheable(value = "followers", key = "#userId")
     public PageDto<UserReturnDto> getFollowers(String userId, String sessionToken, Integer page, Integer size) {
         checkIfUserExists(userId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
@@ -129,6 +151,7 @@ public class UserService implements IUserService {
         return getUserPage(followers, currentUser, page, size);
     }
 
+    @Cacheable(value = "following", key = "#userId")
     public PageDto<UserReturnDto> getFollowing(String userId, String sessionToken, Integer page, Integer size) {
         checkIfUserExists(userId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
@@ -179,6 +202,7 @@ public class UserService implements IUserService {
         return pageDto;
     }
 
+    @Cacheable(value = "userById", key = "#userId")
     public User getUserById(String userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchElementException("User with id " + userId + " not found"));
@@ -211,6 +235,7 @@ public class UserService implements IUserService {
         }
     }
 
+    @CacheEvict(value = {"userShort", "userById", "userBySessionToken", "userShort"}, allEntries = true)
     public User saveUser(User user) {
         return userRepository.save(user);
     }
@@ -239,6 +264,7 @@ public class UserService implements IUserService {
         return userRepository.findUsersByUserIdIn(userIds);
     }
 
+    @Cacheable(value = "userShort", key = "#userId")
     public UserShort findUserShortByUserId(String userId) {
         return userRepository.findUserShortByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));

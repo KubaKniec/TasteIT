@@ -29,36 +29,57 @@ class ClusteringConsumer:
         self.running = False
         self._consumer_task = None
 
+        self.clustering_service = ContentClusteringService(
+            n_topics=10,
+            min_df=0.01,
+            max_df=0.95,
+            n_top_words=10
+        )
+
+        self.current_correlation_id = None
+        self.processed_batches = 0
+        self.expected_batches = 0
+
     async def process_message(self, message):
         correlation_id = None
         try:
             posts = message.get("posts", [])
             print(f'Received {len(posts)} posts for clustering')
             correlation_id = message.get("correlationId")
+            batch_number = message.get("batchNumber", 0)
+            total_batches = message.get("totalBatches", 1)
+
+            if batch_number != self.processed_batches:
+                print(f"Warning: Received batch {batch_number} but expected {self.processed_batches}")
+                return
 
             if not posts:
                 print(f"No posts in message with correlationId {correlation_id}")
                 return
 
-            clustering_service = ContentClusteringService(
-                n_topics=10,
-                min_df=0.01,
-                max_df=0.95,
-                n_top_words=10
-            )
+            # Check if this is a new batch series
+            if correlation_id != self.current_correlation_id:
+                self.current_correlation_id = correlation_id
+                self.processed_batches = 0
+                self.expected_batches = total_batches
+                # Resetting the service status for the new series
+                self.clustering_service = ContentClusteringService(
+                    n_topics=10,
+                    min_df=0.01,
+                    max_df=0.95,
+                    n_top_words=10
+                )
 
-            clustering_service.fit(posts)
-            clustered_posts = clustering_service.predict(posts)
-            cluster_summary = clustering_service.get_cluster_summary()
-            for cluster_id, cluster_data in cluster_summary.items():
-                cluster_document = {
-                    "cluster_id": cluster_id,
-                    "name": cluster_data["name"],
-                    "main_topics": cluster_data["main_topics"],
-                    "keyword_weights": dict(cluster_data["keyword_weights"]),
-                    "post_count": cluster_data["post_count"],
-                    "timestamp": datetime.now()
-                }
+            # Use existing clustering service
+            self.clustering_service.fit(posts)
+            self.processed_batches += 1
+
+            # Send response only for last batch
+            if self.processed_batches == self.expected_batches:
+                # Prediction on all collected posts
+                clustered_posts = self.clustering_service.predict(self.clustering_service.all_posts)
+                cluster_summary = self.clustering_service.get_cluster_summary()
+
                 posts_assignments = [
                     {
                         "post_id": post.get("postId"),
@@ -69,17 +90,19 @@ class ClusteringConsumer:
                     if all(key in post for key in ["postId", "clusterId", "clusterConfidence"])
                 ]
 
-            response = {
-                "correlationId": correlation_id,
-                "clusters": cluster_summary,
-                "posts_assignments": posts_assignments,
-                "status": "success"
-            }
+                response = {
+                    "correlationId": correlation_id,
+                    "clusters": cluster_summary,
+                    "posts_assignments": posts_assignments,
+                    "status": "success"
+                }
 
-            self.producer.send(RESPONSE_TOPIC, key=correlation_id.encode('utf-8'), value=response)
-            self.producer.flush()
+                self.producer.send(RESPONSE_TOPIC, key=correlation_id.encode('utf-8'), value=response)
+                self.producer.flush()
+                print(f"Processed all {self.processed_batches} batches for correlationId {correlation_id}")
+            else:
+                print(f"Processed batch {self.processed_batches}/{self.expected_batches} for correlationId {correlation_id}")
 
-            print(f"Processed clustering for correlationId {correlation_id}")
         except Exception as e:
             error_response = {
                 "correlationId": correlation_id,
@@ -93,7 +116,6 @@ class ClusteringConsumer:
                 value=error_response
             )
             self.producer.flush()
-
             print(f"Error processing message: {str(e)}")
 
     async def listen_to_messages(self):

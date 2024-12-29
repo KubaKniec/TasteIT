@@ -43,7 +43,7 @@ public class RankerService implements IRankerService {
 
         // 4. Prepare a response with pagination
         List<Post> rankedPosts = scoredPosts.stream()
-                .map(ScoredPost::getPost)
+                .map(ScoredPost::post)
                 .toList();
 
         return postService.convertPostsToPageDto(

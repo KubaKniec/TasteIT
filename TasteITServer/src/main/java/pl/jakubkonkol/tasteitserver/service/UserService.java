@@ -19,13 +19,16 @@ import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.model.Tag;
 import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.UserAction;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
+import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,6 +41,7 @@ public class UserService implements IUserService {
     private final PostRepository postRepository;
     private final IngredientService ingredientService;
     private final TagService tagService;
+    private final UserActionRepository userActionRepository;
 
     @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
@@ -291,6 +295,18 @@ public class UserService implements IUserService {
                 .toList();
         user.setBannedTags(bannedTags);
         userRepository.save(user);
+    }
+
+    public List<User> findUsersActiveInLast30Days() {
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        List<String> activeUserIds = userActionRepository
+                .findByTimestampAfter(thirtyDaysAgo)
+                .stream()
+                .map(UserAction::getUserId)
+                .distinct()
+                .toList();
+
+        return userRepository.findAllById(activeUserIds);
     }
 }
 

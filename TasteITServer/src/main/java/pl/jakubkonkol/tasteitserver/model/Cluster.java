@@ -5,7 +5,9 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import pl.jakubkonkol.tasteitserver.model.enums.ClusterStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,4 +26,8 @@ public class Cluster {
     private List<String> mainTopics = new ArrayList<>();
     @JsonAlias({"keyword_weights"})
     private Map<String, Double> keywordWeights = new HashMap<>();
+    private ClusterStatus status = ClusterStatus.ACTIVE;
+    private LocalDateTime lastUsedDate = LocalDateTime.now();
+    private LocalDateTime createdDate = LocalDateTime.now();
+    private int usageCount = 0;
 }

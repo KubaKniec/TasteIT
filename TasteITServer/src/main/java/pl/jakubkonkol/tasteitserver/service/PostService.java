@@ -2,6 +2,8 @@ package pl.jakubkonkol.tasteitserver.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,23 +47,28 @@ public class PostService implements IPostService {
     private final ModelMapper modelMapper;
     private final MongoTemplate mongoTemplate;
 
+    @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void save(PostDto postDto) {
         Post post = convertToEntity(postDto);
         postRepository.save(Objects.requireNonNull(post, "Post cannot be null."));
     }
 
+    @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public List<Post> saveAll(List<Post> posts) {
         return postRepository.saveAll(Objects.requireNonNull(posts, "List of posts cannot be null."));
     }
 
+    @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void deleteAll() {
         postRepository.deleteAll();
-    } //TODO niebezpieczne
+    }
 
+    @Cacheable(value = "postsAll", key = "'AllPosts'")
     public List<Post> getAll() {
         return postRepository.findAll();
     }
 
+    @Cacheable(value = "postById", key = "#postId")
     public PostDto getPost(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
@@ -79,6 +86,7 @@ public class PostService implements IPostService {
     }
 
     //temp implementation
+
     public PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -142,6 +150,7 @@ public class PostService implements IPostService {
         return getPostDtoPageDto(posts, total, pageable, sessionToken);
     }
 
+    @Cacheable(value = "postsByTag", key = "#tagId + '_' + #page + '_' + #size")
     public PageDto<PostDto> searchPostsByTagName(String tagId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PostPhotoView> postPage = postRepository.findPostsByTagsTagId(tagId, pageable);
@@ -149,6 +158,7 @@ public class PostService implements IPostService {
         return getPostDtoPageDtoFromPostPhotoView(postPage, pageable);
     }
 
+    @Cacheable(value = "userPosts", key = "#userId + '_' + #page + '_' + #size")
     public PageDto<PostDto> getUserPosts(String userId, Integer page, Integer size) {
         userService.checkIfUserExists(userId);
         Pageable pageable = PageRequest.of(page, size);
@@ -196,6 +206,7 @@ public class PostService implements IPostService {
         return post.getRecipe();
     }
 
+    @Cacheable(value = "likedPosts", key = "#userId + '_' + #sessionToken")
     public List<PostDto> getPostsLikedByUser(String userId, String sessionToken) {
         var likes = likeRepository.findByUserId(userId);
         var posts = postRepository.findByLikesIn(likes);
@@ -205,13 +216,14 @@ public class PostService implements IPostService {
                 .toList();
     }
 
+    @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public PostDto createPost(PostDto postDto, String sessionToken) {
         Post post = convertToEntity(postDto);
         postRepository.save(post);
         return convertToDto(post, sessionToken);
     }
 
-    private PostDto convertToDto(Post post, String sessionToken) {
+    public PostDto convertToDto(Post post, String sessionToken) {
         PostDto postDto = modelMapper.map(post, PostDto.class);
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
@@ -241,5 +253,39 @@ public class PostService implements IPostService {
 
     private Post convertToEntity(PostDto postDto) {
         return modelMapper.map(postDto, Post.class);
+    }
+
+    public PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable) {
+        List<String> userIds = posts.stream()
+                .map(Post::getUserId)
+                .distinct()
+                .toList();
+
+        List<UserShort> userShorts = userService.getUserShortByIdIn(userIds);
+
+        Map<String, UserShort> userShortMap = userShorts.stream()
+                .collect(Collectors.toMap(UserShort::getUserId, userShort -> userShort));
+
+        List<PostDto> postDtos = posts.stream()
+                .map(post -> {
+                    PostDto postDto = convertToDto(post, sessionToken);
+                    addAuthorInfo(post, userShortMap, postDto);
+                    return postDto;
+                })
+                .toList();
+
+        PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, postDtos.size());
+        return getPageDto(pageImpl);
+    }
+
+    private void addAuthorInfo(Post post, Map<String, UserShort> userShortMap, PostDto postDto) {
+        UserShort userShort = userShortMap.get(post.getUserId());
+        if (userShort != null) {
+            PostAuthorDto postAuthorDto = new PostAuthorDto();
+            postAuthorDto.setUserId(userShort.getUserId());
+            postAuthorDto.setDisplayName(userShort.getDisplayName());
+            postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+            postDto.setPostAuthorDto(postAuthorDto);
+        }
     }
 }

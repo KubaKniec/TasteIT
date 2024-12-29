@@ -208,7 +208,6 @@ public class UserService implements IUserService {
                 () -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
-    @Cacheable(value = "userBySessionToken", key = "#sessionToken")
     public User getCurrentUserBySessionToken(String sessionToken) {
         return userRepository.findBySessionToken(sessionToken)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));

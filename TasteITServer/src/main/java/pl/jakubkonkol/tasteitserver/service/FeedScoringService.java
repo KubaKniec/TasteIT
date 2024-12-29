@@ -43,7 +43,7 @@ public class FeedScoringService implements IFeedScoringService {
         // Wait for all results and sort by score
         return scoringTasks.stream()
                 .map(CompletableFuture::join)
-                .sorted(Comparator.comparing(ScoredPost::getScore).reversed())
+                .sorted(Comparator.comparing(ScoredPost::score).reversed())
                 .toList();
     }
 
@@ -98,8 +98,8 @@ public class FeedScoringService implements IFeedScoringService {
 
     private double calculateBaseEngagementScore(Post post, NormalizationValues normValues) {
         // Normalize the number of likes and comments to 0-1 range
-        double normalizedLikes = normalizeScore(post.getLikes().size(), normValues.getMaxLikes());
-        double normalizedComments = normalizeScore(post.getComments().size(), normValues.getMaxComments());
+        double normalizedLikes = normalizeScore(post.getLikes().size(), normValues.maxLikes());
+        double normalizedComments = normalizeScore(post.getComments().size(), normValues.maxComments());
 
         return (normalizedLikes * LIKE_WEIGHT) + (normalizedComments * COMMENT_WEIGHT);
     }

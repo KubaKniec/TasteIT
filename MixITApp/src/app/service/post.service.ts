@@ -30,7 +30,7 @@ export class PostService {
 
   async getFeed(page: number, size: number): Promise<Post[]> {
     try {
-      const res = await taste_api.get(`/post/feed?page=${page}&size=${size}`);
+      const res = await taste_api.get(`/feed/ranked_feed?page=${page}&size=${size}`);
       const posts = res.data.content as Post[];
       this.setFeed([...this.getFeedState(), ...posts]);
       return posts;

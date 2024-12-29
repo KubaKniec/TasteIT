@@ -1,6 +1,5 @@
 package pl.jakubkonkol.tasteitserver.service;
 
-import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.PageRequest;
@@ -371,19 +370,5 @@ public class PostCandidatesService implements IPostCandidatesService {
                 excludePostIds.stream().toList(),
                 PageRequest.of(0, Math.min(limit, RECENT_POSTS_LIMIT))
         );
-    }
-
-    //Cleanup when app is closed
-    @PreDestroy
-    void cleanup() {
-        postFetchingExecutorService.shutdown();
-        try {
-            if (!postFetchingExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                postFetchingExecutorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            postFetchingExecutorService.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
     }
 }

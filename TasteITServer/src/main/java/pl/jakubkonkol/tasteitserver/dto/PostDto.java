@@ -15,7 +15,8 @@ import java.util.List;
 @Data
 public class PostDto {
     private String postId;
-    @NotNull(message = "UserId cannot be null.")
+//    @NotNull(message = "UserId cannot be null.")
+    // musialem usunac @NotNull bo na froncie nie przesylam autora posta
     private PostAuthorDto postAuthorDto;
     @NotNull(message = "PostType cannot be null.")
     private PostType postType;

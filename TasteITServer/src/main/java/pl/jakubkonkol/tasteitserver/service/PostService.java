@@ -67,13 +67,12 @@ public class PostService implements IPostService {
                 .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
 
         PostDto postDto = convertToDto(post, sessionToken);
-        PostAuthorDto postAuthorDto = new PostAuthorDto();
 
         UserShort userShort = userService.findUserShortByUserId(post.getUserId());
-        postAuthorDto.setUserId(userShort.getUserId());
-        postAuthorDto.setDisplayName(userShort.getDisplayName());
-        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
-        postDto.setPostAuthorDto(postAuthorDto);
+
+        if (userShort != null) {
+            postDto.setPostAuthorDto(convertToPostAuthorDto(userShort));
+        }
 
         return postDto;
     }
@@ -108,11 +107,7 @@ public class PostService implements IPostService {
                     PostDto postDto = convertToDto(post, sessionToken);
                     UserShort userShort = userShortMap.get(post.getUserId());
                     if (userShort != null) {
-                        PostAuthorDto postAuthorDto = new PostAuthorDto();
-                        postAuthorDto.setUserId(userShort.getUserId());
-                        postAuthorDto.setDisplayName(userShort.getDisplayName());
-                        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
-                        postDto.setPostAuthorDto(postAuthorDto);
+                        postDto.setPostAuthorDto(convertToPostAuthorDto(userShort));
                     }
                     return postDto;
                 })
@@ -206,9 +201,21 @@ public class PostService implements IPostService {
     }
 
     public PostDto createPost(PostDto postDto, String sessionToken) {
+        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
+
         Post post = convertToEntity(postDto);
-        postRepository.save(post);
-        return convertToDto(post, sessionToken);
+        post.setUserId(currentUser.getUserId());
+        Post savedPost = postRepository.save(post);
+
+        PostDto responseDto = modelMapper.map(savedPost, PostDto.class);
+        responseDto.setLikesCount(0L);
+        responseDto.setCommentsCount(0L);
+        responseDto.setLikedByCurrentUser(false);
+
+        PostAuthorDto authorDto = convertToPostAuthorDto(currentUser);
+        responseDto.setPostAuthorDto(authorDto);
+
+        return responseDto;
     }
 
     public PostDto convertToDto(Post post, String sessionToken) {
@@ -216,7 +223,7 @@ public class PostService implements IPostService {
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
-        var currentUser = userService.getCurrentUserDtoBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
+        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
         var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
         if(like.isEmpty()){
@@ -229,6 +236,9 @@ public class PostService implements IPostService {
         else {
             postDto.setLikedByCurrentUser(true);
         }
+
+        PostAuthorDto postAuthorDto = convertToPostAuthorDto(currentUser);
+        postDto.setPostAuthorDto(postAuthorDto);
         return postDto;
     }
 
@@ -269,11 +279,15 @@ public class PostService implements IPostService {
     private void addAuthorInfo(Post post, Map<String, UserShort> userShortMap, PostDto postDto) {
         UserShort userShort = userShortMap.get(post.getUserId());
         if (userShort != null) {
-            PostAuthorDto postAuthorDto = new PostAuthorDto();
-            postAuthorDto.setUserId(userShort.getUserId());
-            postAuthorDto.setDisplayName(userShort.getDisplayName());
-            postAuthorDto.setProfilePicture(userShort.getProfilePicture());
-            postDto.setPostAuthorDto(postAuthorDto);
+            postDto.setPostAuthorDto(convertToPostAuthorDto(userShort));
         }
+    }
+
+    private PostAuthorDto convertToPostAuthorDto(UserShort userShort) {
+        PostAuthorDto postAuthorDto = new PostAuthorDto();
+        postAuthorDto.setUserId(userShort.getUserId());
+        postAuthorDto.setDisplayName(userShort.getDisplayName());
+        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+        return postAuthorDto;
     }
 }

@@ -213,6 +213,11 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
+    public UserShort getCurrentUserShortBySessionToken(String sessionToken) {
+        return userRepository.findUserShortBySessionToken(sessionToken)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
     private UserReturnDto convertToDto(User user) {
         UserReturnDto userReturnDto = modelMapper.map(user, UserReturnDto.class);
         userReturnDto.setFollowersCount((long) user.getFollowers().size());

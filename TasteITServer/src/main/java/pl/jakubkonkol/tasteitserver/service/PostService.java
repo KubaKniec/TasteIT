@@ -31,11 +31,11 @@ import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IPostService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
-
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +55,8 @@ public class PostService implements IPostService {
 
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public List<Post> saveAll(List<Post> posts) {
-        return postRepository.saveAll(Objects.requireNonNull(posts, "List of posts cannot be null."));
+        return postRepository.saveAll(
+                Objects.requireNonNull(posts, "List of posts cannot be null."));
     }
 
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
@@ -126,7 +127,8 @@ public class PostService implements IPostService {
     }
 
     //if title consists few words use '%20' between them in get request
-    public PageDto<PostDto> searchPosts(String title, String postType, String sessionToken, int page, int size) {
+    public PageDto<PostDto> searchPosts(String title, String postType, String sessionToken,
+                                        int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Query query = new Query();
 
@@ -145,7 +147,62 @@ public class PostService implements IPostService {
         return getPostDtoPageDto(posts, total, pageable, sessionToken);
     }
 
-    @Cacheable(value = "postsByTag", key = "#tagId + '_' + #page + '_' + #size")
+    public List<PostDto> searchPostsWithAnyIngredient(List<String> ingredientNames,
+                                                   String sessionToken) {
+        var foundPosts = postRepository.findAll();
+
+
+        Set<String> ingredientNamesLower = ingredientNames.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+        // Filtrowanie i sortowanie postów
+        var filteredPosts = foundPosts.stream()
+                .filter(post -> post.getRecipe() != null && post.getRecipe().getIngredientsWithMeasurements() != null)
+                .filter(post -> post.getRecipe().getIngredientsWithMeasurements().stream()
+                        .anyMatch(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase())))
+                .map(post -> new PostWithMatchCount(post, (int) post.getRecipe().getIngredientsWithMeasurements().stream()
+                        .filter(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase()))
+                        .count()))
+                .sorted(Comparator.comparingInt(PostWithMatchCount::getMatchCount).reversed())
+                .map(PostWithMatchCount::getPost)
+                .collect(Collectors.toList());
+
+        List<PostDto> filteredPostsDtos = filteredPosts.stream()
+                .map(post -> convertToDto(post, sessionToken))
+                .toList();
+
+        return filteredPostsDtos;
+    }
+
+    public List<PostDto> searchPostsWithAllIngredients(List<String> ingredientNames,
+                                                       String sessionToken) {
+        var foundPosts = postRepository.findAll();
+
+        Set<String> ingredientNamesLower = ingredientNames.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+        // Filtrowanie i sortowanie postów
+        var filteredPosts = foundPosts.stream()
+                .filter(post -> post.getRecipe() != null && post.getRecipe().getIngredientsWithMeasurements() != null
+                        && !post.getRecipe().getIngredientsWithMeasurements().isEmpty())
+                .filter(post -> post.getRecipe().getIngredientsWithMeasurements().stream()
+                        .allMatch(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase())))
+                .map(post -> new PostWithMatchCount(post, (int) post.getRecipe().getIngredientsWithMeasurements().stream()
+                        .filter(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase()))
+                        .count()))
+                .sorted(Comparator.comparingInt(PostWithMatchCount::getMatchCount).reversed())
+                .map(PostWithMatchCount::getPost)
+                .collect(Collectors.toList());
+
+        List<PostDto> filteredPostsDtos = filteredPosts.stream()
+                .map(post -> convertToDto(post, sessionToken))
+                .toList();
+
+        return filteredPostsDtos;
+    }
+
     public PageDto<PostDto> searchPostsByTagName(String tagId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PostPhotoView> postPage = postRepository.findPostsByTagsTagId(tagId, pageable);
@@ -162,6 +219,7 @@ public class PostService implements IPostService {
         return getPostDtoPageDtoFromPostPhotoView(postsPhotoViewPage, pageable);
     }
 
+
     public PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken) {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> convertToDto(post, sessionToken))
@@ -172,7 +230,8 @@ public class PostService implements IPostService {
         return getPageDto(pageImpl);
     }
 
-    public PageDto<PostDto> getPostDtoPageDtoFromPostPhotoView(Page<PostPhotoView> postsPhotoViewPage, Pageable pageable) {
+    public PageDto<PostDto> getPostDtoPageDtoFromPostPhotoView(
+            Page<PostPhotoView> postsPhotoViewPage, Pageable pageable) {
         List<PostDto> postDtos = postsPhotoViewPage.stream().map(post -> {
             PostDto postDto = new PostDto();
             postDto.setPostId(post.getPostId());
@@ -180,7 +239,8 @@ public class PostService implements IPostService {
             return postDto;
         }).toList();
 
-        PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable, postsPhotoViewPage.getTotalElements());
+        PageImpl<PostDto> pageImpl = new PageImpl<>(postDtos, pageable,
+                postsPhotoViewPage.getTotalElements());
 
         return getPageDto(pageImpl);
     }
@@ -197,7 +257,8 @@ public class PostService implements IPostService {
     }
 
     public Recipe getPostRecipe(String postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new NoSuchElementException("Post with id " + postId + " not found"));
         return post.getRecipe();
     }
 
@@ -207,7 +268,7 @@ public class PostService implements IPostService {
         var posts = postRepository.findByLikesIn(likes);
 
         return posts.stream()
-                .map(post->convertToDto(post, sessionToken))
+                .map(post -> convertToDto(post, sessionToken))
                 .toList();
     }
 
@@ -238,14 +299,13 @@ public class PostService implements IPostService {
         UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
         var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
-        if(like.isEmpty()){
+        if (like.isEmpty()) {
             postDto.setLikedByCurrentUser(false);
             // nie wiem czy ustawialbym to pole w tym miejscu moze np w getRandomPosts i getPost? jest to jednak metoda konkretnie do konwersji
             //" Aby wiedzieć, czy dany użytkownik jest obserwowany przez innego użytkownika,
             // potrzebujesz dodatkowego kontekstu, czyli danych o użytkowniku aktualnie zalogowanym (np. currentUser).
             // Ta informacja nie powinna być dostępna bezpośrednio w metodzie konwertującej."
-        }
-        else {
+        } else {
             postDto.setLikedByCurrentUser(true);
         }
 
@@ -254,9 +314,11 @@ public class PostService implements IPostService {
         return postDto;
     }
 
-    public PageDto<PostDto> getPostsExcludingIngredients(List<String> ingredientNames, Integer page, Integer size) {
+    public PageDto<PostDto> getPostsExcludingIngredients(List<String> ingredientNames, Integer page,
+                                                         Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<PostPhotoView> postPage = postRepository.findByExcludedIngredients(ingredientNames, pageable);
+        Page<PostPhotoView> postPage = postRepository.findByExcludedIngredients(ingredientNames,
+                pageable);
 
         return getPostDtoPageDtoFromPostPhotoView(postPage, pageable);
     }
@@ -301,5 +363,24 @@ public class PostService implements IPostService {
         postAuthorDto.setDisplayName(userShort.getDisplayName());
         postAuthorDto.setProfilePicture(userShort.getProfilePicture());
         return postAuthorDto;
+    }
+
+    //klasa pomocnicza
+    private static class PostWithMatchCount {
+        private final Post post;
+        private final int matchCount;
+
+        public PostWithMatchCount(Post post, int matchCount) {
+            this.post = post;
+            this.matchCount = matchCount;
+        }
+
+        public Post getPost() {
+            return post;
+        }
+
+        public int getMatchCount() {
+            return matchCount;
+        }
     }
 }

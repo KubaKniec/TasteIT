@@ -24,7 +24,8 @@ class ContentClusteringService:
         self.lda_model = LatentDirichletAllocation(
             n_components=n_topics,
             random_state=42,
-            learning_method='batch',
+            learning_method='online',
+            batch_size=100,
             max_iter=25,
             n_jobs=-1
         )
@@ -33,15 +34,29 @@ class ContentClusteringService:
         self.cluster_namer = ClusterNamer()
         self.logger = logging.getLogger(__name__)
 
+        self.all_processed_texts = []
+        self.all_posts = []
+
     def fit(self, posts: List[Dict[str, Any]]) -> None:
         processed_texts = self._prepare_texts(posts)
         if not processed_texts:
             raise ValueError("No valid texts to process")
 
-        doc_term_matrix = self.vectorizer.fit_transform(processed_texts)
-        self.lda_model.fit(doc_term_matrix)
+        self.all_processed_texts.extend(processed_texts)
+        self.all_posts.extend(posts)
+
+        # If this is the first batch, do a full match
+        if not self.is_fitted:
+            doc_term_matrix = self.vectorizer.fit_transform(self.all_processed_texts)
+            self.lda_model.fit(doc_term_matrix)
+            self.is_fitted = True
+        else:
+            # For subsequent batches, use partial_fit
+            doc_term_matrix = self.vectorizer.transform(processed_texts)
+            self.lda_model.partial_fit(doc_term_matrix)
+
+        # Update cluster information based on all data
         self._update_cluster_info(np.array(self.vectorizer.get_feature_names_out()))
-        self.is_fitted = True
 
     def _extract_post_content(self, post: Dict[str, Any]) -> str:
         try:

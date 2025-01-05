@@ -204,7 +204,6 @@ public class UserService implements IUserService {
         return pageDto;
     }
 
-    @Cacheable(value = "userById", key = "#userId")
     public User getUserById(String userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchElementException("User with id " + userId + " not found"));
@@ -212,6 +211,11 @@ public class UserService implements IUserService {
 
     public User getCurrentUserBySessionToken(String sessionToken) {
         return userRepository.findBySessionToken(sessionToken)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    public UserShort getCurrentUserShortBySessionToken(String sessionToken) {
+        return userRepository.findUserShortBySessionToken(sessionToken)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 

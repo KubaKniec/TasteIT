@@ -15,7 +15,7 @@ export class PostBuilderService {
     },
     recipe: {
       steps: new Map<number, string>(),
-      pictures: [],
+      pictures: new Map<number, string>(),
       ingredientsWithMeasurements: []
     },
     postType: EPostType.FOOD,
@@ -53,7 +53,7 @@ export class PostBuilderService {
       },
       recipe: {
         steps: new Map<number, string>(),
-        pictures: [],
+        pictures: new Map<number, string>(),
         ingredientsWithMeasurements: []
       },
       postType: EPostType.FOOD,

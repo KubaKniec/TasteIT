@@ -67,7 +67,7 @@ public class UserService implements IUserService {
     public UserReturnDto getCurrentUserDtoBySessionToken(String sessionToken) {
         User user = getCurrentUserBySessionToken(sessionToken);
         return convertToDto(user);
-    }// mozna pomyslesc o cache'owaniu w celu optymalizacji
+    }
 
     @Caching(evict = {
         @CacheEvict(value = {"userById", "userProfileView", "userShort"}, key = "#userProfileDto.userId"),

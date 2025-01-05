@@ -10,6 +10,7 @@ import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Comment;
 import pl.jakubkonkol.tasteitserver.model.Post;
+import pl.jakubkonkol.tasteitserver.model.enums.NotificationType;
 import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.ICommentService;
@@ -17,6 +18,8 @@ import pl.jakubkonkol.tasteitserver.service.interfaces.IPostRankingService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,10 @@ public class CommentService implements ICommentService {
     private final CommentRepository commentRepository;
     private final IUserService userService;
     private final PostRepository postRepository;
+    private final NotificationEventPublisher notificationEventPublisher;
     private final IPostRankingService postRankingService;
     private final ModelMapper modelMapper;
+    private static final java.util.logging.Logger LOGGER = Logger.getLogger(CommentService.class.getName());
 
     @RegisterAction(actionType = "COMMENT_POST")
     @CacheEvict(value = "postById", key = "#postId")
@@ -46,6 +51,7 @@ public class CommentService implements ICommentService {
         Comment savedComment = commentRepository.save(comment);
         post.getComments().add(savedComment);
         postRepository.save(post);
+        handleCommentNotification(post, userByToken.getUserId());
         postRankingService.clearRankedPostsCacheForUser(userByToken.getUserId());
 
         return convertToDto(savedComment);
@@ -87,5 +93,20 @@ public class CommentService implements ICommentService {
 
     private CommentDto convertToDto(Comment comment) {
         return modelMapper.map(comment, CommentDto.class);
+    }
+
+    private void handleCommentNotification(Post post, String commenterId) {
+        if (!post.getUserId().equals(commenterId)) {
+            try {
+                notificationEventPublisher.publishNotification(
+                        NotificationType.POST_COMMENT,
+                        post.getUserId(),
+                        commenterId,
+                        post.getPostId()
+                );
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING,"Failed to send comment notification", e);
+            }
+        }
     }
 }

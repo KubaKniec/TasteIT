@@ -5,7 +5,7 @@ import {UserService} from "../../../service/user.service";
 import {User} from "../../../model/user/User";
 import {PhotoHelper} from "../../../helpers/PhotoHelper";
 import {PostData} from "../shared/postData";
-import {PostBuilderModule} from "../shared/PostBuilderModule";
+import {HotToastService} from "@ngneat/hot-toast";
 
 @Component({
   selector: 'app-post-photo',
@@ -23,6 +23,7 @@ export class PostPhotoComponent implements OnInit{
   @Output() close = new EventEmitter<void>();
   constructor(private storageUploadService: StorageUploadService,
               private userService: UserService,
+              private toast: HotToastService
               )
   {}
   async ngOnInit() {
@@ -43,13 +44,22 @@ export class PostPhotoComponent implements OnInit{
   uploadPhoto(): void {
     if (!this.croppedImage) return;
 
+    const loadingToast = this.toast.loading('Uploading Photo...');
     const file = PhotoHelper.base64ToFile(this.croppedImage, `${this.user.userId}.png`);
     const randomUUID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const filePath = `post_pictures/${randomUUID}.png`;
 
-    this.storageUploadService.uploadFile(file, filePath).subscribe(url => {
-      this.picUrl = url;
-      this.imageUploaded.emit([this.picUrl]);
+    this.storageUploadService.uploadFile(file, filePath).subscribe({
+      next: (url) => {
+        this.picUrl = url;
+        this.imageUploaded.emit([this.picUrl]);
+        loadingToast.close();
+        this.toast.success('Photo Uploaded Successfully');
+      },
+      error: (error) => {
+        loadingToast.close();
+        this.toast.error('Failed to upload photo');
+      }
     });
   }
   skipToNextStep(): void {

@@ -270,7 +270,7 @@ public class UserService implements IUserService {
         return userRepository.findUsersByUserIdIn(userIds);
     }
 
-    @Cacheable(value = "userShort", key = "#userId")
+//    @Cacheable(value = "userShort", key = "#userId")
     public UserShort findUserShortByUserId(String userId) {
         return userRepository.findUserShortByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));

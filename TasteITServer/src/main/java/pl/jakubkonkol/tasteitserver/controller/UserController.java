@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping()
+    @PutMapping("/updateUserProfile")
     public ResponseEntity<GenericResponse> updateUserProfile(@Valid @RequestBody UserProfileDto userProfileDto, @RequestHeader("Authorization") String sessionToken) {
         userService.updateUserProfile(userProfileDto, sessionToken);
         return ResponseEntity.ok(GenericResponse

@@ -1,5 +1,7 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +21,13 @@ public class IngredientController {
     private final IIngredientService ingredientService;
 
     @PostMapping("/")
-    public ResponseEntity<IngredientDto> save(@RequestBody Ingredient ingredient) {
+    public ResponseEntity<IngredientDto> save(@Valid @RequestBody IngredientDto ingredient) {
         var ingredientDto = ingredientService.save(ingredient);
         return ResponseEntity.ok(ingredientDto);
     }
 
     @PostMapping("/saveAll")
-    public ResponseEntity<List<IngredientDto>> saveAll(@RequestBody List<Ingredient> ingredients) {
+    public ResponseEntity<List<IngredientDto>> saveAll(@RequestBody @NotEmpty(message = "Ingredients list cannot be empty") List<@Valid IngredientDto> ingredients) {
         var ingredientDtoList = ingredientService.saveAll(ingredients);
         return ResponseEntity.ok(ingredientDtoList);
     }

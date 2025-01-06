@@ -1,9 +1,7 @@
 package pl.jakubkonkol.tasteitserver.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import pl.jakubkonkol.tasteitserver.model.Post;
 
 import java.util.ArrayList;
@@ -16,6 +14,5 @@ public class FoodListDto {
     public String name;
     public Date createdDate;
     public List<Post> postsList = new ArrayList<>();
-
     public int postsCount;
 }

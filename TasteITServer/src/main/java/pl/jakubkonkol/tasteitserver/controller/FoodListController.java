@@ -1,5 +1,8 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +20,10 @@ import java.util.List;
 public class FoodListController {
     private final IFoodListService foodListService;
 
-    @PostMapping("/{name}")
+    @PostMapping("/")
     public ResponseEntity<FoodListDto> createFoodList(
-            @RequestHeader("Authorization") final String sessionToken, @PathVariable String name) {
+            @RequestHeader("Authorization") final String sessionToken,
+            @Valid @RequestBody @NotBlank @Size(min = 1, max = 80, message = "Name must be between 1 and 80 characters") String name) {
         FoodListDto foodListDto = foodListService.createFoodList(sessionToken, name);
         return ResponseEntity.ok(foodListDto);
     }

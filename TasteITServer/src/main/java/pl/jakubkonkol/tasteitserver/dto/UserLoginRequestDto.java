@@ -13,7 +13,7 @@ public class UserLoginRequestDto {
 //            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s])[A-Za-z\\d!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~]{8,20}$"
             "^(?=.*[0-9])"
             + "(?=.*[a-z])(?=.*[A-Z])"
-            + "(?=.*[#$%&'()*+,\\-./:;<=>?@\\[\\\\\\]^_`{|}~])"
+            + "(?=.*[!#$%&'()*+,\\-./:;<=>?@\\[\\\\\\]^_`{|}~])"
             + "(?=\\S+$).{6,20}$"
             , message = "Provided password has an invalid format. " +
             "Should be: 6-20 characters long, contains at least one digit, one lowercase letter, " +

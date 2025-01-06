@@ -3,6 +3,6 @@ import {IngredientWrapper} from "./IngredientWrapper";
 
 export interface Recipe{
   steps?: Map<number, string>;
-  pictures?: string[];
+  pictures?: Map<number, string>;
   ingredientsWithMeasurements?: Ingredient[];
 }

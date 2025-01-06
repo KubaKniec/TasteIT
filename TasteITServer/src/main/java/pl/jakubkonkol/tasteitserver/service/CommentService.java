@@ -27,6 +27,8 @@ public class CommentService implements ICommentService {
     private final CommentRepository commentRepository;
     private final IUserService userService;
     private final PostRepository postRepository;
+    private final NotificationEventPublisher notificationEventPublisher;
+    private final IPostRankingService postRankingService;
     private final IPostRankingService postRankingService;
     private final NotificationEventPublisher notificationEventPublisher;
     private final ModelMapper modelMapper;
@@ -51,6 +53,8 @@ public class CommentService implements ICommentService {
         Comment savedComment = commentRepository.save(comment);
         post.getComments().add(savedComment);
         postRepository.save(post);
+        handleCommentNotification(post, userByToken.getUserId());
+        postRankingService.clearRankedPostsCacheForUser(userByToken.getUserId());
         postRankingService.clearRankedPostsCacheForUser(userByToken.getUserId());
         handleCommentNotification(post, userByToken.getUserId());
 

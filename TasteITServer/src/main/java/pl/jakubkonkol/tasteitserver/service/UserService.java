@@ -9,10 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
@@ -272,7 +270,7 @@ public class UserService implements IUserService {
         return userRepository.findUsersByUserIdIn(userIds);
     }
 
-    @Cacheable(value = "userShort", key = "#userId")
+//    @Cacheable(value = "userShort", key = "#userId")
     public UserShort findUserShortByUserId(String userId) {
         return userRepository.findUserShortByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));

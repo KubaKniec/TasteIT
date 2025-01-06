@@ -88,10 +88,16 @@
         <div class="input-field">
           <input formControlName="value" placeholder="Amount" type="number">
         </div>
-        <select class="select-field" formControlName="unit">
-          <option value="">Select unit</option>
-          <option *ngFor="let unit of units" [value]="unit">{{unit}}</option>
-        </select>
+        <div class="radio-group">
+          <div class="radio-option" *ngFor="let unit of units">
+            <input type="radio"
+                   [id]="unit"
+                   [value]="unit"
+                   formControlName="unit"
+                   class="radio-input">
+            <label [for]="unit" class="radio-label">{{unit}}</label>
+          </div>
+        </div>
         <div class="modal-actions">
           <button type="submit" class='button-primary' [disabled]="!measurementForm.valid">Add To Your Recipe</button>
           <button type="button" class="button-tertiary" (click)="showMeasurementModal = false">Cancel</button>

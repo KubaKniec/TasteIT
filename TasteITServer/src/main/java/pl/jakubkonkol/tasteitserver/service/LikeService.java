@@ -26,6 +26,8 @@ public class LikeService implements ILikeService {
     private final PostRepository postRepository;
     private final NotificationEventPublisher notificationEventPublisher;
     private final IUserService userService;
+    private static final java.util.logging.Logger LOGGER = Logger.getLogger(LikeService.class.getName());
+    private final IPostRankingService postRankingService;
     private final IPostRankingService postRankingService;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(LikeService.class.getName());
 
@@ -48,6 +50,8 @@ public class LikeService implements ILikeService {
         likeRepository.save(like);
         post.getLikes().add(like);
         postRepository.save(post);
+        handleLikeNotification(post, userByToken.getUserId());
+        postRankingService.clearRankedPostsCacheForUser(userByToken.getUserId());
         postRankingService.clearRankedPostsCacheForUser(userByToken.getUserId());
         handleLikeNotification(post, userByToken.getUserId());
     }

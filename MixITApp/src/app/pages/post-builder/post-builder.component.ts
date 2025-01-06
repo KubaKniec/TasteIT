@@ -58,7 +58,16 @@ export class PostBuilderComponent implements OnInit {
   async onSubmit() {
     const postData = this.postBuilderService.getCurrentPostData();
     console.log(postData);
-    this.postService.createPost(postData).then((post) => {
+
+    const postDataToSend = {
+      ...postData,
+      recipe: {
+        ...postData.recipe,
+        steps: Object.fromEntries(postData.recipe.steps!),
+      }
+    }
+
+    this.postService.createPost(postDataToSend).then((post) => {
       const postId = post.postId;
       this.postBuilderService.resetPostData();
       this.router.navigate(['/drink', postId]);

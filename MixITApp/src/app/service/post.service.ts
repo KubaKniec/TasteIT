@@ -6,6 +6,7 @@ import { Recipe } from "../model/post/Recipe";
 import { Comment } from "../model/post/Comment";
 import { LoggerService } from "./logger.service";
 import {GenericResponse} from "../model/GenericResponse";
+import {GlobalConfiguration} from "../config/GlobalConfiguration";
 
 @Injectable({
   providedIn: 'root'
@@ -29,8 +30,10 @@ export class PostService {
   }
 
   async getFeed(page: number, size: number): Promise<Post[]> {
+    let feed_url;
+    GlobalConfiguration.USE_RECOMMENDATION_ALGORITHM ? feed_url = `/feed/ranked_feed?page=${page}&size=${size}` : feed_url = `/post/feed?page=${page}&size=${size}`
     try {
-      const res = await taste_api.get(`/feed/ranked_feed?page=${page}&size=${size}`);
+      const res = await taste_api.get(feed_url);
       const posts = res.data.content as Post[];
       this.setFeed([...this.getFeedState(), ...posts]);
       return posts;
@@ -119,7 +122,7 @@ export class PostService {
       return Promise.reject(error.response?.data || error);
     }
   }
-  async createPost(post: Post): Promise<Post> {
+  async createPost(post: any): Promise<Post> {
     try {
       const res = await taste_api.post('/post/create', post);
       return res.data as Post;

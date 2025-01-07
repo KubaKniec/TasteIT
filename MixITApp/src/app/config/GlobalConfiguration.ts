@@ -5,4 +5,5 @@ export const GlobalConfiguration = {
   ALLOW_ALL_DEVICES: true,
   SHOW_WARNINGS: false,
   DEV_MODE: true,
+  USE_RECOMMENDATION_ALGORITHM: true,
 }

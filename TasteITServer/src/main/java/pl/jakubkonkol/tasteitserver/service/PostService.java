@@ -296,7 +296,7 @@ public class PostService implements IPostService {
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
-        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
+        UserShort currentUser = userService.findUserShortByUserId(post.getUserId()); //todo optymalizacja dla wielu postow
         var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
         if (like.isEmpty()) {

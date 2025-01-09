@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.Update;
+import pl.jakubkonkol.tasteitserver.model.Badge;
 import pl.jakubkonkol.tasteitserver.model.FoodList;
 import pl.jakubkonkol.tasteitserver.model.Tag;
 import pl.jakubkonkol.tasteitserver.model.User;
@@ -74,4 +75,8 @@ public interface UserRepository extends MongoRepository<User, String>{
 
     @Query(value = "{ '_id' : ?0 }", fields = "{ 'clusterPreferences' : 1}")
     Optional<User> findClusterPreferencesById(String userId);  // it would be good to create projection for this
+
+    @Query("{'userId' : ?0}")
+    @Update("{ '$set' : { 'badges' : ?1 } }")
+    void updateUserBadgesByUserId(String userId, List<Badge> badges);
 }

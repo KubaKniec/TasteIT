@@ -38,6 +38,7 @@ public class User implements UserDetails {
     @DBRef
     private List<Post> posts = new ArrayList<>();   //ustawiac przy budowaniu bazy
     private Map<String, Double> clusterPreferences = new HashMap<>();
+    private List<Badge> badges = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

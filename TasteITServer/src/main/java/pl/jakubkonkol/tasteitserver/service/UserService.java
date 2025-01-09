@@ -13,10 +13,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import pl.jakubkonkol.tasteitserver.dto.*;
-import pl.jakubkonkol.tasteitserver.model.Ingredient;
-import pl.jakubkonkol.tasteitserver.model.Tag;
-import pl.jakubkonkol.tasteitserver.model.User;
-import pl.jakubkonkol.tasteitserver.model.UserAction;
+import pl.jakubkonkol.tasteitserver.model.*;
 import pl.jakubkonkol.tasteitserver.model.enums.NotificationType;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
@@ -300,6 +297,11 @@ public class UserService implements IUserService {
                 .toList();
         user.setBannedTags(bannedTags);
         userRepository.save(user);
+    }
+
+    public void updateUserBadges(String userId, List<Badge> updatedBadges) { //TODO Zrobić prosty update na bazie save(pobrac zmienic zapisac) /////// JEDNAK TO DZIAŁAAAAAAAAA
+        checkIfUserExists(userId);
+        userRepository.updateUserBadgesByUserId(userId, updatedBadges);
     }
 
     public List<User> findUsersActiveInLast30Days() {

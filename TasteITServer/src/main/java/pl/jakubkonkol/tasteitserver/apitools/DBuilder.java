@@ -24,6 +24,7 @@ public class DBuilder {
     private final ICommentService commentService;
     private final AdminUserFactory adminUserFactory;
     private final ITagService tagService;
+    private final BadgeService badgeService;
 
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
 
@@ -31,7 +32,7 @@ public class DBuilder {
     public void createDefaultAdminAccount() throws IOException{
         adminUserFactory.CreateAdmin();
     }
-//    @PostConstruct
+    @PostConstruct
     public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
         commentService.deleteAll();
@@ -40,6 +41,7 @@ public class DBuilder {
         tagService.deleteAll();
         LOGGER.log(Level.INFO, "Database cleared, building new one");
         tagService.saveBasicTags();
+        badgeService.saveBadgeData();
         foodFetcher.populateDBWithFood();
         ingredientFetcher.populateDBWithIngredients();
         drinkFetcher.populateDBWithDrinks();

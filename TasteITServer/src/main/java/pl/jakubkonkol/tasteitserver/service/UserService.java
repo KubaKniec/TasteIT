@@ -271,8 +271,11 @@ public class UserService implements IUserService {
         return userRepository.findUsersByUserIdIn(userIds);
     }
 
-    @Cacheable(value = "userShort", key = "#userId")
+    @Cacheable(value = "userShort", unless = "#result == null")
     public UserShort findUserShortByUserId(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
         return userRepository.findUserShortByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
@@ -315,13 +318,22 @@ public class UserService implements IUserService {
         return userRepository.findAllById(activeUserIds);
     }
 
-    @Transactional
-    public void deleteUserByEmail(String email) {
+    @CacheEvict(value = {"users", "userById"}, allEntries = true)
+    public void deleteUser(String email, String sessionToken) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("User with email " + email + " not found"));
         
         // Usuń wszystkie posty użytkownika
-        user.getPosts().forEach(post -> postService.deletePost(post.getPostId()));
+        if (user.getPosts() != null) {
+            user.getPosts().forEach(post -> {
+                try {
+                    postService.deletePost(post.getPostId(), sessionToken);
+                } catch (Exception e) {
+                    // Log error but continue with deletion
+                    System.err.println("Error deleting post " + post.getPostId() + ": " + e.getMessage());
+                }
+            });
+        }
         
         // Usuń użytkownika
         userRepository.delete(user);

@@ -35,6 +35,7 @@ import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.jakubkonkol.tasteitserver.exception.UnauthorizedException;
 
 import java.util.List;
 import java.util.Map;
@@ -86,7 +87,15 @@ public class PostService implements IPostService {
         PostDto postDto = convertToDto(post, sessionToken);
         PostAuthorDto postAuthorDto = new PostAuthorDto();
 
+        if (post.getUserId() == null) {
+            throw new IllegalArgumentException("Post user ID cannot be null");
+        }
+
         UserShort userShort = userService.findUserShortByUserId(post.getUserId());
+        if (userShort == null) {
+            throw new IllegalArgumentException("User not found for ID: " + post.getUserId());
+        }
+
         postAuthorDto.setUserId(userShort.getUserId());
         postAuthorDto.setDisplayName(userShort.getDisplayName());
         postAuthorDto.setProfilePicture(userShort.getProfilePicture());
@@ -229,8 +238,12 @@ public class PostService implements IPostService {
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public PostDto createPost(PostDto postDto, String sessionToken) {
         Post post = convertToEntity(postDto);
-        postRepository.save(post);
-        return convertToDto(post, sessionToken);
+        if (post.getUserId() == null && postDto.getPostAuthorDto() != null) {
+            post.setUserId(postDto.getPostAuthorDto().getUserId());
+        }
+        
+        Post savedPost = postRepository.save(post);
+        return convertToDto(savedPost, sessionToken);
     }
 
     public PostDto convertToDto(Post post, String sessionToken) {
@@ -262,7 +275,11 @@ public class PostService implements IPostService {
     }
 
     private Post convertToEntity(PostDto postDto) {
-        return modelMapper.map(postDto, Post.class);
+        Post post = modelMapper.map(postDto, Post.class);
+        if (postDto.getPostAuthorDto() != null) {
+            post.setUserId(postDto.getPostAuthorDto().getUserId());
+        }
+        return post;
     }
 
     public PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable) {
@@ -300,28 +317,19 @@ public class PostService implements IPostService {
     }
 
     @Override
-    @Transactional
-    public void deletePost(String postId) {
+    @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
+    public void deletePost(String postId, String sessionToken) {
+        // Sprawdź, czy użytkownik jest właścicielem posta
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
-
-        // Usuń wszystkie komentarze posta
-        post.getComments().forEach(comment -> 
-            commentRepository.deleteById(comment.getCommentId())
-        );
-
-        // Usuń wszystkie polubienia posta
-        post.getLikes().forEach(like -> 
-            likeRepository.deleteById(like.getLikeId())
-        );
-
-        // Usuń post z listy postów użytkownika
-        User user = userRepository.findById(post.getUserId())
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
-        user.getPosts().removeIf(p -> p.getPostId().equals(postId));
-        userRepository.save(user);
-
-        // Na końcu usuń sam post
+                .orElseThrow(() -> new NoSuchElementException("Post not found"));
+                
+        User user = userRepository.findBySessionToken(sessionToken)
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+                
+        if (!post.getUserId().equals(user.getUserId())) {
+            throw new UnauthorizedException("User is not authorized to delete this post");
+        }
+        
         postRepository.deleteById(postId);
     }
 }

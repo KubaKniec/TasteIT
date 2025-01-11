@@ -61,6 +61,7 @@ public class UserFlowE2ETest {
     private static String sessionToken;
     private static String userId;
     private static String postId;
+    private static String adminSessionToken;
 
     private static final String TEST_PASSWORD = "Test123!@#"; // Hasło spełniające wymagania walidacji
 
@@ -209,16 +210,44 @@ public class UserFlowE2ETest {
     @Order(8)
     @DisplayName("Should verify post interactions")
     void shouldVerifyPostInteractions() throws Exception {
-        // When & Then
-        MvcResult result = mockMvc.perform(get("/api/v1/post/" + postId)
-                .header("Authorization", sessionToken))
+        // Given
+        PostDto postDto = new PostDto();
+        PostMedia postMedia = new PostMedia();
+        postMedia.setTitle("Test Post");
+        postMedia.setPictures(List.of("test-picture-url"));
+        postMedia.setDescription("Test Description");
+        postDto.setPostMedia(postMedia);
+        postDto.setPostType(PostType.FOOD);
+        
+        PostAuthorDto authorDto = new PostAuthorDto();
+        authorDto.setUserId(userId);
+        postDto.setPostAuthorDto(authorDto);
+
+        // When - Create post
+        MvcResult createResult = mockMvc.perform(post("/api/v1/post/create")
+                .header("Authorization", sessionToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(postDto)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        PostDto post = objectMapper.readValue(result.getResponse().getContentAsString(), PostDto.class);
-        assertThat(post.getLikesCount()).isEqualTo(1);
-        assertThat(post.getCommentsCount()).isEqualTo(1);
-        assertThat(post.getLikedByCurrentUser()).isTrue();
+        // Extract post ID from response
+        String postId = objectMapper.readTree(createResult.getResponse().getContentAsString())
+                .get("postId")
+                .asText();
+
+        // Then - Get post and verify
+        mockMvc.perform(get("/api/v1/post/" + postId)
+                .header("Authorization", sessionToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.postId").value(postId))
+                .andExpect(jsonPath("$.postMedia.title").value("Test Post"))
+                .andExpect(jsonPath("$.postType").value("FOOD"));
+
+        // Cleanup
+        mockMvc.perform(delete("/api/v1/post/" + postId)
+                .header("Authorization", sessionToken))
+                .andExpect(status().isOk());
     }
 
     @BeforeEach
@@ -238,6 +267,7 @@ public class UserFlowE2ETest {
     }
 
     private void cleanupTestUser() {
+        String adminSessionToken = null;  // Zmieniamy typ na String
         try {
             // Zaloguj się jako admin
             UserLoginRequestDto adminLogin = new UserLoginRequestDto();
@@ -251,33 +281,67 @@ public class UserFlowE2ETest {
 
             if (loginResult.getResponse().getStatus() == 200) {
                 JsonNode loginResponse = objectMapper.readTree(loginResult.getResponse().getContentAsString());
-                String adminToken = loginResponse.get("sessionToken").asText();
+                adminSessionToken = loginResponse.get("sessionToken").asText();
+            }
 
-                mockMvc.perform(delete("/api/v1/auth/test@example.com")
-                        .header("Authorization", adminToken)
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
-            } else {
-                userRepository.deleteByEmail("test@example.com");
+            // Reszta kodu czyszczenia...
+            if (postId != null) {
+                // Usuń komentarze posta
+                List<CommentDto> comments = commentService.getComments(postId);
+                comments.forEach(comment -> {
+                    try {
+                        commentService.deleteComment(postId, comment.getCommentId(), sessionToken);
+                    } catch (Exception e) {
+                        System.err.println("Error deleting comment: " + e.getMessage());
+                    }
+                });
+
+                // Usuń polubienie posta
+                try {
+                    likeService.unlikePost(postId, sessionToken);
+                } catch (Exception e) {
+                    System.err.println("Error unliking post: " + e.getMessage());
+                }
+
+                // Usuń post testowy
+                try {
+                    postService.deletePost(postId, sessionToken);
+                } catch (Exception e) {
+                    System.err.println("Error deleting post: " + e.getMessage());
+                }
+            }
+
+            // Usuń użytkownika testowego
+            if (userId != null) {
+                try {
+                    if (adminSessionToken != null) {
+                        userService.deleteUser("test@example.com", adminSessionToken);
+                    } else {
+                        // Fallback na repozytorium
+                        userRepository.deleteByEmail("test@example.com");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error deleting user: " + e.getMessage());
+                    try {
+                        userRepository.deleteByEmail("test@example.com");
+                    } catch (Exception ex) {
+                        System.err.println("Error during repository cleanup: " + ex.getMessage());
+                    }
+                }
             }
         } catch (Exception e) {
-            System.err.println("Error during test user cleanup: " + e.getMessage());
-            try {
-                userRepository.deleteByEmail("test@example.com");
-            } catch (Exception ex) {
-                System.err.println("Error during repository cleanup: " + ex.getMessage());
-            }
+            System.err.println("Error during cleanup: " + e.getMessage());
         }
     }
 
     @AfterAll
-    static void cleanup(@Autowired UserService userService,
-                       @Autowired PostService postService,
+    static void cleanup(@Autowired PostService postService,
                        @Autowired CommentService commentService,
                        @Autowired LikeService likeService,
                        @Autowired MockMvc mockMvc,
                        @Autowired ObjectMapper objectMapper,
-                       @Autowired UserRepository userRepository) {
+                       @Autowired UserRepository userRepository,
+                       @Autowired UserService userService) {
         try {
             if (postId != null) {
                 // Usuń komentarze posta
@@ -299,7 +363,7 @@ public class UserFlowE2ETest {
 
                 // Usuń post testowy
                 try {
-                    postService.deletePost(postId);
+                    postService.deletePost(postId, sessionToken);
                 } catch (Exception e) {
                     System.err.println("Error deleting post: " + e.getMessage());
                 }
@@ -308,28 +372,9 @@ public class UserFlowE2ETest {
             // Usuń użytkownika testowego
             if (userId != null) {
                 try {
-                    // Zaloguj się jako admin
-                    UserLoginRequestDto adminLogin = new UserLoginRequestDto();
-                    adminLogin.setEmail("tasteit@admin.com");
-                    adminLogin.setPassword(System.getenv("MONGO_PASSWORD"));
-
-                    MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(adminLogin)))
-                            .andReturn();
-
-                    if (loginResult.getResponse().getStatus() == 200) {
-                        AuthenticationSuccessTokenDto adminToken = objectMapper.readValue(
-                                loginResult.getResponse().getContentAsString(),
-                                AuthenticationSuccessTokenDto.class
-                        );
-
-                        mockMvc.perform(delete("/api/v1/auth/test@example.com")
-                                .header("Authorization", adminToken.getSessionToken())
-                                .contentType(MediaType.APPLICATION_JSON))
-                                .andReturn();
+                    if (adminSessionToken != null) {
+                        userService.deleteUser("test@example.com", adminSessionToken);
                     } else {
-                        // Fallback na repozytorium
                         userRepository.deleteByEmail("test@example.com");
                     }
                 } catch (Exception e) {

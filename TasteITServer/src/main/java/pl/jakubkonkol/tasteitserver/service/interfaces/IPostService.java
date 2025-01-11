@@ -32,10 +32,5 @@ public interface IPostService {
     PageDto<PostDto> getPostsExcludingIngredients(List<String> ingredientNames, Integer page, Integer size);
     PostDto convertToDto(Post post, String sessionToken);
     PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable);
-    /**
-     * Deletes a post by its ID
-     * @param postId ID of the post to delete
-     * @throws NoSuchElementException if post doesn't exist
-     */
-    void deletePost(String postId);
+    void deletePost(String postId, String sessionToken);
 }

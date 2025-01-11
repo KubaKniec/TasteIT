@@ -84,6 +84,17 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
   gotoProfile(userId: string){
     this.router.navigate(['/user-profile', userId]).then();
   }
+  AmITheAuthor(): boolean{
+    return this.currentUserId === this.postAuthor.userId;
+  }
+  removePost(){
+    this.postService.deletePost(this.activePost.postId!).then(() => {
+      this.toast.success("Post deleted successfully");
+      this.router.navigate(['/home']).then();
+    }).catch(() => {
+      this.toast.error("Failed to delete post");
+    })
+  }
 
   getAuthorName(): string{
    return this.postAuthor.displayName || "Unknown"

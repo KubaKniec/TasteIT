@@ -21,7 +21,7 @@
                   highlighted
                   style="background-color: var(--theme-color-600); color:var(--theme-color-50)"
                   [style.display]="i < 6 ? 'inline-flex' : 'none'">
-                  {{selected}}
+                  {{selected.name}}
                 </mat-chip>
                 <mat-chip
                   *ngIf="selectedIngredients.length > 6"
@@ -31,10 +31,13 @@
               </mat-chip-set>
             </div>
           </div>
-          <input type="text" class="search-input" [(ngModel)]="searchPhrase" (ngModelChange)="filterIngredientsByPhrase()" placeholder="Search for ingredient">
+          <div class="input-field">
+            <mat-icon>search</mat-icon>
+            <input type="text" [(ngModel)]="searchPhrase" (ngModelChange)="filterIngredientsByPhrase()" placeholder="Search for ingredient">
+          </div>
           <p class="selected-text"> All ingredients: </p>
           <div class="ingredient-list">
-            <p *ngFor="let ingredient of filteredIngredients" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient}}</p>
+            <p *ngFor="let ingredient of filteredIngredients" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient.name}}</p>
           </div>
         </div>
       </mat-tab>

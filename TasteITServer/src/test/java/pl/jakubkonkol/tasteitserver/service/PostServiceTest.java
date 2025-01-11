@@ -18,11 +18,11 @@ import pl.jakubkonkol.tasteitserver.model.PostMedia;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
-import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
-import pl.jakubkonkol.tasteitserver.repository.PostRepository;
-import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.repository.*;
 import pl.jakubkonkol.tasteitserver.service.PostService;
 import pl.jakubkonkol.tasteitserver.service.UserService;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -51,6 +51,21 @@ class PostServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private MongoTemplate mongoTemplate;
+
+    @Mock
+    private CommentRepository commentRepository;
+
+    @Mock
+    private IngredientService ingredientService;
+
+    @Mock
+    private TagService tagService;
+
+    @Mock
+    private UserActionRepository userActionRepository;
+
     private UserService userService;
     private PostService postService;
 
@@ -60,8 +75,25 @@ class PostServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, modelMapper, postRepository, null, null, null);
-        postService = new PostService(userService, likeRepository, postRepository, modelMapper, null);
+        userService = new UserService(
+            userRepository,
+            modelMapper,
+            postRepository,
+            ingredientService,
+            tagService,
+            userActionRepository
+        );
+
+        postService = new PostService(
+            mongoTemplate,
+            modelMapper,
+            postRepository,
+            likeRepository,
+            commentRepository,
+            userRepository
+        );
+
+        ReflectionTestUtils.setField(postService, "userService", userService);
     }
 
     @Test

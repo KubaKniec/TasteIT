@@ -1,5 +1,4 @@
 package pl.jakubkonkol.tasteitserver.e2e;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -15,10 +14,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.PostMedia;
-
+import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Arrays;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +28,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.AfterAll;
+import pl.jakubkonkol.tasteitserver.service.PostService;
+import pl.jakubkonkol.tasteitserver.service.CommentService;
+import pl.jakubkonkol.tasteitserver.service.LikeService;
+import pl.jakubkonkol.tasteitserver.service.UserService;
+import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,6 +46,17 @@ public class UserFlowE2ETest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PostService postService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private LikeService likeService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     private static String sessionToken;
     private static String userId;
@@ -54,7 +71,7 @@ public class UserFlowE2ETest {
         // Given
         UserCreationRequestDto requestDto = new UserCreationRequestDto();
         requestDto.setEmail("test@example.com");
-        requestDto.setPassword("Test123!@#");
+        requestDto.setPassword(TEST_PASSWORD);
 
         // When & Then
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
@@ -63,8 +80,9 @@ public class UserFlowE2ETest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        User user = objectMapper.readValue(result.getResponse().getContentAsString(), User.class);
-        userId = user.getUserId();
+        // Użyj JsonNode zamiast bezpośredniej deserializacji do User
+        JsonNode jsonNode = objectMapper.readTree(result.getResponse().getContentAsString());
+        userId = jsonNode.get("userId").asText();
         assertThat(userId).isNotNull();
     }
 
@@ -131,6 +149,9 @@ public class UserFlowE2ETest {
     @Order(5)
     @DisplayName("Should create post")
     void shouldCreatePost() throws Exception {
+        // Debug - wyświetl dostępne typy
+        System.out.println("Dostępne typy postów: " + Arrays.toString(PostType.values()));
+        
         // Given
         PostDto postDto = new PostDto();
         PostMedia postMedia = new PostMedia();
@@ -138,7 +159,12 @@ public class UserFlowE2ETest {
         postMedia.setPictures(List.of("https://example.com/image.jpg"));
         postMedia.setDescription("Test description");
         postDto.setPostMedia(postMedia);
+        postDto.setPostType(PostType.FOOD);  // Zmieniamy na FOOD, bo to jedna z dostępnych wartości
         
+        PostAuthorDto authorDto = new PostAuthorDto();
+        authorDto.setUserId(userId);
+        postDto.setPostAuthorDto(authorDto);
+
         // When & Then
         MvcResult result = mockMvc.perform(post("/api/v1/post/create")
                 .header("Authorization", sessionToken)
@@ -196,13 +222,127 @@ public class UserFlowE2ETest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo) {
+    void setUp(TestInfo testInfo) throws Exception {
         assumeTrue(sessionToken != null || 
                   testInfo.getTestMethod().get().getName().equals("shouldRegisterUser") || 
                   testInfo.getTestMethod().get().getName().equals("shouldLoginUser"),
                   "Session token is required for this test");
                   
-        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule());
+        
+        // Clear test user before registration test
+        if (testInfo.getTestMethod().get().getName().equals("shouldRegisterUser")) {
+            cleanupTestUser();
+        }
+    }
+
+    private void cleanupTestUser() {
+        try {
+            // Zaloguj się jako admin
+            UserLoginRequestDto adminLogin = new UserLoginRequestDto();
+            adminLogin.setEmail("tasteit@admin.com");
+            adminLogin.setPassword(System.getenv("MONGO_PASSWORD"));
+
+            MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(adminLogin)))
+                    .andReturn();
+
+            if (loginResult.getResponse().getStatus() == 200) {
+                JsonNode loginResponse = objectMapper.readTree(loginResult.getResponse().getContentAsString());
+                String adminToken = loginResponse.get("sessionToken").asText();
+
+                mockMvc.perform(delete("/api/v1/auth/test@example.com")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn();
+            } else {
+                userRepository.deleteByEmail("test@example.com");
+            }
+        } catch (Exception e) {
+            System.err.println("Error during test user cleanup: " + e.getMessage());
+            try {
+                userRepository.deleteByEmail("test@example.com");
+            } catch (Exception ex) {
+                System.err.println("Error during repository cleanup: " + ex.getMessage());
+            }
+        }
+    }
+
+    @AfterAll
+    static void cleanup(@Autowired UserService userService,
+                       @Autowired PostService postService,
+                       @Autowired CommentService commentService,
+                       @Autowired LikeService likeService,
+                       @Autowired MockMvc mockMvc,
+                       @Autowired ObjectMapper objectMapper,
+                       @Autowired UserRepository userRepository) {
+        try {
+            if (postId != null) {
+                // Usuń komentarze posta
+                List<CommentDto> comments = commentService.getComments(postId);
+                comments.forEach(comment -> {
+                    try {
+                        commentService.deleteComment(postId, comment.getCommentId(), sessionToken);
+                    } catch (Exception e) {
+                        System.err.println("Error deleting comment: " + e.getMessage());
+                    }
+                });
+
+                // Usuń polubienie posta
+                try {
+                    likeService.unlikePost(postId, sessionToken);
+                } catch (Exception e) {
+                    System.err.println("Error unliking post: " + e.getMessage());
+                }
+
+                // Usuń post testowy
+                try {
+                    postService.deletePost(postId);
+                } catch (Exception e) {
+                    System.err.println("Error deleting post: " + e.getMessage());
+                }
+            }
+
+            // Usuń użytkownika testowego
+            if (userId != null) {
+                try {
+                    // Zaloguj się jako admin
+                    UserLoginRequestDto adminLogin = new UserLoginRequestDto();
+                    adminLogin.setEmail("tasteit@admin.com");
+                    adminLogin.setPassword(System.getenv("MONGO_PASSWORD"));
+
+                    MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(adminLogin)))
+                            .andReturn();
+
+                    if (loginResult.getResponse().getStatus() == 200) {
+                        AuthenticationSuccessTokenDto adminToken = objectMapper.readValue(
+                                loginResult.getResponse().getContentAsString(),
+                                AuthenticationSuccessTokenDto.class
+                        );
+
+                        mockMvc.perform(delete("/api/v1/auth/test@example.com")
+                                .header("Authorization", adminToken.getSessionToken())
+                                .contentType(MediaType.APPLICATION_JSON))
+                                .andReturn();
+                    } else {
+                        // Fallback na repozytorium
+                        userRepository.deleteByEmail("test@example.com");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error deleting user: " + e.getMessage());
+                    try {
+                        userRepository.deleteByEmail("test@example.com");
+                    } catch (Exception ex) {
+                        System.err.println("Error during repository cleanup: " + ex.getMessage());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error during cleanup: " + e.getMessage());
+        }
     }
 } 

@@ -26,7 +26,10 @@ import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IPostService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,6 +45,10 @@ public class UserService implements IUserService {
     private final IngredientService ingredientService;
     private final TagService tagService;
     private final UserActionRepository userActionRepository;
+    
+    @Lazy
+    @Autowired
+    private PostService postService;
 
     @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
@@ -306,6 +313,18 @@ public class UserService implements IUserService {
                 .toList();
 
         return userRepository.findAllById(activeUserIds);
+    }
+
+    @Transactional
+    public void deleteUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("User with email " + email + " not found"));
+        
+        // Usuń wszystkie posty użytkownika
+        user.getPosts().forEach(post -> postService.deletePost(post.getPostId()));
+        
+        // Usuń użytkownika
+        userRepository.delete(user);
     }
 }
 

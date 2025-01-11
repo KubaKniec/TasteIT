@@ -24,6 +24,7 @@ import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
+import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,9 @@ import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IPostService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
@@ -41,11 +45,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PostService implements IPostService {
-    private final IUserService userService;
-    private final LikeRepository likeRepository;
-    private final PostRepository postRepository;
-    private final ModelMapper modelMapper;
     private final MongoTemplate mongoTemplate;
+    private final ModelMapper modelMapper;
+    private final PostRepository postRepository;
+    
+    @Lazy
+    @Autowired
+    private UserService userService;
+    
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void save(PostDto postDto) {
@@ -287,5 +297,31 @@ public class PostService implements IPostService {
             postAuthorDto.setProfilePicture(userShort.getProfilePicture());
             postDto.setPostAuthorDto(postAuthorDto);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deletePost(String postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+
+        // Usuń wszystkie komentarze posta
+        post.getComments().forEach(comment -> 
+            commentRepository.deleteById(comment.getCommentId())
+        );
+
+        // Usuń wszystkie polubienia posta
+        post.getLikes().forEach(like -> 
+            likeRepository.deleteById(like.getLikeId())
+        );
+
+        // Usuń post z listy postów użytkownika
+        User user = userRepository.findById(post.getUserId())
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        user.getPosts().removeIf(p -> p.getPostId().equals(postId));
+        userRepository.save(user);
+
+        // Na końcu usuń sam post
+        postRepository.deleteById(postId);
     }
 }

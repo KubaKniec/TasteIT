@@ -21,14 +21,14 @@ public class CreatorController {
     private final IngredientService ingredientService;
 
     @GetMapping("/any")
-    public ResponseEntity<List<PostDto>> searchPostsWithAnyIngredient(@RequestParam List<String> ingredientNames,
+    public ResponseEntity<List<PostDto>> searchPostsWithAnyIngredient(@RequestBody List<String> ingredientNames,
                                                         @RequestHeader("Authorization") String sessionToken) {
         var foundPostsDto = postService.searchPostsWithAnyIngredient(ingredientNames, sessionToken);
         return ResponseEntity.ok(foundPostsDto);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<PostDto>> searchPostsWithAllIngredients(@RequestParam List<String> ingredientNames,
+    public ResponseEntity<List<PostDto>> searchPostsWithAllIngredients(@RequestBody List<String> ingredientNames,
                                                                               @RequestHeader("Authorization") String sessionToken) {
         var pageDto = postService.searchPostsWithAllIngredients(ingredientNames, sessionToken);
         return ResponseEntity.ok(pageDto);

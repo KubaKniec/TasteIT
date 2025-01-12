@@ -11,8 +11,9 @@ import java.util.Optional;
 public interface IIngredientService {
     Optional<Ingredient> findByName(String name);
     IngredientDto getIngredient(String ingredientId);
-    IngredientDto save(Ingredient ingredient);
-    List<IngredientDto> saveAll(List<Ingredient> ingredients);
+    IngredientDto save(IngredientDto ingredient);
+    List<IngredientDto> saveAll(List<IngredientDto> ingredients);
+    List<IngredientDto> saveAllIngredients(List<Ingredient> ingredients);
     void deleteAll();
     void deleteById(String ingredientId);
     List<IngredientDto> getAll();

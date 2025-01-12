@@ -1,5 +1,6 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class TagController {
                 ResponseEntity.ok(tagService.getAll());
     }
     @PostMapping("/")
-    public ResponseEntity<Tag> saveTag(@RequestBody Tag tag){
+    public ResponseEntity<Tag> saveTag(@Valid @RequestBody Tag tag){
         return ResponseEntity.ok(tagService.save(tag));
     }
 }

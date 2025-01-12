@@ -51,7 +51,7 @@ public class PostCandidatesService implements IPostCandidatesService {
         // 3. If we still don't have enough posts, we add the latest ones
         if (candidates.size() < TOTAL_POSTS_TARGET) {
             int remaining = TOTAL_POSTS_TARGET - candidates.size();
-            List<Post> recentPosts = getRecentPosts(cutoffDate, collectedPostIds, remaining);
+            List<Post> recentPosts = getRecentPosts(cutoffDate, collectedPostIds, remaining, user.getUserId());
             LOGGER.log(Level.INFO, "Found {0} posts from last 30 days", recentPosts.size());
             addUniquePostsToCollection(recentPosts, candidates, collectedPostIds);
         }
@@ -60,7 +60,7 @@ public class PostCandidatesService implements IPostCandidatesService {
         if (candidates.size() < TOTAL_POSTS_TARGET) {
             Date extendedCutoffDate = calculateCutoffDate(90);
             int remaining = TOTAL_POSTS_TARGET - candidates.size();
-            List<Post> olderPosts = getRecentPosts(extendedCutoffDate, collectedPostIds, remaining);
+            List<Post> olderPosts = getRecentPosts(extendedCutoffDate, collectedPostIds, remaining, user.getUserId());
             LOGGER.log(Level.INFO, "Found {0} posts from last 90 days", olderPosts.size());
             addUniquePostsToCollection(olderPosts, candidates, collectedPostIds);
         }
@@ -95,15 +95,15 @@ public class PostCandidatesService implements IPostCandidatesService {
                 .orElse(new HashMap<>());
 
         if (preferences.isEmpty()) {
-            return postRepository.findTop100ByOrderByCreatedDateDesc();
+            return postRepository.findTop100ByOrderByCreatedDateDescExcludingUser(userId);
         }
 
         Map<String, Integer> postsPerCluster = calculatePostPerCluster(preferences);
 
-        return getPostsFromEachCluster(cutoffDate, postsPerCluster);
+        return getPostsFromEachCluster(cutoffDate, postsPerCluster, userId);
     }
 
-    private List<Post> getPostsFromEachCluster(Date cutoffDate, Map<String, Integer> postsPerCluster) {
+    private List<Post> getPostsFromEachCluster(Date cutoffDate, Map<String, Integer> postsPerCluster, String userId) {
         // Create thread-safe collections to store results
         List<Post> allPosts = Collections.synchronizedList(new ArrayList<>(PREFERRED_POSTS_INITIAL));
         Set<String> collectedPostIds = Collections.synchronizedSet(new HashSet<>(PREFERRED_POSTS_INITIAL));
@@ -116,7 +116,8 @@ public class PostCandidatesService implements IPostCandidatesService {
                                         entry.getValue(),       // Number of posts to download
                                         cutoffDate,
                                         allPosts,               // Shared list of all posts
-                                        collectedPostIds        // Set of already collected IDs
+                                        collectedPostIds,        // Set of already collected IDs
+                                        userId
                                 ),
                         postFetchingExecutorService))
                 .toList();
@@ -137,7 +138,8 @@ public class PostCandidatesService implements IPostCandidatesService {
             int totalToFetch,
             Date cutoffDate,
             List<Post> allPosts,
-            Set<String> collectedPostIds) {
+            Set<String> collectedPostIds,
+            String userId) {
 
         try {
             long startTime = System.currentTimeMillis();
@@ -157,7 +159,9 @@ public class PostCandidatesService implements IPostCandidatesService {
                         new ObjectId(clusterId),
                         cutoffDate,
                         PageRequest.of(fetchedSoFar / batchSize, currentBatchSize)
-                );
+                ).stream()
+                .filter(post -> !post.getUserId().equals(userId))
+                .toList();
 
                 if (batchPosts.isEmpty()) break;
 
@@ -364,11 +368,13 @@ public class PostCandidatesService implements IPostCandidatesService {
         );
     }
 
-    private List<Post> getRecentPosts(Date cutoffDate, Set<String> excludePostIds, int limit) {
+    private List<Post> getRecentPosts(Date cutoffDate, Set<String> excludePostIds, int limit, String userId) {
         return postRepository.findByCreatedDateAfterAndPostIdNotIn(
                 cutoffDate,
                 excludePostIds.stream().toList(),
                 PageRequest.of(0, Math.min(limit, RECENT_POSTS_LIMIT))
-        );
+        ).stream()
+        .filter(post -> !post.getUserId().equals(userId))
+        .toList();
     }
 }

@@ -104,4 +104,14 @@ public class PostController {
         PostDto post = postService.createPost(postDto, sessionToken);
         return ResponseEntity.ok(post);
     }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<GenericResponse> deletePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
+        postService.deletePostById(postId, sessionToken);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("Post Deleted")
+                .build());
+    }
 }

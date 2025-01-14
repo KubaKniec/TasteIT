@@ -159,3 +159,37 @@
 .nav-button .material-icons {
   font-size: 28px;
 }
+.final-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(180deg, var(--theme-color-900) 0%, var(--theme-color-950) 100%);
+  border: 1px solid var(--theme-color-800);
+  border-radius: var(--soft-radius);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.final-step .step-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, var(--theme-color-50) 0%, var(--accent-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.final-step .step-image {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-color);
+  box-shadow: 0 0 24px rgba(var(--accent-color), 0.3);
+  transition: transform 0.3s ease;
+}
+
+.final-step .step-image:hover {
+  transform: scale(1.05);
+}

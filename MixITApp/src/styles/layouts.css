@@ -3,6 +3,13 @@ html, body {
   margin: 0;
   background-color: var(--theme-color-950);
 }
+/*Temporary fix for inappropriate text styling */
+* {
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  max-width: 100% !important;
+}
 
 .fs-container {
   width: 100vw;

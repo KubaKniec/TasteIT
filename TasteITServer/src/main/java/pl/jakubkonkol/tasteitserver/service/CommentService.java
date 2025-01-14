@@ -29,8 +29,6 @@ public class CommentService implements ICommentService {
     private final PostRepository postRepository;
     private final NotificationEventPublisher notificationEventPublisher;
     private final IPostRankingService postRankingService;
-//    private final IPostRankingService postRankingService;
-//    private final NotificationEventPublisher notificationEventPublisher;
     private final ModelMapper modelMapper;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(CommentService.class.getName());
 

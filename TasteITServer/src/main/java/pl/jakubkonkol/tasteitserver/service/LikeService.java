@@ -28,8 +28,6 @@ public class LikeService implements ILikeService {
     private final IUserService userService;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(LikeService.class.getName());
     private final IPostRankingService postRankingService;
-//    private final IPostRankingService postRankingService;
-//    private static final java.util.logging.Logger LOGGER = Logger.getLogger(LikeService.class.getName());
 
     @RegisterAction(actionType = "LIKE_POST")
     @CacheEvict(value = "postById", key = "#postId")

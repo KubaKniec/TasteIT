@@ -131,4 +131,13 @@ export class PostService {
       return Promise.reject(error.response?.data || error);
     }
   }
+  async deletePost(id: string): Promise<GenericResponse> {
+    try {
+      const res = await taste_api.delete(`/post/${id}`);
+      return res.data;
+    } catch (error: any) {
+      this.logger.logError(`Error deleting post ID: ${id}`, error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
 }

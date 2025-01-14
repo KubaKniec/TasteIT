@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {Filter} from "../../model/Filter";
 import {Post} from "../../model/post/Post";
+import {IngredientService} from "../../service/ingredient.service";
+import {Ingredient} from "../../model/post/Ingredient";
+import {CreatorService} from "../../service/creator.service";
 
 @Component({
   selector: 'app-drink-builder',
@@ -8,44 +11,64 @@ import {Post} from "../../model/post/Post";
   styleUrls: ['./drink-builder.component.css']
 })
 export class DrinkBuilderComponent implements OnInit{
-  constructor(){}
-  ingredients: String[] = [];
-  filteredIngredients: String[] = [];
+  constructor(
+    private ingredientService: IngredientService,
+    private creatorService: CreatorService
+  ){}
+  ingredients: Ingredient[] = [];
+  filteredIngredients: Ingredient[] = [];
   searchPhrase: String = "";
-  selectedIngredients: String[] = [];
-  flexibleMatching: boolean = false;
+  selectedIngredients: Ingredient[] = [];
+  flexibleMatching: boolean = true;
   allowAlcohol: boolean = true;
-  generatedDrinks: Post[] = []
+  foundPost: Post[] = []
   ngOnInit(): void {
-    // this.publicIngredientsService.getAllIngredientsNames().then((ingredients) => {
-    //   this.ingredients = this.removeDuplicatesFromList(ingredients).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-    //   this.filteredIngredients = this.ingredients;
-    // }).catch((error) => {
-    //   console.log(error);
-    // });
-  }
-  generateDrinkRequest(){
-    // if (this.selectedIngredients.length === 0) return;
-    // const filter: Filter = {
-    //   ingredientNames: this.selectedIngredients.join(','),
-    //   alcoholic: this.allowAlcohol,
-    //   ...(this.flexibleMatching ? { minIngredientCount: 1 } : {}),
-    //   matchType: this.flexibleMatching ? 'AT_LEAST' : 'ALL'
-    // }
-    // this.publicDrinkService.getGeneratedDrinks(filter).then((drinks) => {
-    //   this.generatedDrinks = drinks;
-    // }).catch((error) => {
-    //   console.log(error);
-    // })
-  }
-  removeDuplicatesFromList(list: String[]): String[] {
-    const uniqueSet = new Set<String>();
-    list.forEach((item) => {
-      uniqueSet.add(item);
+    this.ingredientService.getAll().subscribe({
+      next: (ingredients: Ingredient[]) => {
+        this.ingredients = this.removeDuplicatesFromList(ingredients)
+          .sort((a: Ingredient, b: Ingredient) =>
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+          );
+        this.filteredIngredients = this.ingredients;
+      },
+      error: (error) => {
+        console.log(error);
+      }
     });
-    return Array.from(uniqueSet);
   }
-  handleIngredientClick(ingredient: String) {
+  generateDrinkRequest() {
+    if (this.selectedIngredients.length === 0){
+      this.foundPost = [];
+      return;
+    }
+    const ingredientNames = this.selectedIngredients.map((ingredient) => ingredient.name);
+
+    if (this.flexibleMatching) {
+      this.creatorService.searchPostsWithAnyIngredient(ingredientNames).then((posts: Post[]) => {
+        this.foundPost = posts;
+      }).catch((error) => {
+        console.log(error);
+      });
+    } else {
+      this.creatorService.searchPostsWithAllIngredients(ingredientNames).then((posts: Post[]) => {
+        this.foundPost = posts;
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
+  }
+  removeDuplicatesFromList(ingredients: Ingredient[]): Ingredient[] {
+    const uniqueMap = new Map<string, Ingredient>();
+
+    ingredients.forEach((ingredient) => {
+      if (!uniqueMap.has(ingredient.name.toLowerCase())) {
+        uniqueMap.set(ingredient.name.toLowerCase(), ingredient);
+      }
+    });
+
+    return Array.from(uniqueMap.values());
+  }
+  handleIngredientClick(ingredient: Ingredient) {
     this.searchPhrase = "";
     this.filterIngredientsByPhrase();
     if (this.selectedIngredients.includes(ingredient)) {
@@ -57,6 +80,6 @@ export class DrinkBuilderComponent implements OnInit{
   }
 
   filterIngredientsByPhrase() {
-    this.filteredIngredients = this.ingredients.filter((ingredient) => ingredient.toLowerCase().includes(this.searchPhrase.toLowerCase()));
+    this.filteredIngredients = this.ingredients.filter((ingredient) => ingredient.name.toLowerCase().includes(this.searchPhrase.toLowerCase()));
   }
 }

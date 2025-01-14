@@ -97,7 +97,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("Powinno zwrócić post po ID")
+    @DisplayName("Should return post ID")
     void shouldReturnPostById() {
         // Given
         Post post = createTestPost();
@@ -119,7 +119,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("Powinno zgłosić wyjątek gdy post nie istnieje")
+    @DisplayName("Should throw exveption if post doesn't exist")
     void shouldThrowExceptionWhenPostNotFound() {
         // Given
         when(postRepository.findById(TEST_POST_ID)).thenReturn(Optional.empty());
@@ -131,7 +131,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("Powinno zwrócić posty użytkownika")
+    @DisplayName("Should return user posts")
     void shouldReturnUserPosts() {
         // Given
         int page = 0;

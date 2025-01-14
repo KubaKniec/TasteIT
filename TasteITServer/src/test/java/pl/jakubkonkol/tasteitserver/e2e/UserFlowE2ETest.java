@@ -1,4 +1,5 @@
 package pl.jakubkonkol.tasteitserver.e2e;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -38,15 +39,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@RequiredArgsConstructor
 @TestMethodOrder(OrderAnnotation.class)
 public class UserFlowE2ETest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private PostService postService;
     @Autowired
@@ -63,7 +63,8 @@ public class UserFlowE2ETest {
     private static String postId;
     private static String adminSessionToken;
 
-    private static final String TEST_PASSWORD = "Test123!@#"; // Hasło spełniające wymagania walidacji
+    private static final String TEST_PASSWORD = "Test123!@#";
+    private static final String TEST_EMAIL = "test@example.com";
 
     @Test
     @Order(1)
@@ -71,7 +72,7 @@ public class UserFlowE2ETest {
     void shouldRegisterUser() throws Exception {
         // Given
         UserCreationRequestDto requestDto = new UserCreationRequestDto();
-        requestDto.setEmail("test@example.com");
+        requestDto.setEmail(TEST_EMAIL);
         requestDto.setPassword(TEST_PASSWORD);
 
         // When & Then
@@ -81,7 +82,7 @@ public class UserFlowE2ETest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Użyj JsonNode zamiast bezpośredniej deserializacji do User
+        // Use JsonNode to deserialize
         JsonNode jsonNode = objectMapper.readTree(result.getResponse().getContentAsString());
         userId = jsonNode.get("userId").asText();
         assertThat(userId).isNotNull();
@@ -93,8 +94,8 @@ public class UserFlowE2ETest {
     void shouldLoginUser() throws Exception {
         // Given
         UserLoginRequestDto requestDto = new UserLoginRequestDto();
-        requestDto.setEmail("test@example.com");
-        requestDto.setPassword("Test123!@#");
+        requestDto.setEmail(TEST_EMAIL);
+        requestDto.setPassword(TEST_PASSWORD);
 
         // When & Then
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
@@ -123,7 +124,7 @@ public class UserFlowE2ETest {
         profileDto.setDisplayName("Test User");
         profileDto.setBio("Test bio");
         profileDto.setProfilePicture("https://example.com/picture.jpg");
-        profileDto.setBirthDate(new Date());
+        profileDto.setBirthDate(new Date()); //TODO dodac konkretna date
 
         // When & Then
         mockMvc.perform(put("/api/v1/user")
@@ -131,6 +132,8 @@ public class UserFlowE2ETest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(profileDto)))
                 .andExpect(status().isOk());
+
+        //TODO dodac pobranie usera i sprawdzenie danych
     }
 
     @Test
@@ -150,7 +153,7 @@ public class UserFlowE2ETest {
     @Order(5)
     @DisplayName("Should create post")
     void shouldCreatePost() throws Exception {
-        // Debug - wyświetl dostępne typy
+        // Debug - show avaible types
         System.out.println("Dostępne typy postów: " + Arrays.toString(PostType.values()));
         
         // Given
@@ -160,7 +163,7 @@ public class UserFlowE2ETest {
         postMedia.setPictures(List.of("https://example.com/image.jpg"));
         postMedia.setDescription("Test description");
         postDto.setPostMedia(postMedia);
-        postDto.setPostType(PostType.FOOD);  // Zmieniamy na FOOD, bo to jedna z dostępnych wartości
+        postDto.setPostType(PostType.FOOD);
         
         PostAuthorDto authorDto = new PostAuthorDto();
         authorDto.setUserId(userId);
@@ -267,9 +270,9 @@ public class UserFlowE2ETest {
     }
 
     private void cleanupTestUser() {
-        String adminSessionToken = null;  // Zmieniamy typ na String
+        String adminSessionToken = null;  // Changing type to String
         try {
-            // Zaloguj się jako admin
+            // Login as admin
             UserLoginRequestDto adminLogin = new UserLoginRequestDto();
             adminLogin.setEmail("tasteit@admin.com");
             adminLogin.setPassword(System.getenv("MONGO_PASSWORD"));
@@ -284,9 +287,8 @@ public class UserFlowE2ETest {
                 adminSessionToken = loginResponse.get("sessionToken").asText();
             }
 
-            // Reszta kodu czyszczenia...
             if (postId != null) {
-                // Usuń komentarze posta
+                // Delete post comments
                 List<CommentDto> comments = commentService.getComments(postId);
                 comments.forEach(comment -> {
                     try {
@@ -296,14 +298,14 @@ public class UserFlowE2ETest {
                     }
                 });
 
-                // Usuń polubienie posta
+                // Delete post likes
                 try {
                     likeService.unlikePost(postId, sessionToken);
                 } catch (Exception e) {
                     System.err.println("Error unliking post: " + e.getMessage());
                 }
 
-                // Usuń post testowy
+                // Delete test post
                 try {
                     postService.deletePost(postId, sessionToken);
                 } catch (Exception e) {
@@ -311,19 +313,18 @@ public class UserFlowE2ETest {
                 }
             }
 
-            // Usuń użytkownika testowego
+            // Delete test user
             if (userId != null) {
                 try {
                     if (adminSessionToken != null) {
-                        userService.deleteUser("test@example.com", adminSessionToken);
+                        userService.deleteUser(TEST_EMAIL, adminSessionToken);
                     } else {
-                        // Fallback na repozytorium
-                        userRepository.deleteByEmail("test@example.com");
+                        userRepository.deleteByEmail(TEST_EMAIL);
                     }
                 } catch (Exception e) {
                     System.err.println("Error deleting user: " + e.getMessage());
                     try {
-                        userRepository.deleteByEmail("test@example.com");
+                        userRepository.deleteByEmail(TEST_EMAIL);
                     } catch (Exception ex) {
                         System.err.println("Error during repository cleanup: " + ex.getMessage());
                     }
@@ -344,7 +345,7 @@ public class UserFlowE2ETest {
                        @Autowired UserService userService) {
         try {
             if (postId != null) {
-                // Usuń komentarze posta
+                // Delete post comments
                 List<CommentDto> comments = commentService.getComments(postId);
                 comments.forEach(comment -> {
                     try {
@@ -354,14 +355,14 @@ public class UserFlowE2ETest {
                     }
                 });
 
-                // Usuń polubienie posta
+                // Delete post likes
                 try {
                     likeService.unlikePost(postId, sessionToken);
                 } catch (Exception e) {
                     System.err.println("Error unliking post: " + e.getMessage());
                 }
 
-                // Usuń post testowy
+                // Delete test post
                 try {
                     postService.deletePost(postId, sessionToken);
                 } catch (Exception e) {
@@ -369,18 +370,18 @@ public class UserFlowE2ETest {
                 }
             }
 
-            // Usuń użytkownika testowego
+            // Delete test user
             if (userId != null) {
                 try {
                     if (adminSessionToken != null) {
-                        userService.deleteUser("test@example.com", adminSessionToken);
+                        userService.deleteUser(TEST_EMAIL, adminSessionToken);
                     } else {
-                        userRepository.deleteByEmail("test@example.com");
+                        userRepository.deleteByEmail(TEST_EMAIL);
                     }
                 } catch (Exception e) {
                     System.err.println("Error deleting user: " + e.getMessage());
                     try {
-                        userRepository.deleteByEmail("test@example.com");
+                        userRepository.deleteByEmail(TEST_EMAIL);
                     } catch (Exception ex) {
                         System.err.println("Error during repository cleanup: " + ex.getMessage());
                     }

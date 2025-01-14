@@ -70,7 +70,7 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/comment")
-    public ResponseEntity<CommentDto> addComment(@PathVariable String postId, @RequestBody CommentDto commentDto, @RequestHeader("Authorization") final String sessionToken) {
+    public ResponseEntity<CommentDto> addComment(@PathVariable String postId, @Valid @RequestBody CommentDto commentDto, @RequestHeader("Authorization") final String sessionToken) {
         CommentDto dto = commentService.addComment(postId, commentDto, sessionToken);
 
         return ResponseEntity.ok(dto);
@@ -95,9 +95,7 @@ public class PostController {
 
     @GetMapping("/likedby/{userId}")
     public ResponseEntity<List<PostDto>> getPostsLikedByUser(@PathVariable String userId, @RequestHeader("Authorization") final String sessionToken) {
-
         var posts = postService.getPostsLikedByUser(userId, sessionToken);
-
         return ResponseEntity.ok(posts);
     }
 
@@ -105,5 +103,15 @@ public class PostController {
     public ResponseEntity<PostDto> createPost(@RequestBody @Valid PostDto postDto, @RequestHeader("Authorization") final String sessionToken) {
         PostDto post = postService.createPost(postDto, sessionToken);
         return ResponseEntity.ok(post);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<GenericResponse> deletePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
+        postService.deletePostById(postId, sessionToken);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("Post Deleted")
+                .build());
     }
 }

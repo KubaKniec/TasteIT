@@ -3,6 +3,7 @@ package pl.jakubkonkol.tasteitserver.controller;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
@@ -29,6 +30,11 @@ public class ErrorController {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(IllegalStateException e) {
         return buildErrorResponse(e, 409);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException e) {
+        return buildErrorResponse(e, 400);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception e, int status) {

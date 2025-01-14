@@ -1,62 +1,97 @@
-import {Component, OnInit} from '@angular/core';
-import {Filter} from "../../model/Filter";
-import {Post} from "../../model/post/Post";
+import { Component, OnInit } from '@angular/core';
+import { IngredientService } from '../../service/ingredient.service';
+import { CreatorService } from '../../service/creator.service';
+import { Ingredient } from '../../model/post/Ingredient';
+import { Post } from '../../model/post/Post';
+import { BehaviorSubject, debounceTime, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-drink-builder',
   templateUrl: './drink-builder.component.html',
   styleUrls: ['./drink-builder.component.css']
 })
-export class DrinkBuilderComponent implements OnInit{
-  constructor(){}
-  ingredients: String[] = [];
-  filteredIngredients: String[] = [];
-  searchPhrase: String = "";
-  selectedIngredients: String[] = [];
-  flexibleMatching: boolean = false;
-  allowAlcohol: boolean = true;
-  generatedDrinks: Post[] = []
+export class DrinkBuilderComponent implements OnInit {
+  private allIngredients: Ingredient[] = [];
+  searchPhrase$ = new BehaviorSubject<string>('');
+  selectedIngredients$ = new BehaviorSubject<Ingredient[]>([]);
+  foundPosts$ = new BehaviorSubject<Post[]>([]);
+  filteredIngredients$ = new BehaviorSubject<Ingredient[]>([]);
+
+  flexibleMatching = true;
+  allowAlcohol = true;
+
+  constructor(
+    private ingredientService: IngredientService,
+    private creatorService: CreatorService
+  ) {}
+
   ngOnInit(): void {
-    // this.publicIngredientsService.getAllIngredientsNames().then((ingredients) => {
-    //   this.ingredients = this.removeDuplicatesFromList(ingredients).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-    //   this.filteredIngredients = this.ingredients;
-    // }).catch((error) => {
-    //   console.log(error);
-    // });
-  }
-  generateDrinkRequest(){
-    // if (this.selectedIngredients.length === 0) return;
-    // const filter: Filter = {
-    //   ingredientNames: this.selectedIngredients.join(','),
-    //   alcoholic: this.allowAlcohol,
-    //   ...(this.flexibleMatching ? { minIngredientCount: 1 } : {}),
-    //   matchType: this.flexibleMatching ? 'AT_LEAST' : 'ALL'
-    // }
-    // this.publicDrinkService.getGeneratedDrinks(filter).then((drinks) => {
-    //   this.generatedDrinks = drinks;
-    // }).catch((error) => {
-    //   console.log(error);
-    // })
-  }
-  removeDuplicatesFromList(list: String[]): String[] {
-    const uniqueSet = new Set<String>();
-    list.forEach((item) => {
-      uniqueSet.add(item);
-    });
-    return Array.from(uniqueSet);
-  }
-  handleIngredientClick(ingredient: String) {
-    this.searchPhrase = "";
-    this.filterIngredientsByPhrase();
-    if (this.selectedIngredients.includes(ingredient)) {
-      this.selectedIngredients = this.selectedIngredients.filter((selectedIngredient) => selectedIngredient !== ingredient);
-    } else {
-      this.selectedIngredients.push(ingredient);
-    }
-    this.generateDrinkRequest();
+    this.loadIngredients();
+
+    this.searchPhrase$
+      .pipe(debounceTime(300))
+      .subscribe((phrase) => this.filterIngredients(phrase));
+
+    this.selectedIngredients$.subscribe(() => this.generateDrinkRequest());
   }
 
-  filterIngredientsByPhrase() {
-    this.filteredIngredients = this.ingredients.filter((ingredient) => ingredient.toLowerCase().includes(this.searchPhrase.toLowerCase()));
+  private loadIngredients(): void {
+    this.ingredientService.getAll().subscribe({
+      next: (ingredients) => {
+        this.allIngredients = this.removeDuplicates(ingredients).sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        );
+        this.filteredIngredients$.next(this.allIngredients);
+      },
+      error: (error) => console.error('Error fetching ingredients:', error)
+    });
+  }
+
+  private removeDuplicates(ingredients: Ingredient[]): Ingredient[] {
+    return Array.from(
+      new Map(ingredients.map((ingredient) => [ingredient.name.toLowerCase(), ingredient])).values()
+    );
+  }
+
+  filterIngredients(phrase: string): void {
+    const filtered = this.allIngredients.filter((ingredient) =>
+      ingredient.name.toLowerCase().includes(phrase.toLowerCase())
+    );
+    this.filteredIngredients$.next(filtered);
+  }
+  get moreSelectedCount(): number {
+    const selected = this.selectedIngredients$.value;
+    return selected.length > 6 ? selected.length - 6 : 0;
+  }
+
+  handleIngredientClick(ingredient: Ingredient): void {
+    const selected = this.selectedIngredients$.value;
+    const updatedSelected = selected.includes(ingredient)
+      ? selected.filter(i => i !== ingredient)
+      : [...selected, ingredient];
+
+    this.selectedIngredients$.next(updatedSelected);
+    this.searchPhrase$.next('');
+  }
+
+  generateDrinkRequest(): void {
+    const selectedNames = this.selectedIngredients$.value.map(i => i.name);
+
+    if (selectedNames.length === 0) {
+      this.foundPosts$.next([]);
+      return;
+    }
+
+    const searchMethod = this.flexibleMatching
+      ? this.creatorService.searchPostsWithAnyIngredient(selectedNames)
+      : this.creatorService.searchPostsWithAllIngredients(selectedNames);
+
+    searchMethod
+      .then((posts) => this.foundPosts$.next(posts))
+      .catch((error) => console.error('Error searching posts:', error));
+  }
+
+  updateSearchPhrase(phrase: string): void {
+    this.searchPhrase$.next(phrase);
   }
 }

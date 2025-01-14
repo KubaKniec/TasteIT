@@ -13,11 +13,13 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostAuthorDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
+import pl.jakubkonkol.tasteitserver.model.FoodList;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.User;
@@ -64,6 +66,27 @@ public class PostService implements IPostService {
         postRepository.deleteAll();
     }
 
+    @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
+    public void deletePostById(String postId, String sessionToken) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post with id " + postId + " not found"));
+
+        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
+        if (!post.getUserId().equals(currentUser.getUserId())) {
+            throw new IllegalStateException("Post of id: " + postId + " does not belong to the user of id: " + currentUser.getUserId());
+        }
+
+        Query userQuery = new Query();
+        Update userUpdate = new Update().pull("posts", postId);
+        mongoTemplate.updateMulti(userQuery, userUpdate, User.class);
+
+        Query foodListQuery = new Query();
+        Update foodListUpdate = new Update().pull("postsList", postId);
+        mongoTemplate.updateMulti(foodListQuery, foodListUpdate, FoodList.class);
+
+        postRepository.deleteById(postId);
+    }
+
     @Cacheable(value = "postsAll", key = "'AllPosts'")
     public List<Post> getAll() {
         return postRepository.findAll();
@@ -72,7 +95,7 @@ public class PostService implements IPostService {
     @Cacheable(value = "postById", key = "#postId")
     public PostDto getPost(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post with id " + postId + " not found"));
 
         PostDto postDto = convertToDto(post, sessionToken);
 
@@ -296,20 +319,17 @@ public class PostService implements IPostService {
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
-        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken); //todo optymalizacja dla wielu postow
+        UserShort author = userService.findUserShortByUserId(post.getUserId()); //todo optymalizacja dla wielu postow
+        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
         var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
-        if (like.isEmpty()) {
-            postDto.setLikedByCurrentUser(false);
-            // nie wiem czy ustawialbym to pole w tym miejscu moze np w getRandomPosts i getPost? jest to jednak metoda konkretnie do konwersji
-            //" Aby wiedzieć, czy dany użytkownik jest obserwowany przez innego użytkownika,
-            // potrzebujesz dodatkowego kontekstu, czyli danych o użytkowniku aktualnie zalogowanym (np. currentUser).
-            // Ta informacja nie powinna być dostępna bezpośrednio w metodzie konwertującej."
-        } else {
-            postDto.setLikedByCurrentUser(true);
-        }
+        // nie wiem czy ustawialbym to pole w tym miejscu moze np w getRandomPosts i getPost? jest to jednak metoda konkretnie do konwersji
+        //" Aby wiedzieć, czy dany użytkownik jest obserwowany przez innego użytkownika,
+        // potrzebujesz dodatkowego kontekstu, czyli danych o użytkowniku aktualnie zalogowanym (np. currentUser).
+        // Ta informacja nie powinna być dostępna bezpośrednio w metodzie konwertującej."
+        postDto.setLikedByCurrentUser(like.isPresent());
 
-        PostAuthorDto postAuthorDto = convertToPostAuthorDto(currentUser);
+        PostAuthorDto postAuthorDto = convertToPostAuthorDto(author);
         postDto.setPostAuthorDto(postAuthorDto);
         return postDto;
     }

@@ -19,9 +19,9 @@ export class DrinkBuilderComponent implements OnInit{
   filteredIngredients: Ingredient[] = [];
   searchPhrase: String = "";
   selectedIngredients: Ingredient[] = [];
-  flexibleMatching: boolean = false;
+  flexibleMatching: boolean = true;
   allowAlcohol: boolean = true;
-  generatedDrinks: Post[] = []
+  foundPost: Post[] = []
   ngOnInit(): void {
     this.ingredientService.getAll().subscribe({
       next: (ingredients: Ingredient[]) => {
@@ -37,18 +37,21 @@ export class DrinkBuilderComponent implements OnInit{
     });
   }
   generateDrinkRequest() {
-    if (this.selectedIngredients.length === 0) return;
+    if (this.selectedIngredients.length === 0){
+      this.foundPost = [];
+      return;
+    }
     const ingredientNames = this.selectedIngredients.map((ingredient) => ingredient.name);
 
     if (this.flexibleMatching) {
       this.creatorService.searchPostsWithAnyIngredient(ingredientNames).then((posts: Post[]) => {
-        this.generatedDrinks = posts;
+        this.foundPost = posts;
       }).catch((error) => {
         console.log(error);
       });
     } else {
       this.creatorService.searchPostsWithAllIngredients(ingredientNames).then((posts: Post[]) => {
-        this.generatedDrinks = posts;
+        this.foundPost = posts;
       }).catch((error) => {
         console.log(error);
       });

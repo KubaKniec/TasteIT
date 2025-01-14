@@ -10,8 +10,8 @@ export class CreatorService {
   }
   async searchPostsWithAnyIngredient(ingredientNames: string[]): Promise<Post[]>{
     try{
-      const res = await taste_api.get('creator/any', {params: {ingredientNames: ingredientNames}});
-      return res.data.content as Post[];
+      const res = await taste_api.put('creator/any', ingredientNames);
+      return res.data as Post[];
     }
     catch(error: any){
       return Promise.reject(error.response?.data || error);
@@ -19,8 +19,8 @@ export class CreatorService {
   }
   async searchPostsWithAllIngredients(ingredientNames: string[]): Promise<Post[]>{
     try{
-      const res = await taste_api.get('creator/all', {params: {ingredientNames: ingredientNames}});
-      return res.data.content as Post[];
+      const res = await taste_api.put('creator/all', ingredientNames);
+      return res.data as Post[];
     }
     catch(error: any){
       return Promise.reject(error.response?.data || error);

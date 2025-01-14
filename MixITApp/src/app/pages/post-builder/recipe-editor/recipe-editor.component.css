@@ -101,10 +101,12 @@ textarea.error {
 
 .step-number {
   font-weight: bold;
+  flex-shrink: 0;
   margin-right: 0.5rem;
 }
 
 .remove-step-btn {
+  flex-shrink: 0;
   margin-left: auto;
   background-color: var(--theme-color-700);
   color: white;

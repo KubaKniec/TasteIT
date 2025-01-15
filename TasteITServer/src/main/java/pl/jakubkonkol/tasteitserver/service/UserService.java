@@ -177,7 +177,7 @@ public class UserService implements IUserService {
 
     private PageDto<UserReturnDto> getUserReturnDtoPageDto(User currentUser, Page<UserShort> userPage, Pageable pageable) {
         List<UserReturnDto> userDtos = userPage.getContent().stream().map(user -> {
-            UserReturnDto userReturnDto = new UserReturnDto();
+            UserReturnDto userReturnDto = new UserReturnDto(); //todo
             userReturnDto.setUserId(user.getUserId());
             userReturnDto.setDisplayName(user.getDisplayName());
             userReturnDto.setProfilePicture(user.getProfilePicture());
@@ -217,7 +217,7 @@ public class UserService implements IUserService {
     }
 
     private UserReturnDto convertToDto(User user) {
-        UserReturnDto userReturnDto = modelMapper.map(user, UserReturnDto.class);
+        UserReturnDto userReturnDto = modelMapper.map(user, UserReturnDto.class); //todo
         userReturnDto.setFollowersCount((long) user.getFollowers().size());
         userReturnDto.setFollowingCount((long) user.getFollowing().size());
 
@@ -244,7 +244,7 @@ public class UserService implements IUserService {
     }
 
     private UserReturnDto convertUserProfileViewToUserReturnDto(String userId, UserProfileView userProfileView, User currentUser) {
-        UserReturnDto userReturnDto = new UserReturnDto();
+        UserReturnDto userReturnDto = new UserReturnDto(); //todo
         userReturnDto.setUserId(userProfileView.getUserId());
         userReturnDto.setEmail(userProfileView.getEmail());
         userReturnDto.setDisplayName(userProfileView.getDisplayName());

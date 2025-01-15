@@ -35,11 +35,11 @@ public class BadgeService {
 
         for (int i = 0; i < badgeBlueprintDataList.size(); i++) {
             BadgeBlueprint badgeBlueprint = new BadgeBlueprint();
-            badgeBlueprint.setBadgeId(badgeBlueprintDataList.get(i).getBadgeId());
+            badgeBlueprint.setId(badgeBlueprintDataList.get(i).getId());
             badgeBlueprint.setBadgeName(badgeBlueprintDataList.get(i).getBadgeName());
             badgeBlueprint.setDescription(badgeBlueprintDataList.get(i).getDescription());
             badgeBlueprint.setImageUrl(badgeBlueprintDataList.get(i).getImageUrl());
-            if (badgeBlueprint.getBadgeId().equals("badge_001")) {
+            if (badgeBlueprint.getId().equals("badge_001")) {
                 badgeBlueprint.setGoalValue(1); // badge_001 jako jedyny nie ma liczby, ma słowo 'pierwszy'
             } else {
                 matcher = pattern.matcher(badgeBlueprint.getDescription());
@@ -63,7 +63,7 @@ public class BadgeService {
                 .orElseThrow();
 
         Badge badge = Badge.builder()
-                .badgeId(badgeBlueprint.getBadgeId())
+                .badgeId(badgeBlueprint.getId())
                 .badgeName(badgeBlueprint.getBadgeName())
                 .description(badgeBlueprint.getDescription())
                 .imageUrl(badgeBlueprint.getImageUrl())

@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Document(collection = "users")
@@ -40,6 +40,7 @@ public class User implements UserDetails {
     private Map<String, Double> clusterPreferences = new HashMap<>();
     private List<Badge> badges = new ArrayList<>();
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(r -> (GrantedAuthority) () -> r).toList();
@@ -54,4 +55,35 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
+
+    public List<Recipe> getRecipes() {
+        return posts.stream()
+                .map(Post::getRecipe)
+                .toList();
+    }
+
+    public List<Post> getPostsBy(PostType type){
+        return posts.stream()
+                .filter(post -> post.getPostType() == type)
+                .toList();
+    }
+
+    public Optional<Post> getPostWithMaxLikes(){
+        return posts.stream()
+                .max((post1, post2) -> post2.getLikes().size() - post1.getLikes().size());
+    }
+
+    public int countAllLikesOnPosts() {
+        return posts.stream()
+                .mapToInt(post -> post.getLikes().size())
+                .sum();
+    }
+
+    public int countPostsInFoodlists(){
+        return foodLists.stream()
+                .mapToInt(foodlist -> foodlist.getPostsList().size())
+                .sum();
+    }
+
 }
+

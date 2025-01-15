@@ -26,11 +26,11 @@ public class FoodListService implements IFoodListService {
     private final IUserService userService;
     private final PostRepository postRepository;
 
-    public FoodListDto createFoodList(String sessionToken, String name) {
+    public FoodListDto createFoodList(String sessionToken, FoodListDto foodListDto) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         FoodList foodList = new FoodList();
-        foodList.setName(name);
+        foodList.setName(foodListDto.getName());
         currentUser.getFoodLists().add(foodList);
         userRepository.save(currentUser);
         return convertToDto(foodList);

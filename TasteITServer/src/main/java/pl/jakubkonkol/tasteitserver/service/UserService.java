@@ -24,7 +24,10 @@ import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IPostService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,6 +45,8 @@ public class UserService implements IUserService {
     private final IngredientService ingredientService;
     private final TagService tagService;
     private final UserActionRepository userActionRepository;
+
+    private PostService postService;
     private final NotificationEventPublisher notificationEventPublisher;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
@@ -204,6 +209,7 @@ public class UserService implements IUserService {
         return pageDto;
     }
 
+    //@Cacheable(value = "userById", key = "#userId")
     public User getUserById(String userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchElementException("User with id " + userId + " not found"));
@@ -270,8 +276,12 @@ public class UserService implements IUserService {
         return userRepository.findUsersByUserIdIn(userIds);
     }
 
+
 //    @Cacheable(value = "userShort", key = "#userId")
     public UserShort findUserShortByUserId(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
         return userRepository.findUserShortByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
@@ -312,6 +322,27 @@ public class UserService implements IUserService {
                 .toList();
 
         return userRepository.findAllById(activeUserIds);
+    }
+
+    @CacheEvict(value = {"users", "userById"}, allEntries = true)
+    public void deleteUser(String email, String sessionToken) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("User with email " + email + " not found"));
+        
+        // Delete all user posts
+        if (user.getPosts() != null) {
+            user.getPosts().forEach(post -> {
+                try {
+                    postService.deletePost(post.getPostId(), sessionToken);
+                } catch (Exception e) {
+                    // Log error but continue with deletion
+                    System.err.println("Error deleting post " + post.getPostId() + ": " + e.getMessage());
+                }
+            });
+        }
+        
+        // Delete user
+        userRepository.delete(user);
     }
 
     private void handleFollowNotification(String followerId, String targetUserId) {

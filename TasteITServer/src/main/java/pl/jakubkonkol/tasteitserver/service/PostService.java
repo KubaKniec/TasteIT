@@ -26,6 +26,7 @@ import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
+import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
 import pl.jakubkonkol.tasteitserver.repository.LikeRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,10 @@ import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IPostService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
+import pl.jakubkonkol.tasteitserver.exception.UnauthorizedException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -43,11 +48,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PostService implements IPostService {
-    private final IUserService userService;
-    private final LikeRepository likeRepository;
-    private final PostRepository postRepository;
-    private final ModelMapper modelMapper;
     private final MongoTemplate mongoTemplate;
+    private final ModelMapper modelMapper;
+    private final PostRepository postRepository;
+    
+    @Lazy
+    @Autowired
+    private UserService userService;
+    
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void save(PostDto postDto) {
@@ -99,11 +110,19 @@ public class PostService implements IPostService {
 
         PostDto postDto = convertToDto(post, sessionToken);
 
-        UserShort userShort = userService.findUserShortByUserId(post.getUserId());
-
-        if (userShort != null) {
-            postDto.setPostAuthorDto(convertToPostAuthorDto(userShort));
+        if (post.getUserId() == null) {
+            throw new IllegalArgumentException("Post user ID cannot be null");
         }
+
+        UserShort userShort = userService.findUserShortByUserId(post.getUserId());
+        if (userShort == null) {
+            throw new IllegalArgumentException("User not found for ID: " + post.getUserId());
+        }
+
+        postAuthorDto.setUserId(userShort.getUserId());
+        postAuthorDto.setDisplayName(userShort.getDisplayName());
+        postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+        postDto.setPostAuthorDto(postAuthorDto);
 
         return postDto;
     }
@@ -300,6 +319,7 @@ public class PostService implements IPostService {
         UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
 
         Post post = convertToEntity(postDto);
+
         post.setUserId(currentUser.getUserId());
         Post savedPost = postRepository.save(post);
 
@@ -344,7 +364,11 @@ public class PostService implements IPostService {
     }
 
     private Post convertToEntity(PostDto postDto) {
-        return modelMapper.map(postDto, Post.class);
+        Post post = modelMapper.map(postDto, Post.class);
+        if (postDto.getPostAuthorDto() != null) {
+            post.setUserId(postDto.getPostAuthorDto().getUserId());
+        }
+        return post;
     }
 
     public PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable) {
@@ -402,5 +426,22 @@ public class PostService implements IPostService {
         public int getMatchCount() {
             return matchCount;
         }
+    }
+
+    @Override
+    @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
+    public void deletePost(String postId, String sessionToken) {
+        // Sprawdź, czy użytkownik jest właścicielem posta
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("Post not found"));
+                
+        User user = userRepository.findBySessionToken(sessionToken)
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+                
+        if (!post.getUserId().equals(user.getUserId())) {
+            throw new UnauthorizedException("User is not authorized to delete this post");
+        }
+        
+        postRepository.deleteById(postId);
     }
 }

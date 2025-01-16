@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.jakubkonkol.tasteitserver.dto.*;
-import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.PostMedia;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import java.util.Date;
@@ -26,8 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.AfterAll;
 import pl.jakubkonkol.tasteitserver.service.PostService;
@@ -36,6 +33,7 @@ import pl.jakubkonkol.tasteitserver.service.LikeService;
 import pl.jakubkonkol.tasteitserver.service.UserService;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.text.SimpleDateFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -124,22 +122,31 @@ public class UserFlowE2ETest {
         profileDto.setDisplayName("Test User");
         profileDto.setBio("Test bio");
         profileDto.setProfilePicture("https://example.com/picture.jpg");
-        profileDto.setBirthDate(new Date()); //TODO dodac konkretna date
+        Date specificDate = new Date(1735689600000L); // 01.01.2025
+        profileDto.setBirthDate(specificDate);
 
-        // When & Then
+        // When
         mockMvc.perform(put("/api/v1/user")
                 .header("Authorization", sessionToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(profileDto)))
                 .andExpect(status().isOk());
 
-        //TODO dodac pobranie usera i sprawdzenie danych
+        // Then
+        mockMvc.perform(get("/api/v1/user/" + userId)
+                .header("Authorization", sessionToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.displayName").value("Test User"))
+                .andExpect(jsonPath("$.bio").value("Test bio"))
+                .andExpect(jsonPath("$.profilePicture").value("https://example.com/picture.jpg"))
+                .andExpect(jsonPath("$.birthDate").value("2025-01-01T00:00:00.000+00:00"));
     }
 
     @Test
     @Order(4)
-    @DisplayName("Should get feed")
-    void shouldGetFeed() throws Exception {
+    @DisplayName("Should get random feed")
+    void shouldGetRandomFeed() throws Exception {
         // When & Then
         mockMvc.perform(get("/api/v1/post/feed")
                 .header("Authorization", sessionToken)
@@ -153,7 +160,7 @@ public class UserFlowE2ETest {
     @Order(5)
     @DisplayName("Should create post")
     void shouldCreatePost() throws Exception {
-        // Debug - show avaible types
+        // Show avaible types
         System.out.println("Dostępne typy postów: " + Arrays.toString(PostType.values()));
         
         // Given
@@ -169,13 +176,15 @@ public class UserFlowE2ETest {
         authorDto.setUserId(userId);
         postDto.setPostAuthorDto(authorDto);
 
-        // When & Then
+        // When
         MvcResult result = mockMvc.perform(post("/api/v1/post/create")
                 .header("Authorization", sessionToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(postDto)))
                 .andExpect(status().isOk())
                 .andReturn();
+
+        // Then
 
         PostDto createdPost = objectMapper.readValue(result.getResponse().getContentAsString(), PostDto.class);
         postId = createdPost.getPostId();
@@ -211,6 +220,34 @@ public class UserFlowE2ETest {
 
     @Test
     @Order(8)
+    @DisplayName("Should get clastered feed")
+    void shouldGetFeed() throws Exception {
+        assumeTrue(sessionToken != null, "Session token is required for this test");
+        
+        // Request clustering
+        mockMvc.perform(get("/api/v1/feed/request_clustering")
+                .header("Authorization", sessionToken))
+                .andExpect(status().isOk());
+
+        // Analyze user preferences
+        mockMvc.perform(post("/api/v1/feed/analyze/" + userId)
+                .header("Authorization", sessionToken))
+                .andExpect(status().isOk());
+
+        // Get ranked feed
+        mockMvc.perform(get("/api/v1/feed/ranked_feed")
+                .header("Authorization", sessionToken)
+                .param("page", "0")
+                .param("size", "20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").exists())
+                .andExpect(jsonPath("$.numberOfElements").exists())
+                .andExpect(jsonPath("$.number").exists())
+                .andExpect(jsonPath("$.size").exists());
+    }
+
+    @Test
+    @Order(9)
     @DisplayName("Should verify post interactions")
     void shouldVerifyPostInteractions() throws Exception {
         // Given

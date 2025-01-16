@@ -1,13 +1,15 @@
 package pl.jakubkonkol.tasteitserver.e2e;
+
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -15,25 +17,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.PostMedia;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInfo;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.AfterAll;
 import pl.jakubkonkol.tasteitserver.service.PostService;
 import pl.jakubkonkol.tasteitserver.service.CommentService;
 import pl.jakubkonkol.tasteitserver.service.LikeService;
 import pl.jakubkonkol.tasteitserver.service.UserService;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
+
 import java.text.SimpleDateFormat;
+
+import org.bson.Document;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,6 +69,16 @@ public class UserFlowE2ETest {
     private static final String TEST_PASSWORD = "Test123!@#";
     private static final String TEST_EMAIL = "test@example.com";
 
+    //Check if mongo is up
+    @BeforeAll
+    static void init(@Autowired MongoTemplate mongoTemplate) {
+        try {
+            mongoTemplate.getDb().runCommand(new Document("ping", 1));
+        } catch (Exception e) {
+            throw new IllegalStateException("MongoDB is not available", e);
+        }
+    }
+
     @Test
     @Order(1)
     @DisplayName("Should register user")
@@ -75,8 +90,8 @@ public class UserFlowE2ETest {
 
         // When & Then
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -97,13 +112,13 @@ public class UserFlowE2ETest {
 
         // When & Then
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andReturn();
 
         AuthenticationSuccessTokenDto response = objectMapper.readValue(
-                result.getResponse().getContentAsString(), 
+                result.getResponse().getContentAsString(),
                 AuthenticationSuccessTokenDto.class
         );
         sessionToken = response.getSessionToken();
@@ -115,7 +130,7 @@ public class UserFlowE2ETest {
     @DisplayName("Should update user profile")
     void shouldUpdateUserProfile() throws Exception {
         assumeTrue(sessionToken != null, "Session token is required for this test");
-        
+
         // Given
         UserProfileDto profileDto = new UserProfileDto();
         profileDto.setUserId(userId);
@@ -127,14 +142,14 @@ public class UserFlowE2ETest {
 
         // When
         mockMvc.perform(put("/api/v1/user")
-                .header("Authorization", sessionToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(profileDto)))
+                        .header("Authorization", sessionToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(profileDto)))
                 .andExpect(status().isOk());
 
         // Then
         mockMvc.perform(get("/api/v1/user/" + userId)
-                .header("Authorization", sessionToken))
+                        .header("Authorization", sessionToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.displayName").value("Test User"))
@@ -149,9 +164,9 @@ public class UserFlowE2ETest {
     void shouldGetRandomFeed() throws Exception {
         // When & Then
         mockMvc.perform(get("/api/v1/post/feed")
-                .header("Authorization", sessionToken)
-                .param("page", "0")
-                .param("size", "20"))
+                        .header("Authorization", sessionToken)
+                        .param("page", "0")
+                        .param("size", "20"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").exists());
     }
@@ -162,7 +177,7 @@ public class UserFlowE2ETest {
     void shouldCreatePost() throws Exception {
         // Show avaible types
         System.out.println("Dostępne typy postów: " + Arrays.toString(PostType.values()));
-        
+
         // Given
         PostDto postDto = new PostDto();
         PostMedia postMedia = new PostMedia();
@@ -171,22 +186,23 @@ public class UserFlowE2ETest {
         postMedia.setDescription("Test description");
         postDto.setPostMedia(postMedia);
         postDto.setPostType(PostType.FOOD);
-        
+
         PostAuthorDto authorDto = new PostAuthorDto();
         authorDto.setUserId(userId);
         postDto.setPostAuthorDto(authorDto);
 
         // When
         MvcResult result = mockMvc.perform(post("/api/v1/post/create")
-                .header("Authorization", sessionToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postDto)))
+                        .header("Authorization", sessionToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postDto)))
                 .andExpect(status().isOk())
                 .andReturn();
 
         // Then
 
-        PostDto createdPost = objectMapper.readValue(result.getResponse().getContentAsString(), PostDto.class);
+        PostDto createdPost = objectMapper.readValue(result.getResponse().getContentAsString(),
+                PostDto.class);
         postId = createdPost.getPostId();
         assertThat(postId).isNotNull();
     }
@@ -197,7 +213,7 @@ public class UserFlowE2ETest {
     void shouldLikePost() throws Exception {
         // When & Then
         mockMvc.perform(post("/api/v1/post/" + postId + "/like")
-                .header("Authorization", sessionToken))
+                        .header("Authorization", sessionToken))
                 .andExpect(status().isOk());
     }
 
@@ -211,9 +227,9 @@ public class UserFlowE2ETest {
 
         // When & Then
         mockMvc.perform(post("/api/v1/post/" + postId + "/comment")
-                .header("Authorization", sessionToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(commentDto)))
+                        .header("Authorization", sessionToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Test comment"));
     }
@@ -223,22 +239,22 @@ public class UserFlowE2ETest {
     @DisplayName("Should get clastered feed")
     void shouldGetFeed() throws Exception {
         assumeTrue(sessionToken != null, "Session token is required for this test");
-        
+
         // Request clustering
         mockMvc.perform(get("/api/v1/feed/request_clustering")
-                .header("Authorization", sessionToken))
+                        .header("Authorization", sessionToken))
                 .andExpect(status().isOk());
 
         // Analyze user preferences
         mockMvc.perform(post("/api/v1/feed/analyze/" + userId)
-                .header("Authorization", sessionToken))
+                        .header("Authorization", sessionToken))
                 .andExpect(status().isOk());
 
         // Get ranked feed
         mockMvc.perform(get("/api/v1/feed/ranked_feed")
-                .header("Authorization", sessionToken)
-                .param("page", "0")
-                .param("size", "20"))
+                        .header("Authorization", sessionToken)
+                        .param("page", "0")
+                        .param("size", "20"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").exists())
                 .andExpect(jsonPath("$.numberOfElements").exists())
@@ -258,16 +274,16 @@ public class UserFlowE2ETest {
         postMedia.setDescription("Test Description");
         postDto.setPostMedia(postMedia);
         postDto.setPostType(PostType.FOOD);
-        
+
         PostAuthorDto authorDto = new PostAuthorDto();
         authorDto.setUserId(userId);
         postDto.setPostAuthorDto(authorDto);
 
         // When - Create post
         MvcResult createResult = mockMvc.perform(post("/api/v1/post/create")
-                .header("Authorization", sessionToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postDto)))
+                        .header("Authorization", sessionToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postDto)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -278,7 +294,7 @@ public class UserFlowE2ETest {
 
         // Then - Get post and verify
         mockMvc.perform(get("/api/v1/post/" + postId)
-                .header("Authorization", sessionToken))
+                        .header("Authorization", sessionToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.postId").value(postId))
                 .andExpect(jsonPath("$.postMedia.title").value("Test Post"))
@@ -286,28 +302,30 @@ public class UserFlowE2ETest {
 
         // Cleanup
         mockMvc.perform(delete("/api/v1/post/" + postId)
-                .header("Authorization", sessionToken))
+                        .header("Authorization", sessionToken))
                 .andExpect(status().isOk());
     }
 
     @BeforeEach
     void setUp(TestInfo testInfo) throws Exception {
-        assumeTrue(sessionToken != null || 
-                  testInfo.getTestMethod().get().getName().equals("shouldRegisterUser") || 
-                  testInfo.getTestMethod().get().getName().equals("shouldLoginUser"),
-                  "Session token is required for this test");
-                  
+        assumeTrue(sessionToken != null ||
+                        testInfo.getTestMethod().get().getName().equals("shouldRegisterUser") ||
+                        testInfo.getTestMethod().get().getName().equals("shouldLoginUser"),
+                "Session token is required for this test");
+
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new JavaTimeModule());
-        
+
         // Clear test user before registration test
         if (testInfo.getTestMethod().get().getName().equals("shouldRegisterUser")) {
             cleanupTestUser();
         }
+
+        System.setProperty("ADMIN_PASSWORD", "admin123!@#");
     }
 
     private void cleanupTestUser() {
-        String adminSessionToken = null;  // Changing type to String
+        String adminSessionToken = null;
         try {
             // Login as admin
             UserLoginRequestDto adminLogin = new UserLoginRequestDto();
@@ -315,12 +333,13 @@ public class UserFlowE2ETest {
             adminLogin.setPassword(System.getenv("MONGO_PASSWORD"));
 
             MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(adminLogin)))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(adminLogin)))
                     .andReturn();
 
             if (loginResult.getResponse().getStatus() == 200) {
-                JsonNode loginResponse = objectMapper.readTree(loginResult.getResponse().getContentAsString());
+                JsonNode loginResponse = objectMapper.readTree(
+                        loginResult.getResponse().getContentAsString());
                 adminSessionToken = loginResponse.get("sessionToken").asText();
             }
 
@@ -351,22 +370,21 @@ public class UserFlowE2ETest {
             }
 
             // Delete test user
-            if (userId != null) {
+            try {
+                if (adminSessionToken != null) {
+                    userService.deleteUser(TEST_EMAIL, adminSessionToken);
+                } else {
+                    userRepository.deleteByEmail(TEST_EMAIL);
+                }
+            } catch (Exception e) {
+                System.err.println("Error deleting user: " + e.getMessage());
                 try {
-                    if (adminSessionToken != null) {
-                        userService.deleteUser(TEST_EMAIL, adminSessionToken);
-                    } else {
-                        userRepository.deleteByEmail(TEST_EMAIL);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error deleting user: " + e.getMessage());
-                    try {
-                        userRepository.deleteByEmail(TEST_EMAIL);
-                    } catch (Exception ex) {
-                        System.err.println("Error during repository cleanup: " + ex.getMessage());
-                    }
+                    userRepository.deleteByEmail(TEST_EMAIL);
+                } catch (Exception ex) {
+                    System.err.println("Error during user cleanup: " + ex.getMessage());
                 }
             }
+
         } catch (Exception e) {
             System.err.println("Error during cleanup: " + e.getMessage());
         }
@@ -374,12 +392,12 @@ public class UserFlowE2ETest {
 
     @AfterAll
     static void cleanup(@Autowired PostService postService,
-                       @Autowired CommentService commentService,
-                       @Autowired LikeService likeService,
-                       @Autowired MockMvc mockMvc,
-                       @Autowired ObjectMapper objectMapper,
-                       @Autowired UserRepository userRepository,
-                       @Autowired UserService userService) {
+                        @Autowired CommentService commentService,
+                        @Autowired LikeService likeService,
+                        @Autowired MockMvc mockMvc,
+                        @Autowired ObjectMapper objectMapper,
+                        @Autowired UserRepository userRepository,
+                        @Autowired UserService userService) {
         try {
             if (postId != null) {
                 // Delete post comments
@@ -420,7 +438,7 @@ public class UserFlowE2ETest {
                     try {
                         userRepository.deleteByEmail(TEST_EMAIL);
                     } catch (Exception ex) {
-                        System.err.println("Error during repository cleanup: " + ex.getMessage());
+                        System.err.println("Error during user cleanup: " + ex.getMessage());
                     }
                 }
             }

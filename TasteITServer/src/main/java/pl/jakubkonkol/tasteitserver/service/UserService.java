@@ -323,7 +323,7 @@ public class UserService implements IUserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("User with email " + email + " not found"));
         
-        // Usuń wszystkie posty użytkownika
+        // Delete all user posts
         if (user.getPosts() != null) {
             user.getPosts().forEach(post -> {
                 try {
@@ -335,7 +335,7 @@ public class UserService implements IUserService {
             });
         }
         
-        // Usuń użytkownika
+        // Delete user
         userRepository.delete(user);
     }
 }

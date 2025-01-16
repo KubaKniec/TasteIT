@@ -23,7 +23,7 @@ public interface IPostService {
     PageDto<PostDto> searchPostsByTagName(String tagId, Integer page, Integer size);
     PageDto<PostDto> getUserPosts(String userId, Integer page, Integer size);
     PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken);
-    public PageDto<PostDto> getPostDtoPageDtoFromPostPhotoView(
+    PageDto<PostDto> getPostDtoPageDtoFromPostPhotoView(
             Page<PostPhotoView> postsPhotoViewPage, Pageable pageable);
     PageDto<PostDto> getPageDto(PageImpl<PostDto> pageImpl);
     Recipe getPostRecipe(String postId);
@@ -33,4 +33,5 @@ public interface IPostService {
     PostDto convertToDto(Post post, String sessionToken);
     PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable);
     void deletePost(String postId, String sessionToken);
+    void deletePostById(String postId, String sessionToken);
 }

@@ -35,7 +35,7 @@ public class IngredientFetcher {
 
     public void populateDBWithIngredients(){
         var ingredients = fetchIngredients();
-        ingredientService.saveAll(ingredients);
+        ingredientService.saveAllIngredients(ingredients);
         LOGGER.log(Level.INFO, "Alcohol ingredients saved");
     }
 

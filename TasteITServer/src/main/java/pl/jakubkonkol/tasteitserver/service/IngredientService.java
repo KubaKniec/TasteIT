@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IIngredientService;
 import org.springframework.cache.annotation.CacheEvict;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -51,19 +51,44 @@ public class IngredientService implements IIngredientService {
     }
 
     @CacheEvict(value = {"ingredients", "ingredientsById", "ingredientsPages", "ingredientsAll"}, allEntries = true)
-    public IngredientDto save(Ingredient ingredient) {
-        if (ingredient == null) {
-            throw new IllegalArgumentException("Ingredient cannot be null.");
-        }
-        if(ingredientRepository.findByNameIgnoreCase(ingredient.getName()).isEmpty()){
-            ingredientRepository.save(ingredient);
+    public IngredientDto save(IngredientDto ingredientDto) {
+        Ingredient ingredient = convertToEntity(ingredientDto);
+        Optional<Ingredient> existingIngredient = ingredientRepository.findByNameIgnoreCase(ingredient.getName());
+
+        if (existingIngredient.isPresent()) {
+            return convertToDto(existingIngredient.get());
         }
 
+        ingredient = ingredientRepository.save(ingredient);
         return convertToDto(ingredient);
     }
 
     @CacheEvict(value = {"ingredients", "ingredientsById", "ingredientsPages", "ingredientsAll"}, allEntries = true)
-    public List<IngredientDto> saveAll(List<Ingredient> ingredients) {
+    public List<IngredientDto> saveAll(List<IngredientDto> ingredientsDtos) {
+        Set<String> existingNames = ingredientRepository
+                .findByNameIgnoreCaseIn(
+                        ingredientsDtos.stream()
+                                .map(IngredientDto::getName)
+                                .collect(Collectors.toSet())
+                )
+                .stream()
+                .map(ingredient -> ingredient.getName().toLowerCase())
+                .collect(Collectors.toSet());
+
+        List<Ingredient> savedIngredients = ingredientRepository.saveAll(
+                ingredientsDtos.stream()
+                        .filter(dto -> !existingNames.contains(dto.getName().toLowerCase()))
+                        .map(this::convertToEntity)
+                        .collect(Collectors.toList())
+        );
+
+        return savedIngredients.stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
+    @CacheEvict(value = {"ingredients", "ingredientsById", "ingredientsPages", "ingredientsAll"}, allEntries = true)
+    public List<IngredientDto> saveAllIngredients(List<Ingredient> ingredients) {
         if (ingredients == null) {
             throw new IllegalArgumentException("List of drinks cannot be null.");
         }
@@ -76,8 +101,9 @@ public class IngredientService implements IIngredientService {
             }
         });
 
-        return ingredients.stream().map(i -> convertToDto(i)).toList();
+        return ingredients.stream().map(this::convertToDto).toList();
     }
+
     @CacheEvict(value = {"ingredients", "ingredientsById", "ingredientsPages", "ingredientsAll"}, allEntries = true)
     public void deleteAll() {
         ingredientRepository.deleteAll();

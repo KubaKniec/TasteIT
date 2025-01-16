@@ -47,7 +47,7 @@ public class FoodFetcher {
      */
     public void populateDBWithFood() {
         var ingredients = fetchIngredients();
-        ingredientService.saveAll(ingredients);
+        ingredientService.saveAllIngredients(ingredients);
         LOGGER.log(Level.INFO, "Ingredients saved");
         var foodPosts = searchFoodForEveryLetter();
         List<Post> posts = postService.saveAll(foodPosts);

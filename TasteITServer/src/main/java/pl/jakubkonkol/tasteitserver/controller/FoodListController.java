@@ -1,5 +1,8 @@
 package pl.jakubkonkol.tasteitserver.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +20,11 @@ import java.util.List;
 public class FoodListController {
     private final IFoodListService foodListService;
 
-    @PostMapping("/{name}")
+    @PostMapping("/")
     public ResponseEntity<FoodListDto> createFoodList(
-            @RequestHeader("Authorization") final String sessionToken, @PathVariable String name) {
-        FoodListDto foodListDto = foodListService.createFoodList(sessionToken, name);
+            @RequestHeader("Authorization") final String sessionToken,
+            @RequestBody @Valid FoodListDto foodList) {
+        FoodListDto foodListDto = foodListService.createFoodList(sessionToken, foodList);
         return ResponseEntity.ok(foodListDto);
     }
 
@@ -49,7 +53,7 @@ public class FoodListController {
     @PutMapping("/name/{foodListId}")
     public ResponseEntity<GenericResponse> updateFoodlistName(
             @RequestHeader("Authorization") final String sessionToken,
-            @PathVariable String foodListId, @RequestBody FoodListDto name) {
+            @PathVariable String foodListId, @RequestBody @Valid FoodListDto name) {
         foodListService.updateFoodlistName(sessionToken, foodListId, name);
         return ResponseEntity.ok(GenericResponse
                 .builder()

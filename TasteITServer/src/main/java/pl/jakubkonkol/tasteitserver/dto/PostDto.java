@@ -1,7 +1,9 @@
 package pl.jakubkonkol.tasteitserver.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 import pl.jakubkonkol.tasteitserver.model.PostMedia;
 import pl.jakubkonkol.tasteitserver.model.Recipe;
@@ -15,14 +17,18 @@ import java.util.List;
 @Data
 public class PostDto {
     private String postId;
-    @NotNull(message = "UserId cannot be null.")
     private PostAuthorDto postAuthorDto;
-    @NotNull(message = "PostType cannot be null.")
+    @NotNull(message = "Type of the Post cannot be null")
     private PostType postType;
+    @NotNull(message = "Post Media cannot be null")
+    @Valid
     private PostMedia postMedia;
+    @NotNull(message = "Recipe cannot be null")
+    @Valid
     private Recipe recipe;
     private Boolean isAlcoholic;
     private List<Tag> tags = new ArrayList<>();
+    @PastOrPresent(message = "Created date cannot be in the future")
     private Date createdDate;
     private Long likesCount;
     private Long commentsCount;

@@ -14,6 +14,10 @@ import {UserService} from "../../service/user.service";
 import {User} from "../../model/user/User";
 import {AddToFoodlistFactoryService} from "../../service/factories/add-to-foodlist-factory.service";
 import {Subject, takeUntil} from "rxjs";
+import {MatDialog} from "@angular/material/dialog";
+import {
+  ConfirmPostDeletionComponent
+} from "../../components/dialogs/confirm-post-deletion/confirm-post-deletion.component";
 
 @Component({
   selector: 'app-drink-view',
@@ -40,7 +44,8 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
              private postService: PostService,
              private commentsSectionFactoryService: CommentsSectionFactoryService,
              private userService: UserService,
-             private addToFoodlistFactoryService: AddToFoodlistFactoryService
+             private addToFoodlistFactoryService: AddToFoodlistFactoryService,
+             private dialog: MatDialog,
  ){
    this.instructionsFactoryService.setRootViewContainerRef(this.viewContainerRef);
    this.ingredientViewFactoryService.setRootViewContainerRef(this.viewContainerRef);
@@ -83,6 +88,23 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
   }
   gotoProfile(userId: string){
     this.router.navigate(['/user-profile', userId]).then();
+  }
+  AmITheAuthor(): boolean{
+    return this.currentUserId === this.postAuthor.userId;
+  }
+  removePost(){
+   const dialogRef = this.dialog.open(ConfirmPostDeletionComponent);
+
+   dialogRef.afterClosed().subscribe(async result => {
+     if(result){
+       this.postService.deletePost(this.activePost.postId!).then(() => {
+         this.toast.success("Post deleted successfully");
+         this.router.navigate(['/home']).then();
+       }).catch(() => {
+         this.toast.error("Failed to delete post");
+       })
+     }
+   })
   }
 
   getAuthorName(): string{

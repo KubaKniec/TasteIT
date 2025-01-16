@@ -23,6 +23,9 @@ public interface UserRepository extends MongoRepository<User, String>{
     @Query("{ 'authentication.sessionToken' : ?0 }")
     Optional<User> findBySessionToken(String sessionToken);
 
+    @Query("{ 'authentication.sessionToken' : ?0 }")
+    Optional<UserShort> findUserShortBySessionToken(String sessionToken);
+
     @Query(value = "{ 'userId': { $in: ?0 } }")
     Page<UserShort> findUsersByUserIdIn(List<String> userIds, Pageable pageable);
 

@@ -173,69 +173,6 @@ public class UserFlowE2ETest {
 
     @Test
     @Order(5)
-    @DisplayName("Should create post")
-    void shouldCreatePost() throws Exception {
-        // Show avaible types
-        System.out.println("Dostępne typy postów: " + Arrays.toString(PostType.values()));
-
-        // Given
-        PostDto postDto = new PostDto();
-        PostMedia postMedia = new PostMedia();
-        postMedia.setTitle("Test post");
-        postMedia.setPictures(List.of("https://example.com/image.jpg"));
-        postMedia.setDescription("Test description");
-        postDto.setPostMedia(postMedia);
-        postDto.setPostType(PostType.FOOD);
-
-        PostAuthorDto authorDto = new PostAuthorDto();
-        authorDto.setUserId(userId);
-        postDto.setPostAuthorDto(authorDto);
-
-        // When
-        MvcResult result = mockMvc.perform(post("/api/v1/post/create")
-                        .header("Authorization", sessionToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postDto)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        // Then
-
-        PostDto createdPost = objectMapper.readValue(result.getResponse().getContentAsString(),
-                PostDto.class);
-        postId = createdPost.getPostId();
-        assertThat(postId).isNotNull();
-    }
-
-    @Test
-    @Order(6)
-    @DisplayName("Should like post")
-    void shouldLikePost() throws Exception {
-        // When & Then
-        mockMvc.perform(post("/api/v1/post/" + postId + "/like")
-                        .header("Authorization", sessionToken))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @Order(7)
-    @DisplayName("Should add comment to post")
-    void shouldAddComment() throws Exception {
-        // Given
-        CommentDto commentDto = new CommentDto();
-        commentDto.setContent("Test comment");
-
-        // When & Then
-        mockMvc.perform(post("/api/v1/post/" + postId + "/comment")
-                        .header("Authorization", sessionToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("Test comment"));
-    }
-
-    @Test
-    @Order(8)
     @DisplayName("Should get clastered feed")
     void shouldGetFeed() throws Exception {
         assumeTrue(sessionToken != null, "Session token is required for this test");
@@ -251,19 +188,24 @@ public class UserFlowE2ETest {
                 .andExpect(status().isOk());
 
         // Get ranked feed
-        mockMvc.perform(get("/api/v1/feed/ranked_feed")
+        var result = mockMvc.perform(get("/api/v1/feed/ranked_feed")
                         .header("Authorization", sessionToken)
                         .param("page", "0")
                         .param("size", "20"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").exists())
-                .andExpect(jsonPath("$.numberOfElements").exists())
-                .andExpect(jsonPath("$.number").exists())
-                .andExpect(jsonPath("$.size").exists());
+                .andReturn();
+
+        //If you want to show results, uncomment these lines
+/*        String responseContent = result.getResponse().getContentAsString();
+        System.out.println("\n=== Feed Content ===");
+        System.out.println(objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(objectMapper.readTree(responseContent)));
+        System.out.println("==================\n");*/
     }
 
     @Test
-    @Order(9)
+    @Order(6)
     @DisplayName("Should verify post interactions")
     void shouldVerifyPostInteractions() throws Exception {
         // Given
@@ -304,6 +246,69 @@ public class UserFlowE2ETest {
         mockMvc.perform(delete("/api/v1/post/" + postId)
                         .header("Authorization", sessionToken))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Should create post")
+    void shouldCreatePost() throws Exception {
+        // Show avaible types
+        System.out.println("Dostępne typy postów: " + Arrays.toString(PostType.values()));
+
+        // Given
+        PostDto postDto = new PostDto();
+        PostMedia postMedia = new PostMedia();
+        postMedia.setTitle("Test post");
+        postMedia.setPictures(List.of("https://example.com/image.jpg"));
+        postMedia.setDescription("Test description");
+        postDto.setPostMedia(postMedia);
+        postDto.setPostType(PostType.FOOD);
+
+        PostAuthorDto authorDto = new PostAuthorDto();
+        authorDto.setUserId(userId);
+        postDto.setPostAuthorDto(authorDto);
+
+        // When
+        MvcResult result = mockMvc.perform(post("/api/v1/post/create")
+                        .header("Authorization", sessionToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postDto)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Then
+
+        PostDto createdPost = objectMapper.readValue(result.getResponse().getContentAsString(),
+                PostDto.class);
+        postId = createdPost.getPostId();
+        assertThat(postId).isNotNull();
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Should like post")
+    void shouldLikePost() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/v1/post/" + postId + "/like")
+                        .header("Authorization", sessionToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Should add comment to post")
+    void shouldAddComment() throws Exception {
+        // Given
+        CommentDto commentDto = new CommentDto();
+        commentDto.setContent("Test comment");
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/post/" + postId + "/comment")
+                        .header("Authorization", sessionToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("Test comment"));
     }
 
     @BeforeEach

@@ -25,5 +25,5 @@ public class UserReturnDto {
     private Long followingCount;
     private Boolean isFollowing;
     private Long postsCount;
-    private List<Badge> badges = new ArrayList<>();
+    private List<BadgeDto> badges = new ArrayList<>();
 }

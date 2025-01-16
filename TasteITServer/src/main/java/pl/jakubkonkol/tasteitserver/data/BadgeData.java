@@ -1,18 +1,26 @@
 package pl.jakubkonkol.tasteitserver.data;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import pl.jakubkonkol.tasteitserver.model.value.BadgeBlueprint;
+import pl.jakubkonkol.tasteitserver.repository.BadgeBlueprintRepository;
+import pl.jakubkonkol.tasteitserver.repository.BadgeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 @Component
+@RequiredArgsConstructor
 public class BadgeData {
-    public static List<BadgeBlueprint> badgeBlueprintData = new ArrayList<>();
+    private List<BadgeBlueprint> badgeBlueprintData = new ArrayList<>();
+    private final BadgeBlueprintRepository badgeBlueprintRepository;
+
+
 
    @PostConstruct
     public void initBadges(){
+
        //BluePrinty odznak, bez statusu
        var badges = List.of(new BadgeBlueprint("First Recipe", "Added your first recipe to the community!", "", 1,
                        collector -> collector.countPosts()),
@@ -37,7 +45,19 @@ public class BadgeData {
                new BadgeBlueprint("Recipe Connoisseur", "Saved 10 recipes to your collection.", "", 10,
                        collector -> collector.countSaved()));
        badgeBlueprintData.addAll(badges);
+       updateDatabase();
    }
+
+    private void updateDatabase() {
+        if (badgeBlueprintRepository.count() == 0) {
+            badgeBlueprintRepository.saveAll(badgeBlueprintData);
+        }
+    }
+
+
+    public List<BadgeBlueprint> getBadgeBlueprintData() {
+        return badgeBlueprintData;
+    }
 }
 
 /*

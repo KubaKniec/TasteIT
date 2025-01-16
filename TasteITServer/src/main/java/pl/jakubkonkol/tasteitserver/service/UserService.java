@@ -40,6 +40,7 @@ public class UserService implements IUserService {
     private final TagService tagService;
     private final UserActionRepository userActionRepository;
     private final NotificationEventPublisher notificationEventPublisher;
+    private final NewBadgeService newBadgeService;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
     @Cacheable(value = "userById", key = "#userId")
@@ -49,7 +50,8 @@ public class UserService implements IUserService {
 
         UserReturnDto userReturnDto = convertToDto(user);
         userReturnDto.setIsFollowing(currentUser.getFollowing().contains(userId));
-
+        List<BadgeDto> allBadges = newBadgeService.updateBadges(user);
+        userReturnDto.setBadges(allBadges);
         return userReturnDto;
     }
 

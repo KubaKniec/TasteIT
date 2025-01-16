@@ -7,7 +7,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.jakubkonkol.tasteitserver.dto.BadgeDto;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
+import pl.jakubkonkol.tasteitserver.model.value.BadgeBlueprint;
 
 import java.util.*;
 
@@ -38,7 +40,8 @@ public class User implements UserDetails {
     @DBRef
     private List<Post> posts = new ArrayList<>();   //ustawiac przy budowaniu bazy
     private Map<String, Double> clusterPreferences = new HashMap<>();
-    private List<Badge> badges = new ArrayList<>();
+    @DBRef
+    private List<Badge> earnedBadges = new ArrayList<>();
 
 
     @Override
@@ -55,6 +58,11 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
+
+    public void addEarnedBadge(Badge badge) {
+        earnedBadges.add(badge);
+    }
+
 
     public List<Recipe> getRecipes() {
         return posts.stream()
@@ -85,5 +93,10 @@ public class User implements UserDetails {
                 .sum();
     }
 
+    public Optional<Badge> getEarnedBadgeBy(int id) {
+        return earnedBadges.stream()
+                .filter(badge -> badge.getId() == id)
+                .findAny();
+    }
 }
 

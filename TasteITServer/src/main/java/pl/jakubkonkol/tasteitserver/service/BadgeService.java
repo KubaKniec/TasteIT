@@ -27,9 +27,10 @@ public class BadgeService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final BadgeData badgeData;
 
     public void saveBadgeData() {
-        List<BadgeBlueprint> badgeBlueprintDataList = BadgeData.badgeBlueprintData;
+        List<BadgeBlueprint> badgeBlueprintDataList = badgeData.getBadgeBlueprintData();
         Pattern pattern = Pattern.compile("\\d+"); // Liczby w opisie
         Matcher matcher;
 
@@ -39,7 +40,7 @@ public class BadgeService {
             badgeBlueprint.setBadgeName(badgeBlueprintDataList.get(i).getBadgeName());
             badgeBlueprint.setDescription(badgeBlueprintDataList.get(i).getDescription());
             badgeBlueprint.setImageUrl(badgeBlueprintDataList.get(i).getImageUrl());
-            if (badgeBlueprint.getId().equals("badge_001")) {
+            if (badgeBlueprint.getId()==1) {
                 badgeBlueprint.setGoalValue(1); // badge_001 jako jedyny nie ma liczby, ma słowo 'pierwszy'
             } else {
                 matcher = pattern.matcher(badgeBlueprint.getDescription());
@@ -57,7 +58,7 @@ public class BadgeService {
     }
 
 
-    public void grantBadgeToUser(String badgeId, String userId, String sessionToken) {
+  /*  public void grantBadgeToUser(String badgeId, String userId, String sessionToken) {
         User user = userService.getCurrentUserBySessionToken(sessionToken);
         BadgeBlueprint badgeBlueprint = badgeRepository.findById(badgeId)
                 .orElseThrow();
@@ -71,7 +72,7 @@ public class BadgeService {
                 .currentValue(1) // TODO w przyszłości currentValue powinno byc przypisywane autmoatycznie jakaś @Adnotacja albo metoda
                 .build();
 
-        List<Badge> updatedBadges = new ArrayList<>(user.getBadges());
+        List<Badge> updatedBadges = new ArrayList<>(user.getEarnedBadges());
         updatedBadges.add(badge);
         userService.updateUserBadges(userId, updatedBadges);
     }
@@ -80,12 +81,12 @@ public class BadgeService {
         UserReturnDto userReturnDto = userService.getCurrentUserDtoBySessionToken(sessionToken);
         List<Badge> userBadges = userReturnDto.getBadges();
         Badge updatedBadge = userBadges.stream()
-                .filter(b -> b.getBadgeId().equals(badgeId))
+                .filter(b -> b.getId().equals(badgeId))
                 .findFirst()
                 .orElseThrow();
         if (updatedBadge.getCurrentValue() != updatedBadge.getGoalValue()) {
             updatedBadge.setCurrentValue(updatedBadge.getCurrentValue() + 1);
             userService.updateUserBadges(userReturnDto.getUserId(), userBadges);
         }
-    }
+    }*/
 }

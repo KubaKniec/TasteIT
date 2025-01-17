@@ -1,0 +1,19 @@
+<div *ngIf="show"
+     [@slideInOut]
+     class="notification-toast">
+  <img [src]="notification.actorPicture"
+       [alt]="notification.actorName"
+       class="notification-avatar"/>
+  <div class="notification-content">
+    <p class="notification-author">{{ notification.actorName }}</p>
+    <p class="notification-message">{{ notification.message }}</p>
+    <p class="notification-timestamp">{{ notification.createdAt | date:'short' }}</p>
+  </div>
+  <button (click)="close()"
+          class="notification-close-btn">
+    <span class="sr-only">Close</span>
+    <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+</div>

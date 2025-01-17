@@ -95,6 +95,10 @@ import { PBNavigationComponent } from './pages/post-builder/pbnavigation/pbnavig
 import {PostBuilderService} from "./pages/post-builder/shared/postBuilder.service";
 import {CreatorService} from "./service/creator.service";
 import { ConfirmPostDeletionComponent } from './components/dialogs/confirm-post-deletion/confirm-post-deletion.component';
+import {NotificationsService} from "./service/notifications.service";
+import { NotificationsComponent } from './components/notifications/notifications.component';
+import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
+import {NotificationToastService} from "./service/notification.toast.service";
 @NgModule({
   declarations: [
     AppComponent,
@@ -142,6 +146,8 @@ import { ConfirmPostDeletionComponent } from './components/dialogs/confirm-post-
     PostSummaryComponent,
     PBNavigationComponent,
     ConfirmPostDeletionComponent,
+    NotificationsComponent,
+    NotificationToastComponent,
   ],
   imports: [
     BrowserModule,
@@ -203,7 +209,9 @@ import { ConfirmPostDeletionComponent } from './components/dialogs/confirm-post-
     AddToFoodlistFactoryService,
     MatDialog,
     PostBuilderService,
-    CreatorService
+    CreatorService,
+    NotificationsService,
+    NotificationToastService
   ],
   bootstrap: [AppComponent]
 })

@@ -25,10 +25,6 @@ export class PostBuilderComponent implements OnInit {
     this.postData$ = this.postBuilderService.postData$;
   }
 
-  async ngOnInit(): Promise<void> {
-
-  }
-
   nextStep(): void {
     if (this.currentStep < 5) {
       this.currentStep = (this.currentStep + 1) as StepNumber;
@@ -72,5 +68,8 @@ export class PostBuilderComponent implements OnInit {
       this.postBuilderService.resetPostData();
       this.router.navigate(['/drink', postId]);
     })
+  }
+  async ngOnInit(): Promise<void> {
+
   }
 }

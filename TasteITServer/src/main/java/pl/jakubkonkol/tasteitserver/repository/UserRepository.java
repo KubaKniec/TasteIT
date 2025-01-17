@@ -74,4 +74,6 @@ public interface UserRepository extends MongoRepository<User, String>{
 
     @Query(value = "{ '_id' : ?0 }", fields = "{ 'clusterPreferences' : 1}")
     Optional<User> findClusterPreferencesById(String userId);  // it would be good to create projection for this
+
+    void deleteByEmail(String email);
 }

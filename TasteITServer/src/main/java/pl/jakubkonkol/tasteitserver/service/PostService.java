@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.jakubkonkol.tasteitserver.exception.UnauthorizedException;
+
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -51,11 +52,11 @@ public class PostService implements IPostService {
     private final MongoTemplate mongoTemplate;
     private final ModelMapper modelMapper;
     private final PostRepository postRepository;
-    
+
     @Lazy
     @Autowired
     private UserService userService;
-    
+
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -80,11 +81,14 @@ public class PostService implements IPostService {
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void deletePostById(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Post with id " + postId + " not found"));
 
         UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
         if (!post.getUserId().equals(currentUser.getUserId())) {
-            throw new IllegalStateException("Post of id: " + postId + " does not belong to the user of id: " + currentUser.getUserId());
+            throw new IllegalStateException(
+                    "Post of id: " + postId + " does not belong to the user of id: " +
+                            currentUser.getUserId());
         }
 
         Query userQuery = new Query();
@@ -106,7 +110,8 @@ public class PostService implements IPostService {
     @Cacheable(value = "postById", key = "#postId")
     public PostDto getPost(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Post with id " + postId + " not found"));
 
         PostDto postDto = convertToDto(post, sessionToken);
 
@@ -119,10 +124,10 @@ public class PostService implements IPostService {
             throw new IllegalArgumentException("User not found for ID: " + post.getUserId());
         }
 
-        postAuthorDto.setUserId(userShort.getUserId());
+/*        postAuthorDto.setUserId(userShort.getUserId());
         postAuthorDto.setDisplayName(userShort.getDisplayName());
         postAuthorDto.setProfilePicture(userShort.getProfilePicture());
-        postDto.setPostAuthorDto(postAuthorDto);
+        postDto.setPostAuthorDto(postAuthorDto);*/
 
         return postDto;
     }
@@ -190,7 +195,7 @@ public class PostService implements IPostService {
     }
 
     public List<PostDto> searchPostsWithAnyIngredient(List<String> ingredientNames,
-                                                   String sessionToken) {
+                                                      String sessionToken) {
         var foundPosts = postRepository.findAll();
 
 
@@ -200,12 +205,16 @@ public class PostService implements IPostService {
 
         // Filtrowanie i sortowanie postów
         var filteredPosts = foundPosts.stream()
-                .filter(post -> post.getRecipe() != null && post.getRecipe().getIngredientsWithMeasurements() != null)
+                .filter(post -> post.getRecipe() != null &&
+                        post.getRecipe().getIngredientsWithMeasurements() != null)
                 .filter(post -> post.getRecipe().getIngredientsWithMeasurements().stream()
-                        .anyMatch(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase())))
-                .map(post -> new PostWithMatchCount(post, (int) post.getRecipe().getIngredientsWithMeasurements().stream()
-                        .filter(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase()))
-                        .count()))
+                        .anyMatch(ingredient -> ingredientNamesLower.contains(
+                                ingredient.getName().toLowerCase())))
+                .map(post -> new PostWithMatchCount(post,
+                        (int) post.getRecipe().getIngredientsWithMeasurements().stream()
+                                .filter(ingredient -> ingredientNamesLower.contains(
+                                        ingredient.getName().toLowerCase()))
+                                .count()))
                 .sorted(Comparator.comparingInt(PostWithMatchCount::getMatchCount).reversed())
                 .map(PostWithMatchCount::getPost)
                 .collect(Collectors.toList());
@@ -227,13 +236,17 @@ public class PostService implements IPostService {
 
         // Filtrowanie i sortowanie postów
         var filteredPosts = foundPosts.stream()
-                .filter(post -> post.getRecipe() != null && post.getRecipe().getIngredientsWithMeasurements() != null
+                .filter(post -> post.getRecipe() != null &&
+                        post.getRecipe().getIngredientsWithMeasurements() != null
                         && !post.getRecipe().getIngredientsWithMeasurements().isEmpty())
                 .filter(post -> post.getRecipe().getIngredientsWithMeasurements().stream()
-                        .allMatch(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase())))
-                .map(post -> new PostWithMatchCount(post, (int) post.getRecipe().getIngredientsWithMeasurements().stream()
-                        .filter(ingredient -> ingredientNamesLower.contains(ingredient.getName().toLowerCase()))
-                        .count()))
+                        .allMatch(ingredient -> ingredientNamesLower.contains(
+                                ingredient.getName().toLowerCase())))
+                .map(post -> new PostWithMatchCount(post,
+                        (int) post.getRecipe().getIngredientsWithMeasurements().stream()
+                                .filter(ingredient -> ingredientNamesLower.contains(
+                                        ingredient.getName().toLowerCase()))
+                                .count()))
                 .sorted(Comparator.comparingInt(PostWithMatchCount::getMatchCount).reversed())
                 .map(PostWithMatchCount::getPost)
                 .collect(Collectors.toList());
@@ -262,7 +275,8 @@ public class PostService implements IPostService {
     }
 
 
-    public PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable, String sessionToken) {
+    public PageDto<PostDto> getPostDtoPageDto(List<Post> posts, Long total, Pageable pageable,
+                                              String sessionToken) {
         List<PostDto> postDtos = posts.stream()
                 .map(post -> convertToDto(post, sessionToken))
                 .toList();
@@ -321,6 +335,14 @@ public class PostService implements IPostService {
         Post post = convertToEntity(postDto);
 
         post.setUserId(currentUser.getUserId());
+
+        if (post.getUserId() == null) {
+            throw new NoSuchElementException("Missing author in post exception");
+        }
+        if (post.getRecipe() == null) {
+            throw new NoSuchElementException("Missing recipe in post exception");
+        }
+
         Post savedPost = postRepository.save(post);
 
         PostDto responseDto = modelMapper.map(savedPost, PostDto.class);
@@ -331,26 +353,45 @@ public class PostService implements IPostService {
         PostAuthorDto authorDto = convertToPostAuthorDto(currentUser);
         responseDto.setPostAuthorDto(authorDto);
 
+        if (responseDto.getPostAuthorDto() == null) {
+            throw new NoSuchElementException("Missing author in returned post exception");
+        }
+
         return responseDto;
     }
 
     public PostDto convertToDto(Post post, String sessionToken) {
         PostDto postDto = modelMapper.map(post, PostDto.class);
+
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
 
-        UserShort author = userService.findUserShortByUserId(post.getUserId()); //todo optymalizacja dla wielu postow
-        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
-        var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId()); //todo optymalizacja dla wielu postow
 
-        // nie wiem czy ustawialbym to pole w tym miejscu moze np w getRandomPosts i getPost? jest to jednak metoda konkretnie do konwersji
-        //" Aby wiedzieć, czy dany użytkownik jest obserwowany przez innego użytkownika,
-        // potrzebujesz dodatkowego kontekstu, czyli danych o użytkowniku aktualnie zalogowanym (np. currentUser).
-        // Ta informacja nie powinna być dostępna bezpośrednio w metodzie konwertującej."
-        postDto.setLikedByCurrentUser(like.isPresent());
+        try {
+            UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
+            var like = likeRepository.findByPostIdAndUserId(post.getPostId(),
+                    currentUser.getUserId());
 
-        PostAuthorDto postAuthorDto = convertToPostAuthorDto(author);
-        postDto.setPostAuthorDto(postAuthorDto);
+            // nie wiem czy ustawialbym to pole w tym miejscu moze np w getRandomPosts i getPost? jest to jednak metoda konkretnie do konwersji
+            //" Aby wiedzieć, czy dany użytkownik jest obserwowany przez innego użytkownika,
+            // potrzebujesz dodatkowego kontekstu, czyli danych o użytkowniku aktualnie zalogowanym (np. currentUser).
+            // Ta informacja nie powinna być dostępna bezpośrednio w metodzie konwertującej."
+            postDto.setLikedByCurrentUser(like.isPresent());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Nie można znaleźć czy post został polikowany - UserId: " + post.getUserId() + ", PostId: " + post.getPostId());
+        }
+
+        try {
+            UserShort author = userService.findUserShortByUserId(
+                    post.getUserId());
+
+            PostAuthorDto postAuthorDto = convertToPostAuthorDto(author);
+            postDto.setPostAuthorDto(postAuthorDto);
+        }
+        catch (Exception e) {
+            System.out.println("Nie można znaleźć autora o UserId: " + post.getUserId() + ", PostId: " + post.getPostId());
+        }
         return postDto;
     }
 
@@ -371,7 +412,8 @@ public class PostService implements IPostService {
         return post;
     }
 
-    public PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable) {
+    public PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts,
+                                                  Pageable pageable) {
         List<String> userIds = posts.stream()
                 .map(Post::getUserId)
                 .distinct()
@@ -434,14 +476,14 @@ public class PostService implements IPostService {
         // Sprawdź, czy użytkownik jest właścicielem posta
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("Post not found"));
-                
+
         User user = userRepository.findBySessionToken(sessionToken)
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
-                
+
         if (!post.getUserId().equals(user.getUserId())) {
             throw new UnauthorizedException("User is not authorized to delete this post");
         }
-        
+
         postRepository.deleteById(postId);
     }
 }

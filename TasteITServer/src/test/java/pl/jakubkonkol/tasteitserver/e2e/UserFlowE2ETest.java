@@ -15,12 +15,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.jakubkonkol.tasteitserver.dto.*;
+import pl.jakubkonkol.tasteitserver.model.Measurement;
 import pl.jakubkonkol.tasteitserver.model.PostMedia;
+import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
+import pl.jakubkonkol.tasteitserver.model.IngredientWrapper;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -141,7 +147,7 @@ public class UserFlowE2ETest {
         profileDto.setBirthDate(specificDate);
 
         // When
-        mockMvc.perform(put("/api/v1/user")
+        mockMvc.perform(put("/api/v1/user/updateUserProfile")
                         .header("Authorization", sessionToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(profileDto)))
@@ -162,6 +168,7 @@ public class UserFlowE2ETest {
     @Order(4)
     @DisplayName("Should get random feed")
     void shouldGetRandomFeed() throws Exception {
+        assumeTrue(sessionToken != null, "Session token is required for this test");
         // When & Then
         mockMvc.perform(get("/api/v1/post/feed")
                         .header("Authorization", sessionToken)
@@ -221,6 +228,26 @@ public class UserFlowE2ETest {
         authorDto.setUserId(userId);
         postDto.setPostAuthorDto(authorDto);
 
+        // Adding Recipe
+        Recipe recipe = new Recipe();
+        Map<Integer, String> steps = new HashMap<>();
+        steps.put(1, "First step");
+        recipe.setSteps(steps);
+        
+        // Adding measurement to recipe
+        List<IngredientWrapper> ingredients = new ArrayList<>();
+        IngredientWrapper ingredient = new IngredientWrapper();
+        ingredient.setName("Test Ingredient");
+        Measurement measurement = new Measurement();
+        measurement.setValue("100");
+        measurement.setUnit("g");
+        ingredient.setMeasurement(measurement);
+
+        ingredients.add(ingredient);
+        recipe.setIngredientsWithMeasurements(ingredients);
+        
+        postDto.setRecipe(recipe);
+
         // When - Create post
         MvcResult createResult = mockMvc.perform(post("/api/v1/post/create")
                         .header("Authorization", sessionToken)
@@ -267,6 +294,26 @@ public class UserFlowE2ETest {
         PostAuthorDto authorDto = new PostAuthorDto();
         authorDto.setUserId(userId);
         postDto.setPostAuthorDto(authorDto);
+
+        // Adding Recipe
+        Recipe recipe = new Recipe();
+        Map<Integer, String> steps = new HashMap<>();
+        steps.put(1, "First step");
+        recipe.setSteps(steps);
+
+        // Adding measurement to recipe
+        List<IngredientWrapper> ingredients = new ArrayList<>();
+        IngredientWrapper ingredient = new IngredientWrapper();
+        ingredient.setName("Test Ingredient");
+        Measurement measurement = new Measurement();
+        measurement.setValue("100");
+        measurement.setUnit("g");
+        ingredient.setMeasurement(measurement);
+
+        ingredients.add(ingredient);
+        recipe.setIngredientsWithMeasurements(ingredients);
+
+        postDto.setRecipe(recipe);
 
         // When
         MvcResult result = mockMvc.perform(post("/api/v1/post/create")

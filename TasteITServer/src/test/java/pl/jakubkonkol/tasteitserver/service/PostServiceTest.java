@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import pl.jakubkonkol.tasteitserver.dto.PageDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
+import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import pl.jakubkonkol.tasteitserver.model.PostMedia;
 import pl.jakubkonkol.tasteitserver.model.User;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -66,6 +68,9 @@ class PostServiceTest {
     @Mock
     private UserActionRepository userActionRepository;
 
+    @Mock
+    private NotificationEventPublisher notificationEventPublisher;
+
     private UserService userService;
     private PostService postService;
 
@@ -81,7 +86,8 @@ class PostServiceTest {
             postRepository,
             ingredientService,
             tagService,
-            userActionRepository
+            userActionRepository,
+            notificationEventPublisher
         );
 
         postService = new PostService(
@@ -101,14 +107,14 @@ class PostServiceTest {
     void shouldReturnPostById() {
         // Given
         Post post = createTestPost();
-        User user= createTestUser();
         UserShort userShort = createTestUserShort();
 
         when(postRepository.findById(TEST_POST_ID)).thenReturn(Optional.of(post));
+        when(userRepository.findUserShortBySessionToken(TEST_SESSION_TOKEN)).thenReturn(Optional.of(userShort));
+        // Using lenient() because can be used multiple times
+        lenient().when(userRepository.findUserShortByUserId(TEST_USER_ID)).thenReturn(Optional.of(userShort));
         when(modelMapper.map(post, PostDto.class)).thenReturn(createTestPostDto());
-        when(userRepository.findBySessionToken(TEST_SESSION_TOKEN)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserReturnDto.class)).thenReturn(createTestUserReturnDto());
-        when(userRepository.findUserShortByUserId(TEST_USER_ID)).thenReturn(Optional.of(userShort));
+        when(likeRepository.findByPostIdAndUserId(TEST_POST_ID, TEST_USER_ID)).thenReturn(Optional.empty());
 
         // When
         PostDto result = postService.getPost(TEST_POST_ID, TEST_SESSION_TOKEN);
@@ -116,16 +122,21 @@ class PostServiceTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getPostId()).isEqualTo(TEST_POST_ID);
+        
+        // Verify
+        verify(postRepository).findById(TEST_POST_ID);
+        verify(userRepository).findUserShortBySessionToken(TEST_SESSION_TOKEN);
+        verify(likeRepository).findByPostIdAndUserId(TEST_POST_ID, TEST_USER_ID);
     }
 
     @Test
-    @DisplayName("Should throw exveption if post doesn't exist")
+    @DisplayName("Should throw exception if post doesn't exist")
     void shouldThrowExceptionWhenPostNotFound() {
         // Given
         when(postRepository.findById(TEST_POST_ID)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             postService.getPost(TEST_POST_ID, TEST_SESSION_TOKEN);
         });
     }
@@ -192,17 +203,17 @@ class PostServiceTest {
         return new UserShort() {
             @Override
             public String getUserId() {
-                return "";
+                return TEST_USER_ID;
             }
 
             @Override
             public String getDisplayName() {
-                return "";
+                return "Test User";
             }
 
             @Override
             public String getProfilePicture() {
-                return "";
+                return "test-picture-url";
             }
         };
     }

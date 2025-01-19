@@ -4,7 +4,6 @@ import {BodyScrollService} from "./service/body-scroll.service";
 import {InstallAppModalFactoryService} from "./service/factories/install-app-modal-factory.service";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {filter} from "rxjs";
-import {NotificationsService} from "./service/notifications.service";
 
 @Component({
   selector: 'app-root',
@@ -20,7 +19,6 @@ export class AppComponent implements OnInit{
               private installAppModalFactoryService: InstallAppModalFactoryService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              private notificationService: NotificationsService
   ) {
     this.installAppModalFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }

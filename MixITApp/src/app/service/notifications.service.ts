@@ -5,6 +5,9 @@ import {Client} from "@stomp/stompjs";
 import taste_api from "../api/taste_api";
 import {NotificationToastService} from "./notification.toast.service";
 
+/**
+ * At this moment, the NotificationsService is not ready to be used in the app.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +15,7 @@ export class NotificationsService{
   private notifications = new BehaviorSubject<Notification[]>([])
   private unreadCount = new BehaviorSubject<number>(0);
   private stompClient: Client;
-  private sessionToken = 'sessionToken';
+  private sessionToken: string;
 
   constructor(
     private notificationToastService: NotificationToastService
@@ -51,6 +54,7 @@ export class NotificationsService{
         this.notifications.next([notification, ...currentNotifications]);
 
         this.unreadCount.next(this.unreadCount.value + 1);
+        console.log('Received notification:', notification);
         this.notificationToastService.show(notification);
       });
 
@@ -73,15 +77,16 @@ export class NotificationsService{
   }
   private async fetchInitialNotifications(): Promise<void> {
     try {
-      const notificationsRes = await taste_api.get('notifications');
-      const notifications = notificationsRes.data.content;
+      const notificationsRes = await taste_api.get('notifications', {
+        params: {
+          page: 0,
+          size: 10
+        }
+      });
+      console.log('Received notifications response:', notificationsRes);
 
-      if (Array.isArray(notifications)) {
-        this.notifications.next(notifications as Notification[]);
-      } else {
-        console.error('Received notifications data is not an array:', notifications);
-        this.notifications.next([]);
-      }
+      const notifications = notificationsRes.data?.content || [];
+      this.notifications.next(notifications as Notification[]);
 
       const countRes = await taste_api.get('notifications/unread/count');
       const count = typeof countRes.data === 'number' ? countRes.data : 0;

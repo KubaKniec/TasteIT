@@ -17,7 +17,6 @@
   width: 100%;
   height: calc(100vh - 4rem);
   overflow: hidden;
-  padding: 0 1rem;
 }
 
 .ingredient-list {
@@ -152,19 +151,4 @@ mat-tab-group {
 .pd-1rem {
   padding: 1rem;
   box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  .ingredient-list {
-    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
-  }
-
-  .content {
-    padding: 0 0.5rem;
-  }
-
-  .ingredient-text {
-    font-size: 0.8125rem;
-    padding: 0.625rem 0.5rem;
-  }
 }

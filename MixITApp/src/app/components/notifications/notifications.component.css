@@ -1,0 +1,12 @@
+.notification {
+  display: flex;
+  padding: 1rem;
+  gap: 1rem;
+  cursor: pointer;
+}
+.unread {
+  background-color: #f0f9ff;
+}
+.read {
+  background-color: white;
+}

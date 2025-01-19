@@ -22,7 +22,7 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
 
   constructor(private fb: FormBuilder, private postBuilderService: PostBuilderService) {
     this.instructionsForm = this.fb.group({
-      currentStep: ['', [Validators.required, Validators.minLength(10)]]
+      currentStep: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
 

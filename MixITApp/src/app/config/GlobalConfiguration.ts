@@ -1,6 +1,6 @@
 
 export const GlobalConfiguration = {
-  APP_VERSION: 'tasteit-1.0b1',
+  APP_VERSION: 'tasteit-1.0b2',
   APP_NAME: 'TasteIT',
   /**
    * Determines if the app should allow all devices like PC, Mobile, Tablet, etc.
@@ -17,5 +17,5 @@ export const GlobalConfiguration = {
    * If true, the recommendation algorithm will be used to suggest posts to users.
    * If false, basic feed will be used.
    */
-  USE_RECOMMENDATION_ALGORITHM: true
+  USE_RECOMMENDATION_ALGORITHM: false
 }

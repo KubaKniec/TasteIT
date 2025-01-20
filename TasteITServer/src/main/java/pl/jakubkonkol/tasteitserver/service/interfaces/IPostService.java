@@ -15,6 +15,7 @@ public interface IPostService {
     void save(PostDto postDto);
     List<Post> saveAll(List<Post> posts);
     void deleteAll();
+    List<Post> getAll();
     PostDto getPost(String postId, String sessionToken);
     PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken);
     PageDto<PostDto> searchPosts(String title, String postType, String sessionToken, int page, int size);
@@ -30,6 +31,5 @@ public interface IPostService {
     PageDto<PostDto> getPostsExcludingIngredients(List<String> ingredientNames, Integer page, Integer size);
     PostDto convertToDto(Post post, String sessionToken);
     PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable);
-    void deletePost(String postId, String sessionToken);
-    void deletePostById(String postId, String sessionToken);
+    void deleteOnePostById(String postId, String sessionToken);
 }

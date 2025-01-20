@@ -15,7 +15,6 @@ import pl.jakubkonkol.tasteitserver.service.interfaces.IFoodListService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -120,7 +119,7 @@ public class FoodListService implements IFoodListService {
         var foodListToDelete = currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId().equals(foodListId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("FoodList with id " + foodListId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("FoodList with id " + foodListId + " not found"));
 
 
         currentUser.getFoodLists().remove(foodListToDelete);

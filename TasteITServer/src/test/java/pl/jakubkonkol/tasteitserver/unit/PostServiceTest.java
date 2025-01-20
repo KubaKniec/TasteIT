@@ -22,7 +22,6 @@ import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.*;
 import pl.jakubkonkol.tasteitserver.service.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,9 +52,6 @@ class PostServiceTest {
     private MongoTemplate mongoTemplate;
 
     @Mock
-    private CommentRepository commentRepository;
-
-    @Mock
     private IngredientService ingredientService;
 
     @Mock
@@ -67,6 +63,7 @@ class PostServiceTest {
     @Mock
     private NotificationEventPublisher notificationEventPublisher;
 
+    private PostValidationService postValidationService;
     private UserService userService;
     private PostService postService;
 
@@ -76,6 +73,11 @@ class PostServiceTest {
 
     @BeforeEach
     void setUp() {
+        postValidationService = new PostValidationService(
+            userRepository,
+            postRepository
+        );
+
         userService = new UserService(
             userRepository,
             modelMapper,
@@ -83,6 +85,7 @@ class PostServiceTest {
             ingredientService,
             tagService,
             userActionRepository,
+            postValidationService,
             notificationEventPublisher
         );
 
@@ -90,12 +93,9 @@ class PostServiceTest {
             mongoTemplate,
             modelMapper,
             postRepository,
-            likeRepository,
-            commentRepository,
-            userRepository
+            userService,
+            likeRepository
         );
-
-        ReflectionTestUtils.setField(postService, "userService", userService);
     }
 
     @Test

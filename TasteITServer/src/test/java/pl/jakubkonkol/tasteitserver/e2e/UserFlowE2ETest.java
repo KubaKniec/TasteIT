@@ -32,10 +32,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import pl.jakubkonkol.tasteitserver.service.PostService;
-import pl.jakubkonkol.tasteitserver.service.CommentService;
-import pl.jakubkonkol.tasteitserver.service.LikeService;
-import pl.jakubkonkol.tasteitserver.service.UserService;
+import pl.jakubkonkol.tasteitserver.service.*;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -53,8 +50,6 @@ public class UserFlowE2ETest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private PostService postService;
-    @Autowired
     private CommentService commentService;
     @Autowired
     private LikeService likeService;
@@ -62,6 +57,8 @@ public class UserFlowE2ETest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PostValidationService postValidationService;
 
     private static String sessionToken;
     private static String userId;
@@ -411,7 +408,7 @@ public class UserFlowE2ETest {
 
                 // Delete test post
                 try {
-                    postService.deletePost(postId, sessionToken);
+                    postValidationService.deletePost(postId, sessionToken);
                 } catch (Exception e) {
                     System.err.println("Error deleting post: " + e.getMessage());
                 }
@@ -439,7 +436,7 @@ public class UserFlowE2ETest {
     }
 
     @AfterAll
-    static void cleanup(@Autowired PostService postService,
+    static void cleanup(@Autowired PostValidationService postValidationService,
                         @Autowired CommentService commentService,
                         @Autowired LikeService likeService,
                         @Autowired MockMvc mockMvc,
@@ -467,7 +464,7 @@ public class UserFlowE2ETest {
 
                 // Delete test post
                 try {
-                    postService.deletePost(postId, sessionToken);
+                    postValidationService.deletePost(postId, sessionToken);
                 } catch (Exception e) {
                     System.err.println("Error deleting post: " + e.getMessage());
                 }

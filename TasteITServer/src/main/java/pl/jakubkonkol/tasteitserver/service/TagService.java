@@ -7,15 +7,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.data.BasicTagsData;
 import pl.jakubkonkol.tasteitserver.dto.TagDto;
-import pl.jakubkonkol.tasteitserver.dto.UserReturnDto;
 import pl.jakubkonkol.tasteitserver.model.Tag;
-import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.enums.TagType;
 import pl.jakubkonkol.tasteitserver.repository.TagRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.ITagService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service

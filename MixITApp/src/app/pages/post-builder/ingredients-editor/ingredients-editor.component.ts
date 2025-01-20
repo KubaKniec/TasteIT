@@ -25,7 +25,7 @@ export class IngredientsEditorComponent implements PostBuilderModule, OnInit, On
   showNewIngredientForm = false;
   showMeasurementModal = false;
 
-  units = ['ml', 'g', 'pinch', 'tsp']; // This should be fetched from the server ig
+  units = ['ml', 'g', 'tsp', 'pcs']; // This should be fetched from the server ig
   newIngredientForm: FormGroup;
   measurementForm: FormGroup;
   currentIngredient: Ingredient | null = null;

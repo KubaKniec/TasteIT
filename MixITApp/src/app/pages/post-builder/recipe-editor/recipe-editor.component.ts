@@ -3,6 +3,7 @@ import {PostBuilderModule} from "../shared/PostBuilderModule";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PostData} from "../shared/postData";
 import {PostBuilderService} from "../shared/postBuilder.service";
+import {debounceTime} from "rxjs";
 
 @Component({
   selector: 'app-recipe-editor',
@@ -15,7 +16,7 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
   @Output() prevStep: EventEmitter<void> = new EventEmitter<void>();
   canProceed: boolean = false;
   @Input() postData!: PostData;
-
+  private orderedSteps: [number, string][] = [];
   instructionsForm: FormGroup;
   steps: Map<number, string> = new Map();
   currentStepNumber: number = 1;
@@ -39,7 +40,9 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
   }
 
   ngOnInit(): void {
-    this.instructionsForm.valueChanges.subscribe(() => {
+    this.instructionsForm.valueChanges.pipe(
+      debounceTime(300)
+    ).subscribe(() => {
       this.validateForm();
     });
     this.initializePostData();
@@ -56,8 +59,13 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
       this.currentStepNumber++;
       this.instructionsForm.get('currentStep')?.reset();
       this.checkIfCanProceed();
+      this.updateOrderedSteps();
     }
   }
+  private updateOrderedSteps(): void {
+    this.orderedSteps = Array.from(this.steps.entries()).sort((a, b) => a[0] - b[0]);
+  }
+
 
   removeStep(stepNumber: number): void {
     this.steps.delete(stepNumber);
@@ -65,8 +73,12 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
   }
 
   getOrderedSteps(): [number, string][] {
-    return Array.from(this.steps.entries()).sort((a, b) => a[0] - b[0]);
+    return this.orderedSteps;
   }
+  trackByFn(index: number, item: [number, string]): number {
+    return item[0];
+  }
+
 
   onClose(): void {
     this.close.emit();

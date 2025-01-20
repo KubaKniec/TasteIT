@@ -10,13 +10,11 @@ import pl.jakubkonkol.tasteitserver.model.Recipe;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public interface IPostService {
     void save(PostDto postDto);
     List<Post> saveAll(List<Post> posts);
     void deleteAll();
-    List<Post> getAll();
     PostDto getPost(String postId, String sessionToken);
     PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken);
     PageDto<PostDto> searchPosts(String title, String postType, String sessionToken, int page, int size);

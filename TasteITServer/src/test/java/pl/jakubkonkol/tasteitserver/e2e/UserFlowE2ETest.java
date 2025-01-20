@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -42,7 +39,6 @@ import pl.jakubkonkol.tasteitserver.service.UserService;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.text.SimpleDateFormat;
 
 import org.bson.Document;
 
@@ -147,7 +143,7 @@ public class UserFlowE2ETest {
         profileDto.setBirthDate(specificDate);
 
         // When
-        mockMvc.perform(put("/api/v1/user/updateUserProfile")
+        mockMvc.perform(put("/api/v1/user/update-user-profile")
                         .header("Authorization", sessionToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(profileDto)))
@@ -170,7 +166,7 @@ public class UserFlowE2ETest {
     void shouldGetRandomFeed() throws Exception {
         assumeTrue(sessionToken != null, "Session token is required for this test");
         // When & Then
-        mockMvc.perform(get("/api/v1/post/feed")
+        mockMvc.perform(get("/api/v1/post/random-feed")
                         .header("Authorization", sessionToken)
                         .param("page", "0")
                         .param("size", "20"))
@@ -185,7 +181,7 @@ public class UserFlowE2ETest {
         assumeTrue(sessionToken != null, "Session token is required for this test");
 
         // Request clustering
-        mockMvc.perform(get("/api/v1/feed/request_clustering")
+        mockMvc.perform(get("/api/v1/feed/request-clustering")
                         .header("Authorization", sessionToken))
                 .andExpect(status().isOk());
 
@@ -195,7 +191,7 @@ public class UserFlowE2ETest {
                 .andExpect(status().isOk());
 
         // Get ranked feed
-        var result = mockMvc.perform(get("/api/v1/feed/ranked_feed")
+        var result = mockMvc.perform(get("/api/v1/feed/ranked-feed")
                         .header("Authorization", sessionToken)
                         .param("page", "0")
                         .param("size", "20"))

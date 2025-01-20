@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import pl.jakubkonkol.tasteitserver.annotation.RegisterAction;
 import pl.jakubkonkol.tasteitserver.dto.FoodListDto;
 import pl.jakubkonkol.tasteitserver.dto.PostDto;
+import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.FoodList;
 import pl.jakubkonkol.tasteitserver.model.Post;
-import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IFoodListService;
@@ -16,7 +16,6 @@ import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +34,7 @@ public class FoodListService implements IFoodListService {
         userRepository.save(currentUser);
         return convertToDto(foodList);
     }
+
     public FoodListDto getFoodList(String sessionToken, String foodListId) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
@@ -42,25 +42,25 @@ public class FoodListService implements IFoodListService {
                 .stream()
                 .filter(f -> f.getFoodListId().equals(foodListId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("FoodList with id " + foodListId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("FoodList with id " + foodListId + " not found"));
 
         return convertToDto(foodList);
     }
+
     public List<FoodListDto> getAllFoodLists(String sessionToken) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         var foodLists = currentUser.getFoodLists();
-        List<FoodListDto> foodListsDto = foodLists.stream()
+        return foodLists.stream()
                 .map(this::convertToDto)
                 .toList();
-        return foodListsDto;
     }
 
     public List<FoodListDto> getAllFoodListsSimpleInfo(String sessionToken) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
 
         var foodLists = currentUser.getFoodLists();
-        List<FoodListDto> foodListsDto = foodLists.stream()
+        return foodLists.stream()
                 .map(f->{
                     var foodlistDto = new FoodListDto();
                     foodlistDto.foodListId = f.getFoodListId();
@@ -70,19 +70,18 @@ public class FoodListService implements IFoodListService {
                     return foodlistDto;
                 })
                 .toList();
-        return foodListsDto;
     }
 
     @RegisterAction(actionType = "ADD_TO_FOODLIST")
     public void addPostToFoodlist(String sessionToken, String foodListId, PostDto postId) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
         Post post = postRepository.findById(postId.getPostId())
-                .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post with id " + postId + " not found"));
 
         currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId().equals(foodListId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("FoodList with id " + foodListId + " not found"))
+                .orElseThrow(() -> new ResourceNotFoundException("FoodList with id " + foodListId + " not found"))
                 .getPostsList()
                 .add(post);
 
@@ -91,12 +90,12 @@ public class FoodListService implements IFoodListService {
     public void deletePostInFoodlist(String sessionToken, String foodListId, PostDto postId) {
         var currentUser = userService.getCurrentUserBySessionToken(sessionToken);
         var post = postRepository.findById(postId.getPostId())
-                .orElseThrow(() -> new NoSuchElementException("Post with id " + postId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post with id " + postId + " not found"));
 
         currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId().equals(foodListId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("FoodList with id " + foodListId + " not found"))
+                .orElseThrow(() -> new ResourceNotFoundException("FoodList with id " + foodListId + " not found"))
                 .getPostsList()
                 .remove(post);
 
@@ -109,7 +108,7 @@ public class FoodListService implements IFoodListService {
         currentUser.getFoodLists().stream()
                 .filter(f -> f.getFoodListId().equals(foodListId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("FoodList with id " + foodListId + " not found"))
+                .orElseThrow(() -> new ResourceNotFoundException("FoodList with id " + foodListId + " not found"))
                 .setName(name.name);
 
         userRepository.save(currentUser);
@@ -130,8 +129,7 @@ public class FoodListService implements IFoodListService {
     }
 
     private FoodListDto convertToDto(FoodList foodList) {
-        FoodListDto foodListDto = modelMapper.map(foodList, FoodListDto.class);
-        return foodListDto;
+        return modelMapper.map(foodList, FoodListDto.class);
     }
 
     private FoodList convertToEntity(FoodListDto foodListDto) {

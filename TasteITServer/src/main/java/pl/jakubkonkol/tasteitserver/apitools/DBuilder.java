@@ -29,7 +29,7 @@ public class DBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
 
-    @PostConstruct //this always should be active
+//    @PostConstruct // Should stay commented out
     public void createDefaultAdminAccount() {
         try {
             adminUserFactory.CreateAdmin();
@@ -41,9 +41,10 @@ public class DBuilder {
     /**
      * Uncomment @PostConstruct if u want to populate database with data from API
      */
-//    @PostConstruct
+    @PostConstruct
     public void buildDataBase()  {
         try {
+            createDefaultAdminAccount();
             ingredientService.deleteAll();
             commentService.deleteAll();
             likeService.deleteAll();
@@ -51,9 +52,9 @@ public class DBuilder {
             tagService.deleteAll();
             LOGGER.log(Level.INFO, "Database cleared, building new one");
             tagService.saveBasicTags();
-            foodFetcher.populateDBWithFood();
             ingredientFetcher.populateDBWithIngredients();
             drinkFetcher.populateDBWithDrinks();
+            foodFetcher.populateDBWithFood();
 
             LOGGER.log(Level.INFO, "Database built");
         } catch (IOException e){

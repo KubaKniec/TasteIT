@@ -1,5 +1,8 @@
 # Changelog for TasteIT beta release
-
+### 1.0.0 Beta 4 (22-01-2025)
+- Changed order of adding sample data on backend
+- Added ingredient photo
+- Changed photo in **InstructionView** 
 ## 1.0.0 Beta 3 (20-01-2025)
 - Fixed a bug where the **PostBuilder** on mobile devices could freeze the app.
 - Fixed a bug where adding a photo in the **PostBuilder** could cause overlapping with other elements.

@@ -216,6 +216,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     componentRef.instance.close
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
+        this.userService.changeUserFirstLogin(this.user!.userId || '').then(() => {
+          console.log('Skipping complete account splash screen');
+        })
         this.splashScreenFactoryService.removeDynamicComponent(componentRef);
         this.bodyScrollService.enableScroll();
       });

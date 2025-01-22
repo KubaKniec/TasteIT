@@ -13,7 +13,7 @@
           rows="4"
         ></textarea>
         <div *ngIf="instructionsForm.get('currentStep')?.invalid && instructionsForm.get('currentStep')?.touched" class="error-message">
-          Step description must be at least 10 characters long
+          Step description must be at least 3 characters long
         </div>
       </div>
 
@@ -25,7 +25,7 @@
     <div class="added-steps" *ngIf="steps.size > 0">
       <h3>Current Instructions:</h3>
       <ul>
-        <li *ngFor="let stepEntry of getOrderedSteps()">
+        <li *ngFor="let stepEntry of getOrderedSteps(); trackBy: trackByFn">
           <span class="step-number">Step {{ stepEntry[0] }}:</span>
           <span class="step-description">{{ stepEntry[1] }}</span>
           <button class="remove-step-btn" (click)="removeStep(stepEntry[0])">Remove</button>

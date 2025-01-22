@@ -31,5 +31,5 @@ public interface IPostService {
     PageDto<PostDto> getPostsExcludingIngredients(List<String> ingredientNames, Integer page, Integer size);
     PostDto convertToDto(Post post, String sessionToken);
     PageDto<PostDto> convertPostsToPageDto(String sessionToken, List<Post> posts, Pageable pageable);
-    void deletePostById(String postId, String sessionToken);
+    void deleteOnePostById(String postId, String sessionToken);
 }

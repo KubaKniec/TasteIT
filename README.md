@@ -40,7 +40,6 @@ TasteIT/
 ### 🤝 Social Culinary Network
 - Follow fellow food enthusiasts
 - Comment, react, and engage with culinary content
-- Earn culinary badges and build your foodie reputation
 
 ### 🔒 Privacy & Security
 - Rock-solid data protection

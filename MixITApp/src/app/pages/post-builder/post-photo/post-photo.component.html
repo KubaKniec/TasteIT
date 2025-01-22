@@ -9,11 +9,15 @@
       <image-cropper
         *ngIf="imageChangedEvent"
         [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1"
         format="png"
         output="base64"
         (imageCropped)="onImageCropped($event)"
         [cropperMinWidth]="500"
         [cropperMinHeight]="500"
+        [resizeToWidth]="1200"
+      [containWithinAspectRatio]="false"
       ></image-cropper>
 
       <div class="upload-placeholder" *ngIf="!imageChangedEvent" (click)="fileInput.click()">

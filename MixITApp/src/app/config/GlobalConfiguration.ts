@@ -1,6 +1,6 @@
 
 export const GlobalConfiguration = {
-  APP_VERSION: 'tasteit-1.0b1',
+  APP_VERSION: 'tasteit-1.0b4',
   APP_NAME: 'TasteIT',
   /**
    * Determines if the app should allow all devices like PC, Mobile, Tablet, etc.

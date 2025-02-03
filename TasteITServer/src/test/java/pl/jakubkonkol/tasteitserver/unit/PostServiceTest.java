@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,6 +64,9 @@ class PostServiceTest {
     @Mock
     private NotificationEventPublisher notificationEventPublisher;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private PostValidationService postValidationService;
     private UserService userService;
     private PostService postService;
@@ -86,7 +90,8 @@ class PostServiceTest {
             tagService,
             userActionRepository,
             postValidationService,
-            notificationEventPublisher
+            notificationEventPublisher,
+            eventPublisher
         );
 
         postService = new PostService(

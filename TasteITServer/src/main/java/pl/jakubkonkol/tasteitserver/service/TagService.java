@@ -65,7 +65,7 @@ public class TagService implements ITagService {
         tagRepository.deleteAll();
     }
 
-    private TagDto convertToDto(Tag tag) {
+    public TagDto convertToDto(Tag tag) {
         return modelMapper.map(tag, TagDto.class);
     }
 

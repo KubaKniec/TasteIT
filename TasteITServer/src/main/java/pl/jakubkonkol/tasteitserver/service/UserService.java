@@ -311,6 +311,22 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
+    public List<IngredientDto> getUserBannedIngredients(String sessionToken) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+
+        return user.getBannedIngredients().stream()
+                .map(ingredientService::convertToDto)
+                .toList();
+    }
+
+    public List<TagDto> getUserBannedTags(String sessionToken) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+
+        return user.getBannedTags().stream()
+                .map(tagService::convertToDto)
+                .toList();
+    }
+
     public List<User> findUsersActiveInLast30Days() {
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
         List<String> activeUserIds = userActionRepository

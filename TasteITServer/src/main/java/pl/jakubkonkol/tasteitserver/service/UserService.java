@@ -26,6 +26,7 @@ import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IPostRankingService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IPostValidationService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
 import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
@@ -48,6 +49,7 @@ public class UserService implements IUserService {
     private final IPostValidationService postValidationService;
     private final NotificationEventPublisher notificationEventPublisher;
     private final ApplicationEventPublisher eventPublisher;
+    private final IPostRankingService postRankingService;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
     @Cacheable(value = "userById", key = "#userId")
@@ -300,6 +302,7 @@ public class UserService implements IUserService {
                 .toList();
         user.setBannedIngredients(bannedIngredients);
         userRepository.save(user);
+        postRankingService.clearRankedPostsCacheForUser(user.getUserId());
     }
 
     public void updateUserBannedTags(String sessionToken, List<TagDto> tags) {
@@ -309,6 +312,7 @@ public class UserService implements IUserService {
                 .toList();
         user.setBannedTags(bannedTags);
         userRepository.save(user);
+        postRankingService.clearRankedPostsCacheForUser(user.getUserId());
     }
 
     public List<IngredientDto> getUserBannedIngredients(String sessionToken) {

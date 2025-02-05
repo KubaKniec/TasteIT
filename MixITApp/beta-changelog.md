@@ -1,4 +1,6 @@
 # Changelog for TasteIT beta release
+### 1.0.0 (01-02-2025)
+- Removed unused buttons
 ### 1.0.0 Beta 4 (22-01-2025)
 - Changed order of adding sample data on backend
 - Added ingredient photo

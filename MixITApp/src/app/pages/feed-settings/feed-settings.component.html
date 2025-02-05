@@ -1,0 +1,61 @@
+<div class="container">
+  <header class="header">
+    <h1 class="header-title">Feed Settings</h1>
+  </header>
+
+  <div class="wrapper">
+    <div class="recommendation-section">
+      <div class="switch-container">
+        <label class="switch-label">
+          <span class="switch-title">TasteIT Recommendation Algorithm</span>
+          <span class="switch-description">
+            Application will use recommendation algorithm to serve you feed based on your preferences,
+            otherwise app will show you basic feed containing random posts
+          </span>
+        </label>
+        <label class="switch">
+          <input type="checkbox" [formControl]="useRecommendations">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="banned-section">
+      <h2 class="section-title">Banned Ingredients</h2>
+      <div class="input-field">
+        <mat-icon>search</mat-icon>
+        <input
+          type="text"
+          (input)="onSearch($event)"
+          placeholder="Search ingredients to ban"
+        >
+      </div>
+
+      <div class="suggestions" *ngIf="suggestions.length > 0">
+        <div
+          class="suggestion-item"
+          *ngFor="let ingredient of suggestions"
+          (click)="banIngredient(ingredient)"
+        >
+          <span class="ingredient-name">{{ingredient.name}}</span>
+          <span class="ingredient-type" *ngIf="ingredient.type">{{ingredient.type}}</span>
+        </div>
+      </div>
+
+      <div class="banned-ingredients-list">
+        <div
+          class="banned-ingredient-token"
+          *ngFor="let ingredient of bannedIngredients; let i = index"
+        >
+          <div class="banned-ingredient-details">
+            <span class="banned-ingredient-name">{{ingredient.name}}</span>
+            <span class="banned-ingredient-type" *ngIf="ingredient.type">{{ingredient.type}}</span>
+          </div>
+          <button class="remove-btn" (click)="removeBannedIngredient(i)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

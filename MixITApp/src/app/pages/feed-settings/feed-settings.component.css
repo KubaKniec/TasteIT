@@ -1,0 +1,208 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--theme-color-950);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background-color: var(--theme-color-950);
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--theme-color-800);
+  z-index: 10;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--theme-color-50);
+}
+
+.wrapper {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.recommendation-section {
+  background-color: var(--theme-color-900);
+  border-radius: var(--soft-radius);
+  padding: 1.25rem;
+}
+
+.switch-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.switch-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.switch-title {
+  color: var(--theme-color-50);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.switch-description {
+  color: var(--theme-color-400);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--theme-color-700);
+  transition: var(--transition-smooth);
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--theme-color-50);
+  transition: var(--transition-smooth);
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.banned-section {
+  background-color: var(--theme-color-900);
+  border-radius: var(--soft-radius);
+  padding: 1.25rem;
+}
+
+.section-title {
+  color: var(--theme-color-50);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.suggestions {
+  margin-top: 0.5rem;
+  background-color: var(--theme-color-800);
+  border-radius: var(--soft-radius);
+  overflow: hidden;
+  box-shadow: var(--smooth-shadow);
+}
+
+.suggestion-item {
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.suggestion-item:hover {
+  background-color: var(--theme-color-700);
+}
+
+.suggestion-item .ingredient-name {
+  color: var(--theme-color-50);
+}
+
+.suggestion-item .ingredient-type {
+  color: var(--theme-color-400);
+  font-size: 0.9rem;
+}
+
+.banned-ingredients-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.banned-ingredient-token {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--theme-color-800);
+  padding: 0.75rem 1rem;
+  border-radius: var(--soft-radius);
+  transition: var(--transition-smooth);
+}
+
+.banned-ingredient-token:hover {
+  background-color: var(--theme-color-700);
+}
+
+.banned-ingredient-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.banned-ingredient-name {
+  color: var(--theme-color-50);
+  font-weight: 500;
+}
+
+.banned-ingredient-type {
+  color: var(--theme-color-400);
+  font-size: 0.9rem;
+}
+
+.remove-btn {
+  background-color: transparent;
+  border: none;
+  color: var(--theme-color-400);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.remove-btn:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.remove-btn mat-icon {
+  font-size: 1.25rem;
+}

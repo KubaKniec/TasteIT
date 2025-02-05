@@ -3,7 +3,7 @@
   "index": "/index.html",
   "assetGroups": [
     {
-      "name": "MixIT",
+      "name": "TasteIT",
       "installMode": "prefetch",
       "resources": {
         "files": [

@@ -34,12 +34,12 @@
   <div class="user-actions">
     <div class="actions" *ngIf="isVisitor()">
       <button class="button-secondary" matRipple [ngClass]="user.isFollowing ? '' : 'active'" (click)="toggleFollow()"> {{user.isFollowing ? 'Following' : 'Follow' }} </button>
-      <button class="button-secondary" matRipple> Message </button>
-      <button class="button-secondary" matRipple> Report </button>
+<!--      <button class="button-secondary" matRipple> Message </button>-->
+<!--      <button class="button-secondary" matRipple> Report </button>-->
     </div>
     <div class="actions" *ngIf="!isVisitor()">
       <button class="button-secondary" matRipple (click)="goto('setup-profile')"> Edit Profile </button>
-      <button class="button-secondary" matRipple> Badges </button>
+<!--      <button class="button-secondary" matRipple> Badges </button>-->
       <button class="button-secondary" matRipple (click)="goto('foodlists')"> Foodlists </button>
     </div>
   </div>

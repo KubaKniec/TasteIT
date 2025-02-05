@@ -48,7 +48,12 @@ export class RegisterComponent implements OnInit{
     this.authServive.register(email!, password!).then(()=>{
       this.toastService.success('Register successfully!');
       this.router.navigate(['/login']).then();
-    })
-
+    }).catch((error) => {
+      if (error.status === 409) {
+        this.toastService.error('This email is already registered');
+      } else {
+        this.toastService.error('Registration failed. Please try again later.');
+      }
+    });
   }
 }

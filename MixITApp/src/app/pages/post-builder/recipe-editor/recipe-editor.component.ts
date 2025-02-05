@@ -61,6 +61,11 @@ export class RecipeEditorComponent implements PostBuilderModule, OnInit {
       this.checkIfCanProceed();
       this.updateOrderedSteps();
     }
+    this.postBuilderService.updatePostData({
+      recipe: {
+        steps: this.steps
+      }
+    })
   }
   private updateOrderedSteps(): void {
     this.orderedSteps = Array.from(this.steps.entries()).sort((a, b) => a[0] - b[0]);

@@ -7,6 +7,7 @@ import { Comment } from "../model/post/Comment";
 import { LoggerService } from "./logger.service";
 import {GenericResponse} from "../model/GenericResponse";
 import {GlobalConfiguration} from "../config/GlobalConfiguration";
+import {ConfigurationService} from "./configuration.service";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class PostService {
   private feedSubject = new BehaviorSubject<Post[]>([]);
   feed$ = this.feedSubject.asObservable();
 
-  constructor(private logger: LoggerService) {}
+  constructor(private logger: LoggerService, private configService: ConfigurationService) {}
 
   setFeed(feed: Post[]): void {
     this.feedSubject.next(feed);
@@ -31,7 +32,9 @@ export class PostService {
 
   async getFeed(page: number, size: number): Promise<Post[]> {
     let feed_url;
-    GlobalConfiguration.USE_RECOMMENDATION_ALGORITHM ? feed_url = `/feed/ranked-feed?page=${page}&size=${size}` : feed_url = `/post/random-feed?page=${page}&size=${size}`
+    this.configService.useRecommendationAlgorithm
+      ? feed_url = `/feed/ranked-feed?page=${page}&size=${size}`
+      : feed_url = `/post/random-feed?page=${page}&size=${size}`
     try {
       const res = await taste_api.get(feed_url);
       const posts = res.data.content as Post[];

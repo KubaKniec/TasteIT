@@ -101,6 +101,8 @@ import { NotificationToastComponent } from './components/notification-toast/noti
 import {NotificationToastService} from "./service/notification.toast.service";
 import {SearchStateService} from "./service/search.state.service";
 import { FeedSettingsComponent } from './pages/feed-settings/feed-settings.component';
+import {ConfigurationService} from "./service/configuration.service";
+import { AppInfoComponent } from './pages/app-info/app-info.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -151,6 +153,7 @@ import { FeedSettingsComponent } from './pages/feed-settings/feed-settings.compo
     NotificationsComponent,
     NotificationToastComponent,
     FeedSettingsComponent,
+    AppInfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -215,7 +218,8 @@ import { FeedSettingsComponent } from './pages/feed-settings/feed-settings.compo
     CreatorService,
     NotificationsService,
     NotificationToastService,
-    SearchStateService
+    SearchStateService,
+    ConfigurationService
   ],
   bootstrap: [AppComponent]
 })

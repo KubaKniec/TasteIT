@@ -20,21 +20,22 @@
       </div>
     </div>
 
+    <!-- Banned Ingredients Section -->
     <div class="banned-section">
       <h2 class="section-title">Banned Ingredients</h2>
       <div class="input-field">
         <mat-icon>search</mat-icon>
         <input
           type="text"
-          (input)="onSearch($event)"
+          (input)="onIngredientSearch($event)"
           placeholder="Search ingredients to ban"
         >
       </div>
 
-      <div class="suggestions" *ngIf="suggestions.length > 0">
+      <div class="suggestions" *ngIf="ingredientSuggestions.length > 0">
         <div
           class="suggestion-item"
-          *ngFor="let ingredient of suggestions"
+          *ngFor="let ingredient of ingredientSuggestions"
           (click)="banIngredient(ingredient)"
         >
           <span class="ingredient-name">{{ingredient.name}}</span>
@@ -43,19 +44,68 @@
       </div>
 
       <div class="banned-ingredients-list">
-        <div
-          class="banned-ingredient-token"
-          *ngFor="let ingredient of bannedIngredients; let i = index"
-        >
-          <div class="banned-ingredient-details">
-            <span class="banned-ingredient-name">{{ingredient.name}}</span>
-            <span class="banned-ingredient-type" *ngIf="ingredient.type">{{ingredient.type}}</span>
+        <ng-container *ngIf="!isLoadingIngredients; else loadingTemplate">
+          <div
+            class="banned-ingredient-token"
+            *ngFor="let ingredient of bannedIngredients; let i = index"
+          >
+            <div class="banned-ingredient-details">
+              <span class="banned-ingredient-name">{{ingredient.name}}</span>
+              <span class="banned-ingredient-type" *ngIf="ingredient.type">{{ingredient.type}}</span>
+            </div>
+            <button class="remove-btn" (click)="removeBannedIngredient(i)">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
-          <button class="remove-btn" (click)="removeBannedIngredient(i)">
-            <mat-icon>close</mat-icon>
-          </button>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Banned Tags Section -->
+    <div class="banned-section">
+      <h2 class="section-title">Banned Tags</h2>
+      <div class="input-field">
+        <mat-icon>search</mat-icon>
+        <input
+          type="text"
+          (input)="onTagSearch($event)"
+          placeholder="Search tags to ban"
+        >
+      </div>
+
+      <div class="suggestions" *ngIf="tagSuggestions.length > 0">
+        <div
+          class="suggestion-item"
+          *ngFor="let tag of tagSuggestions"
+          (click)="banTag(tag)"
+        >
+          <span class="tag-name">{{tag.tagName}}</span>
+          <span class="tag-type" *ngIf="tag.tagType">{{tag.tagType}}</span>
         </div>
+      </div>
+
+      <div class="banned-tags-list">
+        <ng-container *ngIf="!isLoadingTags; else loadingTemplate">
+          <div
+            class="banned-tag-token"
+            *ngFor="let tag of bannedTags; let i = index"
+          >
+            <div class="banned-tag-details">
+              <span class="banned-tag-name">{{tag.tagName}}</span>
+              <span class="banned-tag-type" *ngIf="tag.tagType">{{tag.tagType}}</span>
+            </div>
+            <button class="remove-btn" (click)="removeBannedTag(i)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+</ng-template>

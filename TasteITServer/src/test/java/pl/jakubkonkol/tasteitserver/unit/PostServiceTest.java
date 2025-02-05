@@ -70,6 +70,7 @@ class PostServiceTest {
     private PostValidationService postValidationService;
     private UserService userService;
     private PostService postService;
+    private PostRankingService postRankingService;
 
     private static final String TEST_POST_ID = "test-post-1";
     private static final String TEST_USER_ID = "test-user-1";
@@ -91,7 +92,8 @@ class PostServiceTest {
             userActionRepository,
             postValidationService,
             notificationEventPublisher,
-            eventPublisher
+            eventPublisher,
+            postRankingService
         );
 
         postService = new PostService(

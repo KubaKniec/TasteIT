@@ -21,7 +21,7 @@ public class RankerService implements IRankerService {
 
     public PageDto<PostDto> rankPosts(Integer page, Integer size, String sessionToken) {
         User currentUser = userService.getCurrentUserBySessionToken(sessionToken);
-        List<Post> rankedPosts = postRankingService.getRankedPostsForUser(currentUser.getUserId());
+        List<Post> rankedPosts = postRankingService.getRankedPostsForUser(currentUser, currentUser.getUserId());
 
         return postService.convertPostsToPageDto(
                 sessionToken,

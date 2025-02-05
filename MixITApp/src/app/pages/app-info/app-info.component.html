@@ -1,0 +1,39 @@
+<div class="container">
+  <header class="header">
+    <h1 class="header-title">About TasteIT</h1>
+  </header>
+
+  <div class="wrapper">
+    <!-- App Info Section -->
+    <section class="app-info-section">
+      <div class="logo-container">
+        <img src="assets/icon.png" alt="TasteIT Logo" class="app-logo">
+      </div>
+      <div class="app-description">
+        <h2>Welcome to TasteIT</h2>
+        <p>
+          TasteIT is a cutting-edge culinary social platform,
+          simmering with innovation and ready to serve up the most
+          delicious digital food-sharing experience you've ever tasted! 👨‍🍳🔥
+        </p>
+      </div>
+    </section>
+
+    <!-- Developers Section -->
+    <section class="developers-section">
+      <h2 class="section-title">Meet Our Team</h2>
+      <div class="developers-grid">
+        <div class="developer-card" *ngFor="let dev of developers">
+          <div class="developer-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="developer-info">
+            <h3 class="developer-name">{{dev.name}}</h3>
+            <span class="developer-role">{{dev.role}}</span>
+            <p class="developer-description">{{dev.description}}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

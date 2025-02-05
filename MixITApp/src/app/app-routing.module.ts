@@ -21,6 +21,8 @@ import {
 } from "./components/following-followers-list/following-followers-list.component";
 import {TagViewComponent} from "./pages/tag-view/tag-view.component";
 import {FoodlistViewComponent} from "./pages/foodlist-view/foodlist-view.component";
+import {FeedSettingsComponent} from "./pages/feed-settings/feed-settings.component";
+import {AppInfoComponent} from "./pages/app-info/app-info.component";
 
 const routes: Routes = [
   {path: '', redirectTo:'/welcome', pathMatch: 'full'},
@@ -41,7 +43,9 @@ const routes: Routes = [
   {path: 'postBuilder', component: PostBuilderComponent, data: {showNav: false}, canActivate: [AuthGuard]},
   {path: 'user-profile/:id/following', component: FollowingFollowersListComponent, data: {showNav: true}, canActivate: [AuthGuard]},
   {path: 'user-profile/:id/followers', component: FollowingFollowersListComponent, data: {showNav: true}, canActivate: [AuthGuard]},
-  {path: 'tag/:id', component: TagViewComponent, data: {showNav: true}, canActivate: [AuthGuard]}
+  {path: 'tag/:id', component: TagViewComponent, data: {showNav: true}, canActivate: [AuthGuard]},
+  {path: 'feed-settings', component: FeedSettingsComponent, data: {showNav: true}, canActivate: [AuthGuard]},
+  {path: 'app-info', component: AppInfoComponent, data: {showNav: true}, canActivate: [AuthGuard]}
 
 ];
 

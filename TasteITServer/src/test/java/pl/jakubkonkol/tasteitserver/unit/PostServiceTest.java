@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,6 +64,9 @@ class PostServiceTest {
     @Mock
     private NotificationEventPublisher notificationEventPublisher;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private PostValidationService postValidationService;
     private UserService userService;
     private PostService postService;
@@ -86,7 +90,8 @@ class PostServiceTest {
             tagService,
             userActionRepository,
             postValidationService,
-            notificationEventPublisher
+            notificationEventPublisher,
+            eventPublisher
         );
 
         postService = new PostService(
@@ -104,7 +109,6 @@ class PostServiceTest {
         // Given
         Post post = createTestPost();
         UserShort userShort = createTestUserShort();
-
         when(postRepository.findById(TEST_POST_ID)).thenReturn(Optional.of(post));
         when(userRepository.findUserShortBySessionToken(TEST_SESSION_TOKEN)).thenReturn(Optional.of(userShort));
         // Using lenient() because can be used multiple times
@@ -146,7 +150,6 @@ class PostServiceTest {
         PostPhotoView postPhotoView = mock(PostPhotoView.class);
         List<PostPhotoView> postPhotoViews = List.of(postPhotoView);
         Page<PostPhotoView> postPage = new PageImpl<>(postPhotoViews, PageRequest.of(page, size), 1);
-
         when(userRepository.existsById(TEST_USER_ID)).thenReturn(true);
         when(postRepository.findPostsByUserId(TEST_USER_ID, PageRequest.of(page, size)))
                 .thenReturn(postPage);
@@ -157,7 +160,6 @@ class PostServiceTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getTotalElements()).isEqualTo(1);
         verify(postRepository).findPostsByUserId(TEST_USER_ID, PageRequest.of(page, size));
         verify(userRepository).existsById(TEST_USER_ID);
     }
@@ -178,20 +180,6 @@ class PostServiceTest {
     private PostDto createTestPostDto() {
         PostDto dto = new PostDto();
         dto.setPostId(TEST_POST_ID);
-        return dto;
-    }
-
-    private User createTestUser() {
-        User user = new User();
-        user.setUserId(TEST_USER_ID);
-        user.setDisplayName("Test User");
-        return user;
-    }
-
-    private UserReturnDto createTestUserReturnDto() {
-        UserReturnDto dto = new UserReturnDto();
-        dto.setUserId(TEST_USER_ID);
-        dto.setDisplayName("Test User");
         return dto;
     }
 

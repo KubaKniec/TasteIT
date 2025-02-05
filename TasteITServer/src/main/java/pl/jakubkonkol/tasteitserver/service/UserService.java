@@ -2,6 +2,7 @@ package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import pl.jakubkonkol.tasteitserver.dto.*;
+import pl.jakubkonkol.tasteitserver.event.PreferenceUpdateRequiredEvent;
 import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
 import pl.jakubkonkol.tasteitserver.model.Ingredient;
 import pl.jakubkonkol.tasteitserver.model.Tag;
@@ -26,6 +28,7 @@ import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IPostValidationService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
+import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class UserService implements IUserService {
     private final UserActionRepository userActionRepository;
     private final IPostValidationService postValidationService;
     private final NotificationEventPublisher notificationEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
     @Cacheable(value = "userById", key = "#userId")
@@ -106,6 +110,11 @@ public class UserService implements IUserService {
         User user = getUserById(userId);
         user.setTags(userTagsDto.getTags());
         userRepository.save(user);
+
+        eventPublisher.publishEvent(
+                new PreferenceUpdateRequiredEvent(userId, PreferenceUpdateReason.TAGS_UPDATE)
+        );
+        LOGGER.log(Level.INFO, "Requesting preference update for user {0} due to tags update", userId);
     }
 
     @CacheEvict(value = {"followers", "following"}, allEntries = true)
@@ -300,6 +309,22 @@ public class UserService implements IUserService {
                 .toList();
         user.setBannedTags(bannedTags);
         userRepository.save(user);
+    }
+
+    public List<IngredientDto> getUserBannedIngredients(String sessionToken) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+
+        return user.getBannedIngredients().stream()
+                .map(ingredientService::convertToDto)
+                .toList();
+    }
+
+    public List<TagDto> getUserBannedTags(String sessionToken) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+
+        return user.getBannedTags().stream()
+                .map(tagService::convertToDto)
+                .toList();
     }
 
     public List<User> findUsersActiveInLast30Days() {

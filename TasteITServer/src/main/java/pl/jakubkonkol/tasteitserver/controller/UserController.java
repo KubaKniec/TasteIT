@@ -134,4 +134,16 @@ public class UserController {
                 .message("Banned Tags updated")
                 .build());
     }
+
+    @GetMapping("/banned-tags")
+    public ResponseEntity<List<TagDto>> getUserBannedTags(@RequestHeader("Authorization") String sessionToken) {
+        List<TagDto> bannedTags = userService.getUserBannedTags(sessionToken);
+        return ResponseEntity.ok(bannedTags);
+    }
+
+    @GetMapping("/banned-ingredients")
+    public ResponseEntity<List<IngredientDto>> getUserBannedIngredients(@RequestHeader("Authorization") String sessionToken) {
+        List<IngredientDto> bannedIngredients = userService.getUserBannedIngredients(sessionToken);
+        return ResponseEntity.ok(bannedIngredients);
+    }
 }

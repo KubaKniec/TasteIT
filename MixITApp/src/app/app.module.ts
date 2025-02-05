@@ -99,6 +99,10 @@ import {NotificationsService} from "./service/notifications.service";
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
 import {NotificationToastService} from "./service/notification.toast.service";
+import {SearchStateService} from "./service/search.state.service";
+import { FeedSettingsComponent } from './pages/feed-settings/feed-settings.component';
+import {ConfigurationService} from "./service/configuration.service";
+import { AppInfoComponent } from './pages/app-info/app-info.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -148,6 +152,8 @@ import {NotificationToastService} from "./service/notification.toast.service";
     ConfirmPostDeletionComponent,
     NotificationsComponent,
     NotificationToastComponent,
+    FeedSettingsComponent,
+    AppInfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -211,7 +217,9 @@ import {NotificationToastService} from "./service/notification.toast.service";
     PostBuilderService,
     CreatorService,
     NotificationsService,
-    NotificationToastService
+    NotificationToastService,
+    SearchStateService,
+    ConfigurationService
   ],
   bootstrap: [AppComponent]
 })

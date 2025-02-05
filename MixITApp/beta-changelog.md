@@ -1,4 +1,11 @@
 # Changelog for TasteIT beta release
+### 1.0.0 (05-02-2025)
+- Added an option to enable or disable the **TasteIT Recommendation Algorithm**
+- Added an option to ban ingredients, posts with specific ingredients will not be shown to users
+- Added an option to ban tags, posts with specific tags will not be shown to users
+- Added App Info page
+- Fixed showing error when user tries to register with email that is already in use
+- Fixed small alignments issues in the **PostBuilder**
 ### 1.0.0 Beta 4 (22-01-2025)
 - Changed order of adding sample data on backend
 - Added ingredient photo

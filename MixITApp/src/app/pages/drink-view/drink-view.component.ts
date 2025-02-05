@@ -53,6 +53,7 @@ export class DrinkViewComponent implements OnInit, OnDestroy{
    this.addToFoodlistFactoryService.setRootViewContainerRef(this.viewContainerRef);
  }
   ngOnDestroy(): void {
+   this.bodyScrollService.enableScroll();
     this.destroy$.next();
     this.destroy$.complete();
   }

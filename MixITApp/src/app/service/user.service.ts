@@ -4,6 +4,8 @@ import { User } from '../model/user/User';
 import { UserProfile } from '../model/user/UserProfile';
 import { UserTags } from '../model/user/UserTags';
 import { LoggerService } from './logger.service';
+import {Tag} from "../model/user/Tag";
+import {Ingredient} from "../model/post/Ingredient";
 
 @Injectable({
   providedIn: 'root'
@@ -115,6 +117,42 @@ export class UserService {
       return res.data.content;
     } catch (error: any) {
       this.logger.logError('Error getting user posts', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async getBannedIngredients(): Promise<Ingredient[]> {
+    try {
+      const res = await taste_api.get(`user/banned-ingredients`);
+      return res.data as Ingredient[];
+    } catch (error: any) {
+      this.logger.logError('Error getting banned ingredients', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async updateBannedIngredients(bannedIngredients: Ingredient[]): Promise<User> {
+    try {
+      const res = await taste_api.patch(`user/banned-ingredients`, bannedIngredients);
+      return res.data;
+    } catch (error: any) {
+      this.logger.logError('Error updating banned ingredients', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async getBannedTags(): Promise<Tag[]> {
+    try {
+      const res = await taste_api.get(`user/banned-tags`);
+      return res.data as Tag[];
+    } catch (error: any) {
+      this.logger.logError('Error getting banned tags', error.response?.data || error);
+      return Promise.reject(error.response?.data || error);
+    }
+  }
+  async updateBannedTags(bannedTags: Tag[]): Promise<User> {
+    try {
+      const res = await taste_api.patch(`user/banned-tags`, bannedTags);
+      return res.data;
+    } catch (error: any) {
+      this.logger.logError('Error updating banned tags', error.response?.data || error);
       return Promise.reject(error.response?.data || error);
     }
   }

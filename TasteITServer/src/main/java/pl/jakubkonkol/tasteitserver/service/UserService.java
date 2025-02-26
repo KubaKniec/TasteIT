@@ -15,7 +15,6 @@ import org.springframework.cache.annotation.Caching;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.*;
 import pl.jakubkonkol.tasteitserver.model.enums.NotificationType;
-import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
@@ -45,14 +44,24 @@ public class UserService implements IUserService {
 
     @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
-        User user = getUserById(userId);
+        User user = getFullUserById(userId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);
-
         UserReturnDto userReturnDto = convertToDto(user);
         userReturnDto.setIsFollowing(currentUser.getFollowing().contains(userId));
         List<BadgeDto> allBadges = newBadgeService.updateBadges(user);
         userReturnDto.setBadges(allBadges);
         return userReturnDto;
+    }
+
+    public User getSimpleUserById(String userId) { //return users without additional collections like his posts
+        return userRepository.findById(userId).orElseThrow(
+                () -> new NoSuchElementException("User with id " + userId + " not found"));
+    }
+
+    public User getFullUserById(String userId){ //returns user with additional collections from other repositories
+        User user = getSimpleUserById(userId);
+        user.setPosts(postRepository.findByUserId(userId));
+        return user;
     }
 
     public UserReturnDto getUserProfileView(String userId, String sessionToken) {
@@ -101,7 +110,7 @@ public class UserService implements IUserService {
         @CacheEvict(value = "userBySessionToken", key = "#sessionToken")
     })
     public void updateUserTags(String userId, UserTagsDto userTagsDto, String sessionToken) {
-        User user = getUserById(userId);
+        User user = getSimpleUserById(userId);
         user.setTags(userTagsDto.getTags());
         userRepository.save(user);
     }
@@ -201,11 +210,6 @@ public class UserService implements IUserService {
         pageDto.setTotalPages(pageImpl.getTotalPages());
 
         return pageDto;
-    }
-
-    public User getUserById(String userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
     public User getCurrentUserBySessionToken(String sessionToken) {

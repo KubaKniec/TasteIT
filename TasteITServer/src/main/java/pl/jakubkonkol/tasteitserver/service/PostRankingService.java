@@ -24,7 +24,7 @@ public class PostRankingService implements IPostRankingService {
 
     @Cacheable(value = "rankedPosts", key = "#userId")
     public List<Post> getRankedPostsForUser(String userId) {
-        User currentUser = userService.getUserById(userId);
+        User currentUser = userService.getSimpleUserById(userId);
         List<Post> candidates = postCollectionService.collectPosts(currentUser);
         List<Post> filteredCandidates = contentFilterService.filterBannedContent(candidates, currentUser);
         LOGGER.log(Level.INFO, "Filtered out {0} posts with banned content",

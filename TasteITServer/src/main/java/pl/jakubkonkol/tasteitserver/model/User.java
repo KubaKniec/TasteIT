@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private List<String> followers = new ArrayList<>();
     private List<String> following = new ArrayList<>();
     private List<FoodList> foodLists = new ArrayList<>();
-    @DBRef
+//    @DBRef
     private List<Post> posts = new ArrayList<>();   //ustawiac przy budowaniu bazy
     private Map<String, Double> clusterPreferences = new HashMap<>();
     @DBRef
@@ -78,7 +78,7 @@ public class User implements UserDetails {
 
     public Optional<Post> getPostWithMaxLikes(){
         return posts.stream()
-                .max((post1, post2) -> post2.getLikes().size() - post1.getLikes().size());
+                .max(Comparator.comparingInt(post -> post.getLikes().size()));
     }
 
     public int countAllLikesOnPosts() {

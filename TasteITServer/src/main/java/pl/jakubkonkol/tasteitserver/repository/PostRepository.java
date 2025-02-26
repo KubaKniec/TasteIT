@@ -2,14 +2,11 @@ package pl.jakubkonkol.tasteitserver.repository;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.Aggregation;
 import pl.jakubkonkol.tasteitserver.model.Like;
 import pl.jakubkonkol.tasteitserver.model.Post;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 import pl.jakubkonkol.tasteitserver.model.projection.PostPhotoView;
 
 import java.util.Date;
@@ -70,4 +67,7 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
 
     List<Post> findAll();
+
+    @Query("{ 'userId' : ?0 }")
+    List<Post> findByUserId(String userId);
 }

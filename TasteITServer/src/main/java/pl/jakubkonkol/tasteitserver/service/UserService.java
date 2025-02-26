@@ -17,6 +17,7 @@ import pl.jakubkonkol.tasteitserver.model.*;
 import pl.jakubkonkol.tasteitserver.model.enums.NotificationType;
 import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
+import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
@@ -35,6 +36,7 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final IngredientService ingredientService;
     private final TagService tagService;
     private final UserActionRepository userActionRepository;
@@ -61,6 +63,8 @@ public class UserService implements IUserService {
     public User getFullUserById(String userId){ //returns user with additional collections from other repositories
         User user = getSimpleUserById(userId);
         user.setPosts(postRepository.findByUserId(userId));
+        List<Comment> comments = commentRepository.findByUserId(userId);
+        user.setCreatedComments(comments);
         return user;
     }
 

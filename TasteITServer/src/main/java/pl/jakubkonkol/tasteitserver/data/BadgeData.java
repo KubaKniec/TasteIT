@@ -35,7 +35,7 @@ public class BadgeData {
                new BadgeBlueprint("Community Favorite", "Achieved 500 likes across all recipes.", "", 500,
                        collector -> collector.countLikes()),
                new BadgeBlueprint("Top Commenter", "Left 50 comments. You're a key part of our community!", "", 50,
-                       collector -> 0), //todo
+                       collector -> collector.countComments()),
                new BadgeBlueprint("Taste Influencer", "Gained 10 followers. Your recipes are a hit!", "", 10,
                        collector -> collector.countFollowers()),
                new BadgeBlueprint("Culinary Star", "Reached 100 followers. You inspire many chefs!", "", 100,

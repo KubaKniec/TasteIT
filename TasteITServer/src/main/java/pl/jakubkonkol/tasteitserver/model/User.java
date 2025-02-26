@@ -7,9 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.jakubkonkol.tasteitserver.dto.BadgeDto;
 import pl.jakubkonkol.tasteitserver.model.enums.PostType;
-import pl.jakubkonkol.tasteitserver.model.value.BadgeBlueprint;
 
 import java.util.*;
 
@@ -42,6 +40,7 @@ public class User implements UserDetails {
     private Map<String, Double> clusterPreferences = new HashMap<>();
     @DBRef
     private List<Badge> earnedBadges = new ArrayList<>();
+    private List<Comment> createdComments = new ArrayList<>();
 
 
     @Override

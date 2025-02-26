@@ -31,8 +31,9 @@ public class BadgeDataCollector {
         return user.countAllLikesOnPosts();
     }
 
-    //todo przez CommentRepository znajdz zsumuj posty po id tego usera
-
+    public int countComments() {
+        return user.getCreatedComments().size();
+    }
     public int countFollowers() {
         return user.getFollowers().size();
     }

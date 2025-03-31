@@ -93,6 +93,8 @@ import { PostDetailsComponent } from './pages/post-builder/post-details/post-det
 import { PostSummaryComponent } from './pages/post-builder/post-summary/post-summary.component';
 import { PBNavigationComponent } from './pages/post-builder/pbnavigation/pbnavigation.component';
 import {PostBuilderService} from "./pages/post-builder/shared/postBuilder.service";
+import { BadgesComponent } from './pages/badges/badges.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -139,6 +141,7 @@ import {PostBuilderService} from "./pages/post-builder/shared/postBuilder.servic
     PostDetailsComponent,
     PostSummaryComponent,
     PBNavigationComponent,
+    BadgesComponent,
   ],
   imports: [
     BrowserModule,

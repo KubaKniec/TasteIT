@@ -1,0 +1,33 @@
+<div *ngIf="(currentUser?.badges?.length ?? 0) > 0; else noBadges" class="badges-grid">
+  <div class="badge-card" *ngFor="let badge of currentUser.badges">
+
+    <h4 class="badge-title">{{ badge.name }}</h4>
+
+    <div class="image-container">
+      <img
+        [src]="'assets/badges/badge001.png'"
+        [class.achieved]="badge.value >= badge.goalValue"
+        class="badge-image grayscale"
+        alt="{{ badge.name }}"
+      />
+    </div>
+
+    <p class="badge-description"><strong>Description:</strong> {{ badge.description }}</p>
+
+    <div class="progress-wrapper">
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="(badge.value / badge.goalValue) * 100"></div>
+      </div>
+      <p class="progress-text"><strong>{{ badge.value }} / {{ badge.goalValue }}</strong></p>
+    </div>
+
+    <p class="earned-date" *ngIf="badge.value >= badge.goalValue">
+      <strong>Earned:</strong> {{ badge.earnedDate | date:'dd.MM.yyyy' }}
+    </p>
+
+  </div>
+</div>
+
+<ng-template #noBadges>
+  <p>Brak badge danych.</p>
+</ng-template>

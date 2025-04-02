@@ -44,7 +44,7 @@ public class UserService implements IUserService {
     private final NewBadgeService newBadgeService;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
-    @Cacheable(value = "userById", key = "#userId")
+//    @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
         User user = getFullUserById(userId);
         User currentUser = getCurrentUserBySessionToken(sessionToken);

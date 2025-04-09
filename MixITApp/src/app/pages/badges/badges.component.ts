@@ -10,21 +10,24 @@ import {User} from "../../model/user/User";
   styleUrls: ['./badges.component.css']
 })
 export class BadgesComponent {
-
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
   ) { }
-  currentUser: User = {badges: [] }
-  userId:string = '';
-  async ngOnInit(): Promise<void> { //todo nie odświeża się progres np po dodaniu posta:(
-    await this.getUser()
-    this.userId = this.currentUser.userId as string
-    console.log('stolen id '+this.userId)
+
+  currentUser: User = { badges: [] };
+  userId: string = '';
+
+  async ngOnInit(): Promise<void> {
+    await this.getUser();
+    this.userId = this.currentUser.userId as string;
+    console.log('stolen id ' + this.userId);
+
   }
+
   async getUser() {
     const userFromToken = await this.userService.getUserByToken();
-    this.currentUser = await this.userService.getUserById(userFromToken.userId as string)
+    this.currentUser = await this.userService.getUserById(userFromToken.userId as string);
     console.log('Badges:', this.currentUser.badges);
   }
 }

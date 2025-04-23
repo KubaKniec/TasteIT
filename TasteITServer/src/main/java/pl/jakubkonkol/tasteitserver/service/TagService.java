@@ -1,6 +1,7 @@
 package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.protocol.types.Field;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,7 +29,7 @@ public class TagService implements ITagService {
         return tagRepository.save(tag);
     }
 
-    @Cacheable(value = "allTags", key = "'allTags'")
+//    @Cacheable(value = "allTags", key = "'allTags'")
     public List<Tag> getAll() {
         return tagRepository.findAll();
     }
@@ -63,6 +64,11 @@ public class TagService implements ITagService {
     @CacheEvict(value = {"tags", "basicTags",  "'allTags'"}, allEntries = true)
     public void deleteAll(){
         tagRepository.deleteAll();
+    }
+
+//    @CacheEvict(value = {"tags", "basicTags",  "'allTags'"}, allEntries = true)
+    public void deleteById(String id) {
+        tagRepository.deleteById(id);
     }
 
     public TagDto convertToDto(Tag tag) {

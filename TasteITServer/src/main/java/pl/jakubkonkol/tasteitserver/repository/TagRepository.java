@@ -11,4 +11,5 @@ public interface TagRepository extends MongoRepository<Tag, String> {
     Optional<Tag> findByTagName(String name);
     List<Tag> findByTagNameContainingIgnoreCase(String tagName);
     List<Tag> findByTagType(TagType tagType);
+
 }

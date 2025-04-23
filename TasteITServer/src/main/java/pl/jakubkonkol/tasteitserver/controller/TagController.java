@@ -29,4 +29,9 @@ public class TagController {
     public ResponseEntity<Tag> saveTag(@Valid @RequestBody Tag tag){
         return ResponseEntity.ok(tagService.save(tag));
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteTagById(@PathVariable String id) {
+        tagService.deleteById(id);
+    }
 }

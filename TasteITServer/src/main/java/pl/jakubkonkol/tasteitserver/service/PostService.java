@@ -69,7 +69,7 @@ public class PostService implements IPostService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Post with id " + postId + " not found"));
 
-        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
+        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken); //TODO dodać logike oraz nie jest adminem i zmienic na userReturnDto zeby miec Role
         if (!post.getUserId().equals(currentUser.getUserId())) {
             throw new IllegalStateException(
                     "Post of id: " + postId + " does not belong to the user of id: " +

@@ -16,7 +16,7 @@ public interface ITagService {
     void saveBasicTags();
     void deleteAll();
 
-    void deleteById(String id);
+    void deleteById(String id, String sessionToken);
     Tag convertToEntity(TagDto tagDto);
     TagDto convertToDto(Tag tag);
 

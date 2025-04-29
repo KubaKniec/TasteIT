@@ -31,4 +31,6 @@ public interface IUserService {
     List<User> findUsersActiveInLast30Days();
     List<TagDto> getUserBannedTags(String sessionToken);
     List<IngredientDto> getUserBannedIngredients(String sessionToken);
+    List<UserReturnDto> getUsers();
+    void deleteUserById(String id);
 }

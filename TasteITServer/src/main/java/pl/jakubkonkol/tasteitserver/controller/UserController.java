@@ -19,6 +19,10 @@ public class UserController {
     private final IUserService userService;
     private final IPostService postService;
 
+    @GetMapping("/")
+    public ResponseEntity<List<UserReturnDto>> getUsers() {
+        return ResponseEntity.ok(userService.getUsers());
+    }
     @GetMapping("/{userId}")
     public ResponseEntity<UserReturnDto> getUserById(@PathVariable String userId, @RequestHeader("Authorization") String sessionToken) {
         var user = userService.getUserDtoById(userId, sessionToken);
@@ -146,4 +150,11 @@ public class UserController {
         List<IngredientDto> bannedIngredients = userService.getUserBannedIngredients(sessionToken);
         return ResponseEntity.ok(bannedIngredients);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteUserById(@PathVariable String id) {
+        userService.deleteUserById(id);
+    }
+
+
 }

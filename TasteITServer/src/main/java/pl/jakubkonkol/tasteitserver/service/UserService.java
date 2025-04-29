@@ -52,6 +52,16 @@ public class UserService implements IUserService {
     private final IPostRankingService postRankingService;
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
+    public List<UserReturnDto> getUsers() {
+        List<User> users = userRepository.findAll().stream().toList();
+        List<UserReturnDto> userReturnDtos = new ArrayList<>();
+        for (User user : users) {
+            userReturnDtos.add(modelMapper.map(user, UserReturnDto.class));
+        }
+        return userReturnDtos;
+
+    }
+
     @Cacheable(value = "userById", key = "#userId")
     public UserReturnDto getUserDtoById(String userId, String sessionToken) {
         User user = getUserById(userId);
@@ -364,6 +374,10 @@ public class UserService implements IUserService {
         userRepository.delete(user);
     }
 
+    public void deleteUserById(String id) {
+        userRepository.deleteById(id);
+    }
+
     private void handleFollowNotification(String followerId, String targetUserId) {
         try {
             notificationEventPublisher.publishNotification(
@@ -376,5 +390,7 @@ public class UserService implements IUserService {
             LOGGER.log(Level.WARNING,"Failed to send follow notification", e);
         }
     }
+
+
 }
 

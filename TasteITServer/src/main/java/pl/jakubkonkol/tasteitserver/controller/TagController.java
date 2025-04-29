@@ -31,7 +31,7 @@ public class TagController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTagById(@PathVariable String id) {
-        tagService.deleteById(id);
+    public void deleteTagById(@PathVariable String id, @RequestHeader("Authorization") String sessionToken) {
+        tagService.deleteById(id, sessionToken);
     }
 }

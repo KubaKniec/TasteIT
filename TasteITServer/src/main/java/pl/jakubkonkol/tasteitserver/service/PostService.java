@@ -46,6 +46,7 @@ public class PostService implements IPostService {
     private final IUserService userService;
     private final LikeRepository likeRepository;
 
+
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void save(PostDto postDto) {
         Post post = convertToEntity(postDto);

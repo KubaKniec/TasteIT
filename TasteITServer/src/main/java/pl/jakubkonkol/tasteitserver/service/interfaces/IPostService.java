@@ -15,7 +15,7 @@ public interface IPostService {
     void save(PostDto postDto);
     List<Post> saveAll(List<Post> posts);
     void deleteAll();
-    List<Post> getAll();
+    List<PostDto> getAllPosts(String sessionToken);
     PostDto getPost(String postId, String sessionToken);
     PageDto<PostDto> getRandomPosts(Integer page, Integer size, String sessionToken);
     PageDto<PostDto> searchPosts(String title, String postType, String sessionToken, int page, int size);

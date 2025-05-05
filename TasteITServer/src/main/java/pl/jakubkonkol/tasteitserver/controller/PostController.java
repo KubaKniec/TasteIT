@@ -29,11 +29,10 @@ public class PostController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/all")
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        List<PostDto> postDtos = postService.getAll()
-                .stream()
-                .map(post -> modelMapper.map(post, PostDto.class)).toList();
-        return ResponseEntity.ok(postDtos);
+    public ResponseEntity<List<PostDto>> getAllPosts(
+            @RequestHeader("Authorization") String sessionToken) {
+        List<PostDto> dto = postService.getAllPosts(sessionToken);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{postId}")

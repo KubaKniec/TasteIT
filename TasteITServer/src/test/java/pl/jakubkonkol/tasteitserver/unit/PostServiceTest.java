@@ -201,6 +201,11 @@ class PostServiceTest {
             public String getProfilePicture() {
                 return "test-picture-url";
             }
+
+            @Override
+            public String getEmail() {
+                return "";
+            }
         };
     }
 }

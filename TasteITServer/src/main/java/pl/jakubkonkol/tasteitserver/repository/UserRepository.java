@@ -19,7 +19,12 @@ public interface UserRepository extends MongoRepository<User, String>{
     @Query("{ 'authentication.sessionToken' : ?0 }")
     Optional<User> findBySessionToken(String sessionToken);
 
-    @Query("{ 'authentication.sessionToken' : ?0 }")
+//    @Query("{ 'authentication.sessionToken' : ?0 }")
+//    Optional<UserShort> findUserShortBySessionToken(String sessionToken);
+    @Query(
+            value  = "{ 'authentication.sessionToken' : ?0 }",
+            fields = "{ 'userId':1, 'displayName':1, 'profilePicture':1, 'email':1 }"
+    )
     Optional<UserShort> findUserShortBySessionToken(String sessionToken);
 
     @Query(value = "{ 'userId': { $in: ?0 } }")
@@ -58,6 +63,11 @@ public interface UserRepository extends MongoRepository<User, String>{
 
     Optional<UserProfileView> findUserByUserId(String userId);
 
+//    Optional<UserShort> findUserShortByUserId(String userId);
+    @Query(
+            value  = "{ 'userId' : ?0 }",
+            fields = "{ 'userId':1, 'displayName':1, 'profilePicture':1, 'email':1 }"
+    )
     Optional<UserShort> findUserShortByUserId(String userId);
 
     @Query("{ 'userId' : ?0 }")

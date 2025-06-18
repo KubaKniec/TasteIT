@@ -61,7 +61,7 @@ export class UserProfileComponent implements OnInit{
       : await this.userService.followUser(this.user.userId!);
 
     this.user = await this.userService.getUserProfileById(this.user.userId!);
-    location.reload(); // na razie jest reload bo jest prościej :)
+    location.reload();
   }
   goto(url: string) {
     this.router.navigate([url]);

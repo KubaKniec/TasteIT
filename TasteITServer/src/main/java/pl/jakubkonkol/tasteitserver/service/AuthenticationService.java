@@ -69,6 +69,9 @@ public class AuthenticationService implements IAuthenticationService {
             throw new AccountDoesNotExistException("User with this email does not exist");
         }
         var user = existingUser.get();
+        if (userLoginRequestDto.isRequireAdmin() && !user.getRoles().contains("ADMIN")) {
+            throw new IllegalArgumentException("Login admin endpoint available only for admins");
+        }
         var expectedHash = cryptoTools.authentication(userLoginRequestDto.getPassword(), user.getAuthentication().getSalt());
         if (!expectedHash.equals(user.getAuthentication().getPassword())) {
             throw new IncorrectPasswordException("Incorrect password");

@@ -21,6 +21,8 @@ public class UserLoginRequestDto {
             "one uppercase letter, one special character '  ', and has no whitespace")
     private String password;
 
+    private boolean requireAdmin;
+
 
 }
 

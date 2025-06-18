@@ -38,6 +38,13 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationSuccessTokenDto> login(@Valid @RequestBody final UserLoginRequestDto userLoginRequest) {
         return ResponseEntity.ok(authenticationService.login(userLoginRequest));
     }
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<AuthenticationSuccessTokenDto> adminLogin(@Valid @RequestBody final UserLoginRequestDto userLoginRequest) {
+        userLoginRequest.setRequireAdmin(true);
+        return ResponseEntity.ok(authenticationService.login(userLoginRequest));
+    }
+
     @GetMapping("/logout")
     public ResponseEntity<GenericResponse> logout(@RequestHeader("Authorization") final String sessionToken) {
         authenticationService.logout(sessionToken);

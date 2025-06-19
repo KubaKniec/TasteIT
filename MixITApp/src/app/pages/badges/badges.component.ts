@@ -21,13 +21,10 @@ export class BadgesComponent {
   async ngOnInit(): Promise<void> {
     await this.getUser();
     this.userId = this.currentUser.userId as string;
-    console.log('stolen id ' + this.userId);
-
   }
 
   async getUser() {
     const userFromToken = await this.userService.getUserByToken();
     this.currentUser = await this.userService.getUserById(userFromToken.userId as string);
-    console.log('Badges:', this.currentUser.badges);
   }
 }

@@ -58,15 +58,15 @@ public class User implements UserDetails {
         return email;
     }
 
-    public void addEarnedBadge(Badge badge) {
-        earnedBadges.add(badge);
-    }
-
 
     public List<Recipe> getRecipes() {
         return posts.stream()
                 .map(Post::getRecipe)
                 .toList();
+    }
+
+    public void addEarnedBadge(Badge badge) {
+        earnedBadges.add(badge);
     }
 
     public List<Post> getPostsBy(PostType type){

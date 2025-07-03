@@ -39,6 +39,4 @@ public class NewBadgeService {
         }
         return allBadges;
     }
-
-
 }

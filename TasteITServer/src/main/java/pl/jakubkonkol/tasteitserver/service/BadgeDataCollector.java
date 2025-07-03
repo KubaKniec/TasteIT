@@ -12,8 +12,10 @@ public class BadgeDataCollector {
         this.user = user;
     }
 
-    public int countPosts() {
-        return user.getPosts().size();
+    public int countMaxLikes(){
+        return user.getPostWithMaxLikes()
+                .map(post -> post.getLikes().size())
+                .orElse(0);
     }
 
     public int countPostsBy(PostType type){
@@ -21,10 +23,8 @@ public class BadgeDataCollector {
                 .size();
     }
 
-    public int countMaxLikes(){
-        return user.getPostWithMaxLikes()
-                .map(post -> post.getLikes().size())
-                .orElse(0);
+    public int countPosts() {
+        return user.getPosts().size();
     }
 
     public int countLikes(){

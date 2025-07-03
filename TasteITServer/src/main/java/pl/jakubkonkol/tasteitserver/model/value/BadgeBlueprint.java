@@ -26,11 +26,12 @@ public class BadgeBlueprint {
     private Integer goalValue;
     private Function<BadgeDataCollector, Integer> valueCounter;
 
-    public BadgeBlueprint(String badgeName, String description, String imageUrl, Integer goalValue, Function<BadgeDataCollector, Integer> valueCounter) {
+    public BadgeBlueprint(String badgeName, String description,  Integer goalValue,
+                          Function<BadgeDataCollector, Integer> valueCounter) {
         id = nextId++;
         this.badgeName = badgeName;
         this.description = description;
-        this.imageUrl = imageUrl;
+        imageUrl = "";
         this.goalValue = goalValue;
         this.valueCounter = valueCounter;
     }
@@ -42,8 +43,13 @@ public class BadgeBlueprint {
         return valueCounter.apply(collector);
     }
 
-    public void setValueCounter(Function<BadgeDataCollector, Integer> valueCounter) {
-        this.valueCounter = valueCounter;
+    public BadgeDto.BadgeDtoBuilder toDto() {
+        return BadgeDto.builder()
+                .id(id)
+                .name(badgeName)
+                .description(description)
+                .image(imageUrl)
+                .goalValue(goalValue);
     }
 
     @Override
@@ -59,13 +65,8 @@ public class BadgeBlueprint {
         return Objects.hash(id);
     }
 
-    public BadgeDto.BadgeDtoBuilder toDto() {
-        return BadgeDto.builder()
-                .id(id)
-                .name(badgeName)
-                .description(description)
-                .image(imageUrl)
-                .goalValue(goalValue);
+    public void setValueCounter(Function<BadgeDataCollector, Integer> valueCounter) {
+        this.valueCounter = valueCounter;
     }
 
 }

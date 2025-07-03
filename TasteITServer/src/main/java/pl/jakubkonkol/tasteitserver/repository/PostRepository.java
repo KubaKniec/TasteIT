@@ -31,8 +31,6 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query("{ 'recipe.ingredientsWithMeasurements.name': { $nin: ?0 } }")
     Page<PostPhotoView> findByExcludedIngredients(List<String> ingredientNames, Pageable pageable);
 
-    List<Post> findTop100ByOrderByCreatedDateDesc();
-
     @Query("{ 'clusters.$id': ?0, 'createdDate': { $gt: ?1 } }")
     List<Post> findByClustersAndCreatedDateAfter(
             ObjectId clusterId,
@@ -58,13 +56,8 @@ public interface PostRepository extends MongoRepository<Post, String> {
     @Query(value = "{ 'clusters.$id': ?0, 'createdDate': { $gt: ?1 } }", count = true)
     long countByClustersAndCreatedDateAfter(ObjectId clusterId, Date cutoffDate);
 
-    // Znajdź posty zawierające co najmniej jeden z podanych składników
-    @Query("{ 'recipe.ingredientsWithMeasurements.name': { $in: ?0 } }")
-    List<Post> findByAnyIngredientInRecipe(List<String> ingredientNames);
-
-    @Query("{ 'recipe.ingredientsWithMeasurements.name': { $not: { $elemMatch: { $nin: ?0 } } } }")
-    List<Post> findByIngredientsSubset(List<String> ingredientNames);
-
+    @Query(value = "{'userId': {$ne: ?0}}", sort = "{'createdDate': -1}")
+    List<Post> findTop100ByOrderByCreatedDateDescExcludingUser(String userId);
 
     List<Post> findAll();
 

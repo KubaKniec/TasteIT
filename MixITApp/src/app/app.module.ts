@@ -93,7 +93,19 @@ import { PostDetailsComponent } from './pages/post-builder/post-details/post-det
 import { PostSummaryComponent } from './pages/post-builder/post-summary/post-summary.component';
 import { PBNavigationComponent } from './pages/post-builder/pbnavigation/pbnavigation.component';
 import {PostBuilderService} from "./pages/post-builder/shared/postBuilder.service";
+
 import { BadgesComponent } from './pages/badges/badges.component';
+
+import {CreatorService} from "./service/creator.service";
+import { ConfirmPostDeletionComponent } from './components/dialogs/confirm-post-deletion/confirm-post-deletion.component';
+import {NotificationsService} from "./service/notifications.service";
+import { NotificationsComponent } from './components/notifications/notifications.component';
+import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
+import {NotificationToastService} from "./service/notification.toast.service";
+import {SearchStateService} from "./service/search.state.service";
+import { FeedSettingsComponent } from './pages/feed-settings/feed-settings.component';
+import {ConfigurationService} from "./service/configuration.service";
+import { AppInfoComponent } from './pages/app-info/app-info.component';
 
 @NgModule({
   declarations: [
@@ -142,6 +154,11 @@ import { BadgesComponent } from './pages/badges/badges.component';
     PostSummaryComponent,
     PBNavigationComponent,
     BadgesComponent,
+    ConfirmPostDeletionComponent,
+    NotificationsComponent,
+    NotificationToastComponent,
+    FeedSettingsComponent,
+    AppInfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -202,7 +219,12 @@ import { BadgesComponent } from './pages/badges/badges.component';
     FoodlistService,
     AddToFoodlistFactoryService,
     MatDialog,
-    PostBuilderService
+    PostBuilderService,
+    CreatorService,
+    NotificationsService,
+    NotificationToastService,
+    SearchStateService,
+    ConfigurationService
   ],
   bootstrap: [AppComponent]
 })

@@ -4,7 +4,7 @@
   width: 100%;
   height: 100%;
   background-color: var(--theme-color-950);
-  padding-bottom: calc(50px + 38px + 2rem);
+  position: relative;
 }
 .header {
   position: sticky;
@@ -20,9 +20,10 @@
   color: var(--theme-color-50);
 }
 .instructions-container {
-  flex-grow: 1;
-  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
   color: white;
+  padding: 1rem 1rem calc(50px + 38px + 2rem);
 }
 
 h2 {
@@ -101,10 +102,12 @@ textarea.error {
 
 .step-number {
   font-weight: bold;
+  flex-shrink: 0;
   margin-right: 0.5rem;
 }
 
 .remove-step-btn {
+  flex-shrink: 0;
   margin-left: auto;
   background-color: var(--theme-color-700);
   color: white;

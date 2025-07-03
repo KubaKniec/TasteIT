@@ -5,17 +5,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.Update;
+
 import pl.jakubkonkol.tasteitserver.model.Badge;
 import pl.jakubkonkol.tasteitserver.model.FoodList;
 import pl.jakubkonkol.tasteitserver.model.Tag;
+
 import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, String>{
@@ -69,14 +69,12 @@ public interface UserRepository extends MongoRepository<User, String>{
     @Update("{ '$set' : { 'displayName' : ?1, 'bio' : ?2, 'profilePicture' : ?3, 'birthDate' : ?4 } }")
     void updateUserProfileFields(String userId, String displayName, String bio, String profilePicture, Date birthDate);
 
-    @Query(value = "{ '_id' : ?0 }", fields = "{ 'preferredClusterIds' : 1 }")
-    @Update("{ '$set' : { 'preferredClusterIds' : ?1 }}")
-    void updateUserClusters(String userId, List<String> clusterIds);
-
     @Query(value = "{ '_id' : ?0 }", fields = "{ 'clusterPreferences' : 1}")
+
     Optional<User> findClusterPreferencesById(String userId);  // it would be good to create projection for this
 
     @Query("{'userId' : ?0}")
     @Update("{ '$set' : { 'badges' : ?1 } }")
     void updateUserBadgesByUserId(String userId, List<Badge> badges);
+
 }

@@ -2,7 +2,6 @@ package pl.jakubkonkol.tasteitserver.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.el.parser.Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +26,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/profile/{userId}") //temp endpoint
+    @GetMapping("/profile/{userId}")
     public ResponseEntity<UserReturnDto> getUserProfileById(@PathVariable String userId, @RequestHeader("Authorization") String sessionToken) {
         var user = userService.getUserProfileView(userId, sessionToken);
         return ResponseEntity.ok(user);
@@ -39,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/updateUserProfile")
+    @PutMapping("/update-user-profile")
     public ResponseEntity<GenericResponse> updateUserProfile(@Valid @RequestBody UserProfileDto userProfileDto, @RequestHeader("Authorization") String sessionToken) {
         userService.updateUserProfile(userProfileDto, sessionToken);
         return ResponseEntity.ok(GenericResponse
@@ -69,9 +68,6 @@ public class UserController {
                 .build());
     }
 
-    //POST jest najbardziej naturalny w tym kontekście, ponieważ follow tworzy nową relację
-    // (czyli nowe połączenie między dwoma użytkownikami), a unfollow usuwa tę relację.
-    // POST semantycznie bardziej odpowiada operacjom związanym z modyfikacją lub tworzeniem czegoś nowego, np. relacji między użytkownikami.
     @PostMapping("/follow/{targetUserId}")
     public ResponseEntity<GenericResponse> followUser(@PathVariable String targetUserId, @RequestHeader("Authorization") String sessionToken) {
         userService.followUser(targetUserId, sessionToken);
@@ -81,9 +77,7 @@ public class UserController {
                 message("Followed")
                 .build());
     }
-    //peracja unfollow usuwa istniejącą relację (z list following i followers),
-    // co jest typową operacją usuwania zasobów, dlatego DELETE będzie bardziej naturalnym wyborem.
-    // POST może działać, ale DELETE bardziej odpowiada konwencji REST, bo semantycznie usuwasz relację między dwoma zasobami (użytkownikami).
+
     @DeleteMapping("/unfollow/{targetUserId}")
     public ResponseEntity<GenericResponse> unfollowUser(@PathVariable String targetUserId, @RequestHeader("Authorization") String sessionToken) {
         userService.unfollowUser(targetUserId, sessionToken);
@@ -122,7 +116,7 @@ public class UserController {
         return ResponseEntity.ok(posts);
     }
 
-    @PatchMapping("/banned_ingredients")
+    @PatchMapping("/banned-ingredients")
     public ResponseEntity<GenericResponse> updateUserBannedIngredients(@RequestHeader("Authorization") String sessionToken, @RequestBody List<IngredientDto> ingredients) {
         userService.updateUserBannedIngredients(sessionToken, ingredients);
         return ResponseEntity.ok(GenericResponse
@@ -132,7 +126,7 @@ public class UserController {
                 .build());
     }
 
-    @PatchMapping("/banned_tags")
+    @PatchMapping("/banned-tags")
     public ResponseEntity<GenericResponse> updateUserBannedTags(@RequestHeader("Authorization") String sessionToken, @RequestBody List<TagDto> tags) {
         userService.updateUserBannedTags(sessionToken, tags);
         return ResponseEntity.ok(GenericResponse
@@ -140,5 +134,17 @@ public class UserController {
                 .status(HttpStatus.OK.value())
                 .message("Banned Tags updated")
                 .build());
+    }
+
+    @GetMapping("/banned-tags")
+    public ResponseEntity<List<TagDto>> getUserBannedTags(@RequestHeader("Authorization") String sessionToken) {
+        List<TagDto> bannedTags = userService.getUserBannedTags(sessionToken);
+        return ResponseEntity.ok(bannedTags);
+    }
+
+    @GetMapping("/banned-ingredients")
+    public ResponseEntity<List<IngredientDto>> getUserBannedIngredients(@RequestHeader("Authorization") String sessionToken) {
+        List<IngredientDto> bannedIngredients = userService.getUserBannedIngredients(sessionToken);
+        return ResponseEntity.ok(bannedIngredients);
     }
 }

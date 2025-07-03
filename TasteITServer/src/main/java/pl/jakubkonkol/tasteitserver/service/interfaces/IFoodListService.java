@@ -6,7 +6,7 @@ import pl.jakubkonkol.tasteitserver.dto.PostDto;
 import java.util.List;
 
 public interface IFoodListService {
-    FoodListDto createFoodList(String sessionToken, String name);
+    FoodListDto createFoodList(String sessionToken, FoodListDto foodListDto);
     FoodListDto getFoodList(String sessionToken, String foodListId);
     List<FoodListDto> getAllFoodLists(String sessionToken);
     List<FoodListDto> getAllFoodListsSimpleInfo(String sessionToken);

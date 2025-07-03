@@ -27,13 +27,10 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable String postId, @RequestHeader("Authorization") String sessionToken) {
         PostDto postDto = postService.getPost(postId, sessionToken);
-/*        if (postDto == null) {
-            throw new ResourceNotFoundException("Post not found with ID: " + postId);
-        }*/
         return ResponseEntity.ok(postDto);
     }
 
-    @GetMapping("/feed")
+    @GetMapping("/random-feed")
     public ResponseEntity<PageDto<PostDto>> getRandomPosts(@RequestParam(defaultValue = "0") Integer page,
                                                         @RequestParam(defaultValue = "20") Integer size,
                                                            @RequestHeader("Authorization") String sessionToken) {
@@ -50,7 +47,6 @@ public class PostController {
     @PostMapping("/{postId}/like")
     public ResponseEntity<GenericResponse> likePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
         likeService.likePost(postId, sessionToken);
-
         return ResponseEntity.ok(GenericResponse
                 .builder()
                 .status(HttpStatus.OK.value()).
@@ -61,7 +57,6 @@ public class PostController {
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<GenericResponse> unlikePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
         likeService.unlikePost(postId, sessionToken);
-
         return ResponseEntity.ok(GenericResponse
                 .builder()
                 .status(HttpStatus.OK.value()).
@@ -70,16 +65,14 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/comment")
-    public ResponseEntity<CommentDto> addComment(@PathVariable String postId, @RequestBody CommentDto commentDto, @RequestHeader("Authorization") final String sessionToken) {
+    public ResponseEntity<CommentDto> addComment(@PathVariable String postId, @Valid @RequestBody CommentDto commentDto, @RequestHeader("Authorization") final String sessionToken) {
         CommentDto dto = commentService.addComment(postId, commentDto, sessionToken);
-
         return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{postId}/comment/{commentId}")
     public ResponseEntity<GenericResponse> deleteComment(@PathVariable String postId, @PathVariable String commentId, @RequestHeader("Authorization") final String sessionToken) {
         commentService.deleteComment(postId, commentId, sessionToken);
-
         return ResponseEntity.ok(GenericResponse
                 .builder()
                 .status(HttpStatus.OK.value()).
@@ -95,15 +88,23 @@ public class PostController {
 
     @GetMapping("/likedby/{userId}")
     public ResponseEntity<List<PostDto>> getPostsLikedByUser(@PathVariable String userId, @RequestHeader("Authorization") final String sessionToken) {
-
-        var posts = postService.getPostsLikedByUser(userId, sessionToken);
-
-        return ResponseEntity.ok(posts);
+        List<PostDto> postsLikedByUser = postService.getPostsLikedByUser(userId, sessionToken);
+        return ResponseEntity.ok(postsLikedByUser);
     }
 
     @PostMapping("/create")
     public ResponseEntity<PostDto> createPost(@RequestBody @Valid PostDto postDto, @RequestHeader("Authorization") final String sessionToken) {
         PostDto post = postService.createPost(postDto, sessionToken);
         return ResponseEntity.ok(post);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<GenericResponse> deletePost(@PathVariable String postId, @RequestHeader("Authorization") final String sessionToken) {
+        postService.deleteOnePostById(postId, sessionToken);
+        return ResponseEntity.ok(GenericResponse
+                .builder()
+                .status(HttpStatus.OK.value()).
+                message("Post Deleted")
+                .build());
     }
 }

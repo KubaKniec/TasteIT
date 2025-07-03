@@ -1,53 +1,55 @@
 <div class="container">
   <div class="content">
-<!--    <div class="title">-->
-<!--      <p class="title-text"> DrinkBuilder </p>-->
-<!--      <app-beta-badge />-->
-<!--    </div>-->
-<!--    -->
     <mat-tab-group dynamicHeight>
       <mat-tab>
         <ng-template mat-tab-label>
           <div style="color: var(--theme-color-50)">Ingredients</div>
         </ng-template>
         <div class="wrapper">
-          <div class="selected" *ngIf="selectedIngredients.length>0">
-            <p class="selected-text"> Selected ingredients: </p>
+          <div class="pd-1rem">
+            <div class="input-field">
+              <mat-icon>search</mat-icon>
+              <input type="text" [ngModel]="searchPhrase$ | async" (ngModelChange)="updateSearchPhrase($event)" placeholder="Search for ingredient">
+            </div>
+          </div>
+
+          <div class="selected" *ngIf="(selectedIngredients$ | async)?.length ?? 0 > 0">
+          <p class="selected-text"> Selected ingredients: </p>
             <div class="chip-set-wrapper">
               <mat-chip-set>
                 <mat-chip
-                  *ngFor="let selected of selectedIngredients; let i = index"
+                  *ngFor="let selected of selectedIngredients$ | async; let i = index"
                   (click)="handleIngredientClick(selected)"
                   highlighted
                   style="background-color: var(--theme-color-600); color:var(--theme-color-50)"
                   [style.display]="i < 6 ? 'inline-flex' : 'none'">
-                  {{selected}}
+                  {{selected.name}}
                 </mat-chip>
                 <mat-chip
-                  *ngIf="selectedIngredients.length > 6"
+                  *ngIf="moreSelectedCount > 0"
                   style="background-color: var(--theme-color-600); color:var(--theme-color-50)"
                   highlighted>
-                  +{{ selectedIngredients.length - 6 }} more</mat-chip>
+                  +{{ moreSelectedCount }} more
+                </mat-chip>
               </mat-chip-set>
             </div>
           </div>
-          <input type="text" class="search-input" [(ngModel)]="searchPhrase" (ngModelChange)="filterIngredientsByPhrase()" placeholder="Search for ingredient">
           <p class="selected-text"> All ingredients: </p>
           <div class="ingredient-list">
-            <p *ngFor="let ingredient of filteredIngredients" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient}}</p>
+            <p *ngFor="let ingredient of filteredIngredients$ | async" class="ingredient-text" (click)="handleIngredientClick(ingredient)">{{ingredient.name}}</p>
           </div>
         </div>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          <div style="color: var(--theme-color-50)">Results ({{generatedDrinks.length}})</div>
+          <div style="color: var(--theme-color-50)">Results ({{(foundPosts$ | async)?.length}})</div>
         </ng-template>
-        <div class="drinks-grid">
-          <app-drinks-grid
-            [iterableDrinks]="generatedDrinks"
-            *ngIf="generatedDrinks.length > 0"/>
-        </div>
 
+        <div class="drinks-grid">
+          <app-post-grid
+            [posts]="(foundPosts$ | async) ?? []">
+          </app-post-grid>
+        </div>
 
       </mat-tab>
       <mat-tab>
@@ -56,12 +58,8 @@
         </ng-template>
         <div class="settings">
           <div class="setting">
-            <mat-slide-toggle color="primary" [(ngModel)]="flexibleMatching"></mat-slide-toggle>
+            <mat-slide-toggle color="primary" [ngModel]="flexibleMatching"></mat-slide-toggle>
             <p class="setting-text"> Flexible Matching</p>
-          </div>
-          <div class="setting">
-            <mat-slide-toggle color="primary" [(ngModel)]="allowAlcohol"></mat-slide-toggle>
-            <p class="setting-text"> Allow drinks with alcohol</p>
           </div>
         </div>
       </mat-tab>

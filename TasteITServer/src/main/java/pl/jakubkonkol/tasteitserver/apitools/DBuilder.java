@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Component;
 import pl.jakubkonkol.tasteitserver.factory.AdminUserFactory;
-import pl.jakubkonkol.tasteitserver.repository.UserRepository;
-import pl.jakubkonkol.tasteitserver.service.*;
 import pl.jakubkonkol.tasteitserver.service.interfaces.*;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class allows you to create sample data by downloading it from themealdb.com and thecocktaildb.com,
+ * which is a temporary solution
+ */
 @Component
 @RequiredArgsConstructor
 public class DBuilder {
@@ -28,10 +30,18 @@ public class DBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DBuilder.class.getName());
 
-    @PostConstruct //this always should be active
-    public void createDefaultAdminAccount() throws IOException{
-        adminUserFactory.CreateAdmin();
+//    @PostConstruct // Should stay commented out
+    public void createDefaultAdminAccount() {
+        try {
+            adminUserFactory.CreateAdmin();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
+
+    /**
+     * Uncomment @PostConstruct if u want to populate database with data from API
+     */
 //    @PostConstruct
     public void buildDataBase() throws IOException {
         ingredientService.deleteAll();
@@ -45,7 +55,10 @@ public class DBuilder {
         foodFetcher.populateDBWithFood();
         ingredientFetcher.populateDBWithIngredients();
         drinkFetcher.populateDBWithDrinks();
-
-        LOGGER.log(Level.INFO, "Database built");
+      
+            LOGGER.log(Level.INFO, "Database built");
+        } catch (IOException e){
+            LOGGER.log(Level.SEVERE, e.getMessage());
+        }
     }
 }

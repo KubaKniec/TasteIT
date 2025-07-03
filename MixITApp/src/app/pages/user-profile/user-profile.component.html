@@ -1,24 +1,5 @@
 <div class="container">
 
-  <div class="skeleton-wrapper" *ngIf="isLoading">
-    <div class="user-info-skeleton">
-      <div class="user-avatar skeleton"></div>
-      <div class="skeleton-text"></div>
-      <div class="social-details">
-        <div class="social-details-item" *ngFor="let i of [1,2,3]">
-          <div class="skeleton-text"></div>
-          <div class="skeleton-text"></div>
-        </div>
-      </div>
-      <div class="skeleton-text skeleton-bio"></div>
-    </div>
-    <div class="user-actions">
-      <div class="actions">
-        <div class="skeleton-button" *ngFor="let i of [1,2,3]"></div>
-      </div>
-    </div>
-  </div>
-
   <ng-container *ngIf="!isLoading">
   <div class="navigation">
     <p *ngIf="!isVisitor()">Your Profile</p>
@@ -74,20 +55,36 @@
   <div class="user-actions">
     <div class="actions" *ngIf="isVisitor()">
       <button class="button-secondary" matRipple [ngClass]="user.isFollowing ? '' : 'active'" (click)="toggleFollow()"> {{user.isFollowing ? 'Following' : 'Follow' }} </button>
-      <button class="button-secondary" matRipple> Message </button>
-      <button class="button-secondary" matRipple> Report </button>
+<!--      <button class="button-secondary" matRipple> Message </button>-->
+<!--      <button class="button-secondary" matRipple> Report </button>-->
     </div>
     <div class="actions" *ngIf="!isVisitor()">
       <button class="button-secondary" matRipple> Edit Profile </button>
       <button class="button-secondary" matRipple (click)="goto('badges')"> Badges </button>
+      <button class="button-secondary" matRipple (click)="goto('setup-profile')"> Edit Profile </button>
       <button class="button-secondary" matRipple (click)="goto('foodlists')"> Foodlists </button>
     </div>
   </div>
-  <div class="user-posts">
-    <app-post-grid
-      [posts]="userPosts"
-      (loadMore)="loadMorePosts()"
+    <div class="user-posts">
+      <app-post-grid
+        *ngIf="userPosts.length > 0"
+        [posts]="userPosts"
+        (loadMore)="loadMorePosts()"
       />
-  </div>
+      <div *ngIf="userPosts.length === 0 && !isVisitor()" class="empty-state">
+        <svg viewBox="0 0 240 240" class="empty-state-illustration">
+          <rect x="40" y="70" width="160" height="120" fill="#f0f0f0" rx="8"/>
+          <rect x="60" y="90" width="120" height="80" fill="#e0e0e0" rx="4"/>
+          <circle cx="120" cy="130" r="20" fill="#d0d0d0"/>
+          <path d="M110 130 L130 130 M120 120 L120 140" stroke="#f0f0f0" stroke-width="4" stroke-linecap="round"/>
+          <rect x="70" y="170" width="100" height="8" fill="#d0d0d0" rx="4"/>
+          <rect x="85" y="185" width="70" height="8" fill="#d0d0d0" rx="4"/>
+        </svg>
+        <h3 class="empty-state-title">No Posts Yet</h3>
+        <p class="empty-state-description">
+          Looks like you haven't added any posts yet. Create your first one by clicking the + button in the navigation bar!
+        </p>
+      </div>
+    </div>
   </ng-container>
 </div>

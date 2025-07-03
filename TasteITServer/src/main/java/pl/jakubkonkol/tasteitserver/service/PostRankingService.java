@@ -18,13 +18,13 @@ import java.util.logging.Logger;
 public class PostRankingService implements IPostRankingService {
     private final IPostCandidatesService postCollectionService;
     private final IFeedScoringService scoringService;
-    private final IUserService userService;
     private final IContentFilterService contentFilterService;
     private static final Logger LOGGER = Logger.getLogger(PostRankingService.class.getName());
 
     @Cacheable(value = "rankedPosts", key = "#userId")
-    public List<Post> getRankedPostsForUser(String userId) {
-        User currentUser = userService.getSimpleUserById(userId);
+
+    public List<Post> getRankedPostsForUser(User currentUser, String userId) {
+     
         List<Post> candidates = postCollectionService.collectPosts(currentUser);
         List<Post> filteredCandidates = contentFilterService.filterBannedContent(candidates, currentUser);
         LOGGER.log(Level.INFO, "Filtered out {0} posts with banned content",

@@ -29,4 +29,6 @@ public interface IUserService {
     void updateUserBannedTags(String sessionToken, List<TagDto> tags);
     UserShort getCurrentUserShortBySessionToken(String sessionToken);
     List<User> findUsersActiveInLast30Days();
+    List<TagDto> getUserBannedTags(String sessionToken);
+    List<IngredientDto> getUserBannedIngredients(String sessionToken);
 }

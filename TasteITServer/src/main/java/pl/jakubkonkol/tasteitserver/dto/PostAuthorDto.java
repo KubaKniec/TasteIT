@@ -7,4 +7,5 @@ public class PostAuthorDto {
     private String userId;
     private String displayName;
     private String profilePicture;
+    private String email;
 }

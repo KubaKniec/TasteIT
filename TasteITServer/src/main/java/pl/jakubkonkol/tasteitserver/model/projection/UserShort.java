@@ -4,4 +4,5 @@ public interface UserShort {
     String getUserId();
     String getDisplayName();
     String getProfilePicture();
+    String getEmail();
 }

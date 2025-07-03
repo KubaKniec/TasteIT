@@ -46,6 +46,7 @@ public class PostService implements IPostService {
     private final IUserService userService;
     private final LikeRepository likeRepository;
 
+
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void save(PostDto postDto) {
         Post post = convertToEntity(postDto);
@@ -63,13 +64,19 @@ public class PostService implements IPostService {
         postRepository.deleteAll();
     }
 
+    @Override
+    public List<PostDto> getAllPosts(String sessionToken) {
+        return getAll().stream()
+                .map(post -> convertToDto(post, sessionToken))
+                .toList();
+    }
     @CacheEvict(value = {"posts", "postById", "userPosts", "postsByTag", "likedPosts", "postsAll"}, allEntries = true)
     public void deleteOnePostById(String postId, String sessionToken) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Post with id " + postId + " not found"));
 
-        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
+        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken); //TODO dodać logike oraz nie jest adminem i zmienic na userReturnDto zeby miec Role
         if (!post.getUserId().equals(currentUser.getUserId())) {
             throw new IllegalStateException(
                     "Post of id: " + postId + " does not belong to the user of id: " +
@@ -290,27 +297,53 @@ public class PostService implements IPostService {
         if (responseDto.getPostAuthorDto() == null) throw new ResourceNotFoundException("Missing author in created Post");
         return responseDto;
     }
-
+    @Override
     public PostDto convertToDto(Post post, String sessionToken) {
-        if (post.getUserId() == null) throw new ResourceNotFoundException("Missing Post Author ID");
+        if (post.getUserId() == null) {
+            throw new ResourceNotFoundException("Missing Post Author ID");
+        }
 
         PostDto postDto = modelMapper.map(post, PostDto.class);
         postDto.setLikesCount((long) post.getLikes().size());
         postDto.setCommentsCount((long) post.getComments().size());
-        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
 
-        var like = likeRepository.findByPostIdAndUserId(post.getPostId(),
-                currentUser.getUserId());
+        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
+        var like = likeRepository.findByPostIdAndUserId(post.getPostId(), currentUser.getUserId());
         postDto.setLikedByCurrentUser(like.isPresent());
 
-        UserShort author = userService.findUserShortByUserId(
-                post.getUserId());
-
-        PostAuthorDto postAuthorDto = convertToPostAuthorDto(author);
-        postDto.setPostAuthorDto(postAuthorDto);
+        try {
+            UserShort author = userService.findUserShortByUserId(post.getUserId());
+            postDto.setPostAuthorDto(convertToPostAuthorDto(author));
+        } catch (ResourceNotFoundException ex) {
+            PostAuthorDto empty = new PostAuthorDto();
+            empty.setUserId(post.getUserId());
+            empty.setDisplayName("Unknown");
+            postDto.setPostAuthorDto(empty);
+        }
 
         return postDto;
     }
+
+//    public PostDto convertToDto(Post post, String sessionToken) {
+//        if (post.getUserId() == null) throw new ResourceNotFoundException("Missing Post Author ID");
+//
+//        PostDto postDto = modelMapper.map(post, PostDto.class);
+//        postDto.setLikesCount((long) post.getLikes().size());
+//        postDto.setCommentsCount((long) post.getComments().size());
+//        UserShort currentUser = userService.getCurrentUserShortBySessionToken(sessionToken);
+//
+//        var like = likeRepository.findByPostIdAndUserId(post.getPostId(),
+//                currentUser.getUserId());
+//        postDto.setLikedByCurrentUser(like.isPresent());
+//
+//        UserShort author = userService.findUserShortByUserId(
+//                post.getUserId());
+//
+//        PostAuthorDto postAuthorDto = convertToPostAuthorDto(author);
+//        postDto.setPostAuthorDto(postAuthorDto);
+//
+//        return postDto;
+//    }
 
     public PageDto<PostDto> getPostsExcludingIngredients(List<String> ingredientNames, Integer page,
                                                          Integer size) {
@@ -365,6 +398,7 @@ public class PostService implements IPostService {
         postAuthorDto.setUserId(userShort.getUserId());
         postAuthorDto.setDisplayName(userShort.getDisplayName());
         postAuthorDto.setProfilePicture(userShort.getProfilePicture());
+        postAuthorDto.setEmail(userShort.getEmail());
         return postAuthorDto;
     }
 

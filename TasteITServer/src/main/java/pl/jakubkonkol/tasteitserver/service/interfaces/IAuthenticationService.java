@@ -9,4 +9,7 @@ public interface IAuthenticationService {
     User register(final UserCreationRequestDto userCreationRequestDto);
     AuthenticationSuccessTokenDto login(final UserLoginRequestDto userLoginRequestDto);
     void logout(final String sessionToken);
+    User promote(String adminToken, String newAdminEmail);
+
+    User demote(String adminToken, String newAdminEmail);
 }

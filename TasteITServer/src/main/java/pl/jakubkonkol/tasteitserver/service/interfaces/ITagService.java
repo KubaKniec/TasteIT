@@ -1,5 +1,6 @@
 package pl.jakubkonkol.tasteitserver.service.interfaces;
 
+import org.apache.kafka.common.protocol.types.Field;
 import pl.jakubkonkol.tasteitserver.dto.TagDto;
 import pl.jakubkonkol.tasteitserver.model.Tag;
 
@@ -14,6 +15,10 @@ public interface ITagService {
     List<Tag> getBasicTags();
     void saveBasicTags();
     void deleteAll();
+
+    void deleteById(String id, String sessionToken);
     Tag convertToEntity(TagDto tagDto);
     TagDto convertToDto(Tag tag);
+
+
 }

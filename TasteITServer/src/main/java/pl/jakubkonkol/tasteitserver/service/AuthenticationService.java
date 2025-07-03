@@ -14,12 +14,35 @@ import pl.jakubkonkol.tasteitserver.model.User;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IAuthenticationService;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService {
 
     private final UserRepository userRepository;
     private final CryptoTools cryptoTools;
+
+    @Override
+    public User promote(String adminToken, String newAdminEmail) {
+        return setRoles(adminToken,newAdminEmail, List.of("USER", "ADMIN"));
+    }
+
+    @Override
+    public User demote(String adminToken, String newAdminEmail) {
+        return setRoles(adminToken,newAdminEmail, List.of("USER"));
+    }
+
+    private User setRoles(String adminToken, String newAdminEmail, List<String> roles) {
+        User admin = userRepository.findBySessionToken(adminToken).orElseThrow();
+        if (!admin.getRoles().contains("ADMIN")) {
+            throw new IllegalArgumentException("Only admin can promote new admins");
+        }
+        User newAdmin = userRepository.findByEmail(newAdminEmail).orElseThrow(()-> new NoSuchElementException("User to promote not found"));
+        newAdmin.setRoles(roles);
+        return userRepository.save(newAdmin);
+    }
 
     public User register(final UserCreationRequestDto userCreationRequestDto) {
         var existingUser = userRepository.findByEmail(userCreationRequestDto.getEmail());
@@ -46,6 +69,9 @@ public class AuthenticationService implements IAuthenticationService {
             throw new AccountDoesNotExistException("User with this email does not exist");
         }
         var user = existingUser.get();
+        if (userLoginRequestDto.isRequireAdmin() && !user.getRoles().contains("ADMIN")) {
+            throw new IllegalArgumentException("Login admin endpoint available only for admins");
+        }
         var expectedHash = cryptoTools.authentication(userLoginRequestDto.getPassword(), user.getAuthentication().getSalt());
         if (!expectedHash.equals(user.getAuthentication().getPassword())) {
             throw new IncorrectPasswordException("Incorrect password");

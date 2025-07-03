@@ -24,10 +24,27 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.register(userCreationRequest));
     }
 
+    @PostMapping("/promote")
+    public ResponseEntity<User> promoteUser(@RequestHeader("Authorization") final String adminToken,@RequestParam("email") String newAdminEmail){
+        return ResponseEntity.ok(authenticationService.promote(adminToken,newAdminEmail));
+    }
+
+    @PostMapping("/demote")
+    public ResponseEntity<User> demoteUser(@RequestHeader("Authorization") final String adminToken, @RequestParam("email") String newAdminEmail) {
+        return ResponseEntity.ok(authenticationService.demote(adminToken, newAdminEmail));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthenticationSuccessTokenDto> login(@Valid @RequestBody final UserLoginRequestDto userLoginRequest) {
         return ResponseEntity.ok(authenticationService.login(userLoginRequest));
     }
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<AuthenticationSuccessTokenDto> adminLogin(@Valid @RequestBody final UserLoginRequestDto userLoginRequest) {
+        userLoginRequest.setRequireAdmin(true);
+        return ResponseEntity.ok(authenticationService.login(userLoginRequest));
+    }
+
     @GetMapping("/logout")
     public ResponseEntity<GenericResponse> logout(@RequestHeader("Authorization") final String sessionToken) {
         authenticationService.logout(sessionToken);

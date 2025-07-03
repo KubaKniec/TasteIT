@@ -2,6 +2,7 @@ package pl.jakubkonkol.tasteitserver.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,8 @@ import pl.jakubkonkol.tasteitserver.service.interfaces.ILikeService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IPostService;
 
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/v1/post")
@@ -23,6 +26,14 @@ public class PostController {
     private final IPostService postService;
     private final ILikeService likeService;
     private final ICommentService commentService;
+    private final ModelMapper modelMapper;
+
+    @GetMapping("/all")
+    public ResponseEntity<List<PostDto>> getAllPosts(
+            @RequestHeader("Authorization") String sessionToken) {
+        List<PostDto> dto = postService.getAllPosts(sessionToken);
+        return ResponseEntity.ok(dto);
+    }
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable String postId, @RequestHeader("Authorization") String sessionToken) {

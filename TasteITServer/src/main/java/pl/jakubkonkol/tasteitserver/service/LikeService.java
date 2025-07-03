@@ -50,8 +50,6 @@ public class LikeService implements ILikeService {
         postRepository.save(post);
         handleLikeNotification(post, userByToken.getUserId());
         postRankingService.clearRankedPostsCacheForUser(userByToken.getUserId());
-        postRankingService.clearRankedPostsCacheForUser(userByToken.getUserId());
-        handleLikeNotification(post, userByToken.getUserId());
     }
 
     @CacheEvict(value = "postById", key = "#postId")

@@ -1,0 +1,22 @@
+<div class="notifications-container">
+  <div class="notifications-count">
+    Unread: {{ unreadCount$ | async }}
+  </div>
+  <div class="notifications-list">
+    <div *ngFor="let notification of notifications$ | async"
+         [class.unread]="!notification.read"
+         [class.read]="notification.read"
+         class="notification"
+         (click)="!notification.read && markAsRead(notification.notificationId)">
+      <img [src]="notification.actorPicture"
+           [alt]="notification.actorName"
+           class="w-10 h-10 rounded-full">
+      <div class="notification-content">
+        <p>{{ notification.message }}</p>
+        <span class="text-sm text-gray-500">
+                            {{ notification.createdAt | date:'shortTime' }}
+                        </span>
+      </div>
+    </div>
+  </div>
+</div>

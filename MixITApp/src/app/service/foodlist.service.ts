@@ -12,7 +12,7 @@ export class FoodlistService{
 
   async createFoodList(name: string){
     try{
-      const res = await taste_api.post(`foodlist/${name}`);
+      const res = await taste_api.post(`foodlist/`, {name: name});
       return res.data;
     }catch (error: any){
       this.logger.logError('Error creating food list', error.response?.data || error);

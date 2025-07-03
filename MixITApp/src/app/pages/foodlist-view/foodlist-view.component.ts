@@ -61,6 +61,7 @@ export class FoodlistViewComponent implements OnInit {
   async deleteFoodList() {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
 
+
     dialogRef.afterClosed().subscribe(async result => {
       if (result) {
         await this.foodlistService.deleteFoodList(this.foodListId);

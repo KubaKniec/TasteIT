@@ -45,8 +45,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // This creates the WebSocket endpoint that clients will connect to
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:3000")  // frontend URL
-                .withSockJS();  // Provides fallback options for older browsers
+                .setAllowedOrigins("http://localhost:4200");  // frontend URL
+//                .withSockJS();  // Provides fallback options for older browsers
     }
 
     @Override
@@ -57,32 +57,29 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
                         message, StompHeaderAccessor.class);
 
-                // We only want to authenticate during the initial CONNECT
+                System.out.println("Received message: " + message);
                 assert accessor != null;
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    // Get the session token from headers
                     String sessionToken = accessor.getFirstNativeHeader("Authorization");
 
                     if (sessionToken != null) {
-                        // Try to find the user with this session token
                         Optional<User> userOptional = userRepository.findBySessionToken(sessionToken);
 
-                        if (userOptional.isPresent()) {
-                            User user = userOptional.get();
-                            // Create a Principal object that Spring will use to identify the user
-                            accessor.setUser(new Principal() {
-                                @Override
-                                public String getName() {
-                                    return user.getUserId();
-                                }
-                            });
-
-                            // You can also set user attributes that might be useful later
-                            accessor.setSessionAttributes(Map.of(
-                                    "userId", user.getUserId(),
-                                    "email", user.getEmail()
-                            ));
+                        if (userOptional.isEmpty()) {
+                            System.out.println("User not found for token: " + sessionToken);
+                            throw new IllegalArgumentException("Invalid session token");
                         }
+
+                        User user = userOptional.get();
+                        accessor.setUser(new Principal() {
+                            @Override
+                            public String getName() {
+                                return user.getUserId();
+                            }
+                        });
+                    } else {
+                        System.out.println("No Authorization header received");
+                        throw new IllegalArgumentException("No Authorization header");
                     }
                 }
                 return message;

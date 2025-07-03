@@ -35,6 +35,9 @@ export class ProfileComponent implements OnInit{
   goto(url: string){
     this.router.navigateByUrl(url).then();
   }
+  notImplemented(){
+    this.toast.error("This feature is not implemented yet");
+  }
   gotoProfile() {
     const currentUserId = this.user.userId;
     this.router.navigateByUrl('user-profile/' + currentUserId).then();

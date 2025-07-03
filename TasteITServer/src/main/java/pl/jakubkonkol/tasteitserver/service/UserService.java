@@ -2,6 +2,7 @@ package pl.jakubkonkol.tasteitserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import pl.jakubkonkol.tasteitserver.dto.*;
 import pl.jakubkonkol.tasteitserver.model.*;
+import pl.jakubkonkol.tasteitserver.event.PreferenceUpdateRequiredEvent;
+import pl.jakubkonkol.tasteitserver.exception.ResourceNotFoundException;
+import pl.jakubkonkol.tasteitserver.model.Ingredient;
+import pl.jakubkonkol.tasteitserver.model.Tag;
+import pl.jakubkonkol.tasteitserver.model.User;
+import pl.jakubkonkol.tasteitserver.model.UserAction;
 import pl.jakubkonkol.tasteitserver.model.enums.NotificationType;
 import pl.jakubkonkol.tasteitserver.model.projection.UserProfileView;
 import pl.jakubkonkol.tasteitserver.model.projection.UserShort;
@@ -21,12 +28,14 @@ import pl.jakubkonkol.tasteitserver.repository.CommentRepository;
 import pl.jakubkonkol.tasteitserver.repository.PostRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserActionRepository;
 import pl.jakubkonkol.tasteitserver.repository.UserRepository;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IPostRankingService;
+import pl.jakubkonkol.tasteitserver.service.interfaces.IPostValidationService;
 import pl.jakubkonkol.tasteitserver.service.interfaces.IUserService;
+import pl.jakubkonkol.tasteitserver.model.enums.PreferenceUpdateReason;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,8 +49,12 @@ public class UserService implements IUserService {
     private final IngredientService ingredientService;
     private final TagService tagService;
     private final UserActionRepository userActionRepository;
+    private final IPostValidationService postValidationService;
     private final NotificationEventPublisher notificationEventPublisher;
     private final NewBadgeService newBadgeService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final IPostRankingService postRankingService;
+
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
 //    @Cacheable(value = "userById", key = "#userId")
@@ -70,7 +83,7 @@ public class UserService implements IUserService {
 
     public UserReturnDto getUserProfileView(String userId, String sessionToken) {
         UserProfileView userProfileView = userRepository.findUserByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         User currentUser = getCurrentUserBySessionToken(sessionToken);
         return convertUserProfileViewToUserReturnDto(userId, userProfileView, currentUser);
@@ -117,6 +130,11 @@ public class UserService implements IUserService {
         User user = getSimpleUserById(userId);
         user.setTags(userTagsDto.getTags());
         userRepository.save(user);
+
+        eventPublisher.publishEvent(
+                new PreferenceUpdateRequiredEvent(userId, PreferenceUpdateReason.TAGS_UPDATE)
+        );
+        LOGGER.log(Level.INFO, "Requesting preference update for user {0} due to tags update", userId);
     }
 
     @CacheEvict(value = {"followers", "following"}, allEntries = true)
@@ -216,14 +234,21 @@ public class UserService implements IUserService {
         return pageDto;
     }
 
+
+    public User getUserById(String userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User with id " + userId + " not found"));
+    }
+
+
     public User getCurrentUserBySessionToken(String sessionToken) {
         return userRepository.findBySessionToken(sessionToken)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     public UserShort getCurrentUserShortBySessionToken(String sessionToken) {
         return userRepository.findUserShortBySessionToken(sessionToken)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private UserReturnDto convertToDto(User user) {
@@ -244,7 +269,7 @@ public class UserService implements IUserService {
 
     public void checkIfUserExists(String userId) {
         if (!userRepository.existsById(userId)) {
-            throw new NoSuchElementException("User with id " + userId + " does not exist.");
+            throw new ResourceNotFoundException("User with id " + userId + " does not exist.");
         }
     }
 
@@ -277,18 +302,17 @@ public class UserService implements IUserService {
         return userRepository.findUsersByUserIdIn(userIds);
     }
 
-//    @Cacheable(value = "userShort", key = "#userId")
     public UserShort findUserShortByUserId(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
         return userRepository.findUserShortByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found"));
     }
 
     public String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            return (String) authentication.getDetails();
-        }
-        return null;
+        return authentication != null ? (String) authentication.getDetails() : null;
     }
 
     public void updateUserBannedIngredients(String sessionToken, List<IngredientDto> ingredients) {
@@ -298,6 +322,7 @@ public class UserService implements IUserService {
                 .toList();
         user.setBannedIngredients(bannedIngredients);
         userRepository.save(user);
+        postRankingService.clearRankedPostsCacheForUser(user.getUserId());
     }
 
     public void updateUserBannedTags(String sessionToken, List<TagDto> tags) {
@@ -307,9 +332,26 @@ public class UserService implements IUserService {
                 .toList();
         user.setBannedTags(bannedTags);
         userRepository.save(user);
+        postRankingService.clearRankedPostsCacheForUser(user.getUserId());
     }
 
-    public void updateUserBadges(String userId, List<Badge> updatedBadges) { //TODO Zrobić prosty update na bazie save(pobrac zmienic zapisac) /////// JEDNAK TO DZIAŁAAAAAAAAA
+    public List<IngredientDto> getUserBannedIngredients(String sessionToken) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+
+        return user.getBannedIngredients().stream()
+                .map(ingredientService::convertToDto)
+                .toList();
+    }
+
+    public List<TagDto> getUserBannedTags(String sessionToken) {
+        User user = getCurrentUserBySessionToken(sessionToken);
+
+        return user.getBannedTags().stream()
+                .map(tagService::convertToDto)
+                .toList();
+    }
+
+    public void updateUserBadges(String userId, List<Badge> updatedBadges) { 
         checkIfUserExists(userId);
         userRepository.updateUserBadgesByUserId(userId, updatedBadges);
     }
@@ -324,6 +366,27 @@ public class UserService implements IUserService {
                 .toList();
 
         return userRepository.findAllById(activeUserIds);
+    }
+
+    @CacheEvict(value = {"users", "userById"}, allEntries = true)
+    public void deleteUser(String email, String sessionToken) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " not found"));
+        
+        // Delete all user posts
+        if (user.getPosts() != null) {
+            user.getPosts().forEach(post -> {
+                try {
+                    postValidationService.deletePost(post.getPostId(), sessionToken);
+                } catch (Exception e) {
+                    // Log error but continue with deletion
+                    LOGGER.log(Level.SEVERE,"Error deleting post " + post.getPostId() + ": " + e.getMessage());
+                }
+            });
+        }
+        
+        // Delete user
+        userRepository.delete(user);
     }
 
     private void handleFollowNotification(String followerId, String targetUserId) {

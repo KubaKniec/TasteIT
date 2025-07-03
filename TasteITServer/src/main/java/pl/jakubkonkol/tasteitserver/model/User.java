@@ -11,7 +11,7 @@ import pl.jakubkonkol.tasteitserver.model.enums.PostType;
 
 import java.util.*;
 
-@Document(collection = "users")
+@Document
 @Data
 public class User implements UserDetails {
     @Id
@@ -35,8 +35,10 @@ public class User implements UserDetails {
     private List<String> followers = new ArrayList<>();
     private List<String> following = new ArrayList<>();
     private List<FoodList> foodLists = new ArrayList<>();
+
 //    @DBRef
     private List<Post> posts = new ArrayList<>();   //ustawiac przy budowaniu bazy
+  
     private Map<String, Double> clusterPreferences = new HashMap<>();
     @DBRef
     private List<Badge> earnedBadges = new ArrayList<>();

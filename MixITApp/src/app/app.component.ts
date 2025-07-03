@@ -18,7 +18,7 @@ export class AppComponent implements OnInit{
               private bodyScrollService: BodyScrollService,
               private installAppModalFactoryService: InstallAppModalFactoryService,
               private router: Router,
-              private activatedRoute: ActivatedRoute
+              private activatedRoute: ActivatedRoute,
   ) {
     this.installAppModalFactoryService.setRootViewContainerRef(this.viewContainerRef);
   }
@@ -44,6 +44,8 @@ export class AppComponent implements OnInit{
         this.bodyScrollService.enableScroll();
       });
     }
+
+    // setting up notifications
   }
 
 

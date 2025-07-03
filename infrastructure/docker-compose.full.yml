@@ -14,6 +14,27 @@ services:
     networks:
       - app-network
 
+  zookeeper:
+    extends:
+      file: ./infrastructure/kafka/docker-compose.yml
+      service: zookeeper
+    networks:
+      - app-network
+
+  kafka:
+    extends:
+      file: ./infrastructure/kafka/docker-compose.yml
+      service: kafka
+    networks:
+      - app-network
+
+  kafka-ui:
+    extends:
+      file: ./infrastructure/kafka/docker-compose.yml
+      service: kafka-ui
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
